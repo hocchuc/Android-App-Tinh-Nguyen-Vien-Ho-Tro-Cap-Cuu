@@ -1,0 +1,109 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context="com.emc.emergency.Fragment.fragment_menu_page"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_gps_fixed_black_24dp"
+            android:text="@string/yeu_cau_cap_cuu"
+            android:textColor="@android:color/black"
+            android:id="@+id/button4"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />.
+        <Button
+
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_shopping_basket_black_36dp"
+            android:text="@string/danh_sach_tai_nan_gan_day"
+            android:layout_weight="4"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/button_accident"
+            android:scaleType="fitCenter" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_camera_alt_black_36dp"
+            android:layout_weight="4"
+            android:text="@string/so_dien_thoai_cap_cuu"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_flight_land_black_36dp"
+            android:text="@string/thong_tin_ca_nhan"
+            android:lines="2"
+            android:textColor="@android:color/black"
+            android:id="@+id/flatButton"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_redeem_black_36dp"
+            android:text="@string/danh_sach_benh_vien"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/button3" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_power_settings_new_black_36dp"
+            android:text="Rời Khỏi"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/button2" />
+
+    </LinearLayout>
+
+</LinearLayout>
