@@ -75,4 +75,13 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="main_menu_activity">Main Menu</string>
+    <string name="accident_activity">Accident List</string>
+    <string name="personal_infomation">Personal infomation</string>
+    <string name="Emergency_SOS">Emergency SOS VN</string>
+    <string name="chat_room">Message</string>
+    <string name="setting">Setting</string>
+    <string name="other_resources">Link outside</string>
+    <string name="framework">Framework</string>
+    <string name="bao_tai_nan">REPORT ACCIDENT</string>
 </resources>

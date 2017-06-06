@@ -126,7 +126,7 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
         setSupportActionBar(toolbar);
         //set the back arrow in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.drawer_item_crossfade_drawer_layout_drawer);
+        getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
@@ -153,13 +153,13 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
                 .withGenerateMiniDrawer(true)
                 .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_compact_header).withIcon(FontAwesome.Icon.faw_sun_o).withIdentifier(1),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_action_bar_drawer).withIcon(FontAwesome.Icon.faw_home).withBadge("22").withBadgeStyle(new BadgeStyle(Color.RED, Color.RED)).withIdentifier(2),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_multi_drawer).withIcon(FontAwesome.Icon.faw_gamepad).withIdentifier(3),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_non_translucent_status_drawer).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(4),
-                        new PrimaryDrawerItem().withDescription("A more complex sample").withName(R.string.drawer_item_advanced_drawer).withIcon(GoogleMaterial.Icon.gmd_adb).withIdentifier(5),
-                        new SectionDrawerItem().withName(R.string.drawer_item_section_header),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(6),
+                        new PrimaryDrawerItem().withName(R.string.main_menu_activity).withIcon(FontAwesome.Icon.faw_th).withIdentifier(1),
+                        new PrimaryDrawerItem().withName(R.string.accident_activity).withIcon(GoogleMaterial.Icon.gmd_error).withBadge("22").withBadgeStyle(new BadgeStyle(Color.RED, Color.RED)).withIdentifier(2),
+                        new PrimaryDrawerItem().withName(R.string.personal_infomation).withIcon(FontAwesome.Icon.faw_user_circle).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(R.string.chat_room).withIcon(FontAwesome.Icon.faw_comments).withIdentifier(4),
+                        new PrimaryDrawerItem().withDescription("A more complex sample").withName(R.string.setting).withIcon(GoogleMaterial.Icon.gmd_settings_applications).withIdentifier(5),
+                        new SectionDrawerItem().withName(R.string.other_resources),
+                        new SecondaryDrawerItem().withName(R.string.framework).withIcon(FontAwesome.Icon.faw_github).withIdentifier(6),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(GoogleMaterial.Icon.gmd_format_color_fill).withTag("Bullhorn").withIdentifier(7)
                 ) // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
