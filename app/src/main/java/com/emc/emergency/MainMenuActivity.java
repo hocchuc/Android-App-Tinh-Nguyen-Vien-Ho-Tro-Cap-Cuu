@@ -88,7 +88,6 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
 
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        pager_menu = (ViewPager) findViewById(R.id.viewpager_menu);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -97,18 +96,26 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     }
     private void BuildFragment() {
         FragmentManager managerBot = getSupportFragmentManager();
-
-        PagerAdapter pagerdapterBot = new PagerAdapterMainMenuBot(managerBot) {
-        };
-        pager_menu.setAdapter(pagerdapterBot);
         FragmentManager managerTop = getSupportFragmentManager();
 
         fragment_map_page fragment_map = new fragment_map_page();
+        fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
+        fragment_menu_page2 fragment_menu_page2 = new fragment_menu_page2();
+
         fragment_map.setArguments(getIntent().getExtras());
+        fragment_menu_page1.setArguments((getIntent()).getExtras());
+        fragment_menu_page2.setArguments((getIntent()).getExtras());
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_map, fragment_map).commit();
+
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_menu,fragment_menu_page1).commit();
+
+   /*     getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_menu,fragment_menu_page2).commit();*/
 
 
 
