@@ -253,7 +253,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 LatLng loocation = new LatLng(viDo, kinhDo);
                 mMap.addMarker(new MarkerOptions()
                         .position(loocation)
-                        .title(arrAccidents.get(i).getDescription_AC()));
+                        .title(arrAccidents.get(i).getAddress()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
             }
         }
@@ -293,6 +293,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                         accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
+                    if (jsonObject.has("adress"))
+                        accident.setAddress(jsonObject.getString("adress"));
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
                     // Log.d("DS", ds.toString());

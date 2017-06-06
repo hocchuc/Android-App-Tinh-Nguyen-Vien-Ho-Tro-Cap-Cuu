@@ -51,8 +51,8 @@ public class AccidentAdapter extends ArrayAdapter<Accident> {
         }
         TextView txtDes = (TextView) v.findViewById(R.id.txtDes_Ac);
         TextView txtStatus = (TextView) v.findViewById(R.id.txtStatus);
-        TextView txtLong_Ac = (TextView) v.findViewById(R.id.txtLong_Ac);
-        TextView txtLat_Ac = (TextView) v.findViewById(R.id.txtLat_Ac);
+//        TextView txtLong_Ac = (TextView) v.findViewById(R.id.txtLong_Ac);
+//        TextView txtLat_Ac = (TextView) v.findViewById(R.id.txtLat_Ac);
         TextView txtDate = (TextView) v.findViewById(R.id.txtDate_Ac);
 
         Accident accident = objects.get(position);
@@ -62,8 +62,8 @@ public class AccidentAdapter extends ArrayAdapter<Accident> {
         Log.d("LatAC",accident.getLat_AC().toString());
         Log.d("Status",accident.getStatus_AC().toString());
         txtDate.setText(accident.getDate_AC());
-        txtLong_Ac.setText(String.valueOf(accident.getLong_AC()));
-        txtLat_Ac.setText(String.valueOf(accident.getLat_AC()));
+//        txtLong_Ac.setText(String.valueOf(accident.getLong_AC()));
+//        txtLat_Ac.setText(String.valueOf(accident.getLat_AC()));
         txtDes.setText(accident.getDescription_AC());
         txtStatus.setText(accident.getStatus_AC());
 
