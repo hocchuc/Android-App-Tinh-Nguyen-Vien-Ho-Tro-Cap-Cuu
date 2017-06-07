@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.emc.emergency.Fragment.fragment_countdown;
-import com.emc.emergency.Fragment.fragment_map_page;
+
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.Fragment.fragment_menu_page2;
 import com.emc.emergency.model.Accident;
@@ -93,18 +93,9 @@ public class MainMenuActivity extends AppCompatActivity
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
 
-    //    private ActionBarDrawerToggle toggle;
-//    public ViewPager viewPager;
-//    public FragmentManager fragment_manager;
-//    private PagerAdapter pagerdApter;
-//    DrawerLayout drawerLayout;
-//    ViewPager pager_menu;
-//    private static final String LOG_TAG = "Refresh";
-//    private static final long PROFILE_SETTING = 10000;
-//    private FloatingActionButton floatingActionButton;
     //-----------------------------------------------------------------------
     private GoogleMap mMap;
-    ProgressDialog pdl;
+//    ProgressDialog pdl;
     double viDo, kinhDo;
     String description, address;
     Button btnVeDuong;
@@ -113,10 +104,8 @@ public class MainMenuActivity extends AppCompatActivity
     boolean flag = false;
 
 
-    private Button btnFindPath;
+//    private Button btnFindPath;
     // XU LY NUT VE DUONG
-//    private EditText etOrigin;
-//    private EditText etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
@@ -202,19 +191,13 @@ public class MainMenuActivity extends AppCompatActivity
                 .withName("Mike Penz")
                 .withEmail("mikepenz@gmail.com")
                 .withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
-        final IProfile profile2 = new ProfileDrawerItem()
-                .withName("Bernat Borras")
-                .withEmail("alorma@github.com")
-                .withIcon(Uri
-                        .parse("https://avatars3.githubusercontent.com/u/887462?v=3&s=460"));
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        profile,
-                        profile2
+                        profile
                 )
                 .withSavedInstance(savedInstanceState)
                 .build();
@@ -495,11 +478,11 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         LatLng position =marker.getPosition();
-        Toast.makeText(
-                MainMenuActivity.this,
-                "Lat " + position.latitude + " "
-                        + "Long " + position.longitude,
-                Toast.LENGTH_LONG).show();
+//        Toast.makeText(
+//                MainMenuActivity.this,
+//                "Lat " + position.latitude + " "
+//                        + "Long " + position.longitude,
+//                Toast.LENGTH_LONG).show();
         viDo = Double.parseDouble(String.valueOf(position.latitude));
         kinhDo = Double.parseDouble(String.valueOf(position.longitude));
         return false;

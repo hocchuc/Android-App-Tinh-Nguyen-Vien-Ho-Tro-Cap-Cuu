@@ -1,6 +1,6 @@
 package com.emc.emergency.Fragment;
 
-import android.app.FragmentTransaction;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.emc.emergency.Accident.AccidentActivity;
-import com.emc.emergency.Chat.ChatBoxActivity;
+
 import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 

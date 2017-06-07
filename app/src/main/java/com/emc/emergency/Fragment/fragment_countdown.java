@@ -94,13 +94,13 @@ public class fragment_countdown extends DialogFragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             public void onTick(long millisUntilFinished) {
                 txtCoundDown.setText(""+millisUntilFinished / 1000);
-                btnCancle.setProgress(Math.toIntExact(millisUntilFinished / 1000)*20);
+//                btnCancle.setProgress(Math.toIntExact(millisUntilFinished / 1000)*20);
             }
 
             public void onFinish() {
                 btnCancle.setProgress(0);
                 txtCoundDown.setText("Sending request rescue to SOS Center");
-                Intent intent = new Intent((MainMenuActivity)getActivity(), ChatBoxActivity.class);
+                Intent intent = new Intent(getActivity(), ChatBoxActivity.class);
                 startActivity(intent);
             }
         }.start();

@@ -1,6 +1,7 @@
 <resources>
     <!-- Sample menu -->
     <string name="action_settings">Settings</string>
+    <string name="app_name">EmergencySOS</string>
 
     <!-- Drawer Items -->
     <string name="drawer_item_persistent_compact_header">PersistentHeader Drawer</string>

@@ -86,6 +86,10 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:25.3.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+
+    compile 'com.wrapp.floatlabelededittext:library:0.0.6'
+
+//    compile 'com.akexorcist:googledirectionlibrary:1.0.5'
 }
 android {
     defaultConfig {

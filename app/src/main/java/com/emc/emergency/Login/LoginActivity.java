@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     private TokenService tokenService;
     private Utils utils;
     String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,15 +59,16 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             @Override
             public void onClick(View v) {
 
-                String username=txtUsername.getText().toString();
-                String password=txtPassword.getText().toString();
+                String username = txtUsername.getText().toString();
+                String password = txtPassword.getText().toString();
 
-                User user = new User(username,password);
+                User user = new User(username, password);
                 btnLogin.setProgress(1);
                 xulyDangNhap(user);
             }
         });
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -117,7 +119,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     Log.d("LoginToken", "Token: " + token);
                     //Call the token service to save the token in the database
 
-                   Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                     startActivity(intent);
                 }
             }
