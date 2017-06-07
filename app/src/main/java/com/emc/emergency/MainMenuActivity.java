@@ -87,8 +87,8 @@ public class MainMenuActivity extends AppCompatActivity
         , fragment_countdown.OnFragmentInteractionListener {
 
 
+
     Toolbar toolbar;
-    ViewPager  pager_menu;
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
@@ -106,7 +106,7 @@ public class MainMenuActivity extends AppCompatActivity
     private GoogleMap mMap;
     ProgressDialog pdl;
     double viDo, kinhDo;
-    String tenATM, diaChi;
+    String description, address;
     Button btnVeDuong;
     double latitude = 0;
     double longitude = 0;
@@ -402,10 +402,7 @@ public class MainMenuActivity extends AppCompatActivity
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",
                 "Finding direction..!", true);
-        @Override
-        public void onFragmentInteraction(Uri uri) {
 
-        }
         if (originMarkers != null) {
             for (Marker marker : originMarkers) {
                 marker.remove();
@@ -443,13 +440,13 @@ public class MainMenuActivity extends AppCompatActivity
                     .title(route1.startAddress)
                     .position(route1.startLocation)));
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .title(tenATM)
-                    .snippet(diaChi)
+                    .title(description)
+                    .snippet(address)
                     .position(route1.endLocation)));
 
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
-                    color(Color.BLUE).
+                    color(Color.GREEN).
                     width(10);
 
             for (int i = 0; i < route1.points.size(); i++)
@@ -508,6 +505,11 @@ public class MainMenuActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
     class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
         Activity activity;
         ArrayList<Accident> arrAccidents;
@@ -533,8 +535,6 @@ public class MainMenuActivity extends AppCompatActivity
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
                 kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-//                moTa=arrAccidents.get(i).getDescription_AC();
-//                diaChi=arrAccidents.get(i).getAddress();
                 LatLng loocation = new LatLng(viDo, kinhDo);
                 mMap.addMarker(new MarkerOptions()
                         .position(loocation)
