@@ -126,7 +126,7 @@ public class ChatBoxActivity extends AppCompatActivity implements IRequestListen
         Log.d(TAG, "Message: " + message + ", recipient: " + token);
         FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(FCM_PROJECT_SENDER_ID + FCM_SERVER_CONNECTION)
                 .setMessageId(Integer.toString(RANDOM.nextInt()))
-                .addData("message", message)
+                .addData("message", message2)
                 .addData("action", BACKEND_ACTION_ECHO)
                 .build());
     }
