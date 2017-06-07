@@ -26,7 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.emc.emergency.Fragment.fragment_countdown;
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.Fragment.fragment_menu_page2;
@@ -78,10 +78,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import devlight.io.library.ntb.NavigationTabBar;
 
-public class MainMenuActivity extends AppCompatActivity implements fragment_menu_page.onFragmentMenu1Interaction, fragment_menu_page2.onFragmentMenu2Interaction, OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener {
+public class MainMenuActivity extends AppCompatActivity
+        implements fragment_menu_page.onFragmentMenu1Interaction
+        , fragment_menu_page2.onFragmentMenu2Interaction
+        ,OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
+        , fragment_countdown.OnFragmentInteractionListener {
+
+
     Toolbar toolbar;
-
+    ViewPager  pager_menu;
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
@@ -116,6 +123,7 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
     private ArrayList<Accident> arrayAccident;
+
 
 
     @Override
@@ -177,9 +185,6 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_menu, fragment_menu_page1).commit();
 
-   /*     getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_menu,fragment_menu_page2).commit();*/
-
 
     }
 
@@ -189,19 +194,27 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
         setSupportActionBar(toolbar);
         //set the back arrow in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.drawer_item_crossfade_drawer_layout_drawer);
+        getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
-        final IProfile profile = new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
-        final IProfile profile2 = new ProfileDrawerItem().withName("Bernat Borras").withEmail("alorma@github.com").withIcon(Uri.parse("https://avatars3.githubusercontent.com/u/887462?v=3&s=460"));
+        final IProfile profile = new ProfileDrawerItem()
+                .withName("Mike Penz")
+                .withEmail("mikepenz@gmail.com")
+                .withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
+        final IProfile profile2 = new ProfileDrawerItem()
+                .withName("Bernat Borras")
+                .withEmail("alorma@github.com")
+                .withIcon(Uri
+                        .parse("https://avatars3.githubusercontent.com/u/887462?v=3&s=460"));
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        profile, profile2
+                        profile,
+                        profile2
                 )
                 .withSavedInstance(savedInstanceState)
                 .build();
@@ -216,15 +229,38 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
                 .withGenerateMiniDrawer(true)
                 .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_compact_header).withIcon(FontAwesome.Icon.faw_sun_o).withIdentifier(1),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_action_bar_drawer).withIcon(FontAwesome.Icon.faw_home).withBadge("22").withBadgeStyle(new BadgeStyle(Color.RED, Color.RED)).withIdentifier(2),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_multi_drawer).withIcon(FontAwesome.Icon.faw_gamepad).withIdentifier(3),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_non_translucent_status_drawer).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(4),
-                        new PrimaryDrawerItem().withDescription("A more complex sample").withName(R.string.drawer_item_advanced_drawer).withIcon(GoogleMaterial.Icon.gmd_adb).withIdentifier(5),
-                        new SectionDrawerItem().withName(R.string.drawer_item_section_header),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(6),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(GoogleMaterial.Icon.gmd_format_color_fill).withTag("Bullhorn").withIdentifier(7)
-                ) // add the items we want to use with our Drawer
+                        new PrimaryDrawerItem().withName(R.string.main_menu_activity)
+                                .withIcon(FontAwesome.Icon.faw_th)
+                                .withIdentifier(1),
+                        new PrimaryDrawerItem().withName(R.string.accident_activity)
+                                .withIcon(GoogleMaterial.Icon.gmd_error)
+                                .withBadge("22").withBadgeStyle(new BadgeStyle(Color.RED, Color.RED))
+                                .withIdentifier(2),
+                        new PrimaryDrawerItem().withName(R.string.personal_infomation)
+                                .withIcon(FontAwesome.Icon.faw_user_circle)
+                                .withIdentifier(3),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.chat_room)
+                                .withIcon(FontAwesome
+                                .Icon.faw_comments)
+                                .withIdentifier(4),
+                        new PrimaryDrawerItem()
+                                .withDescription("A more complex sample")
+                                .withName(R.string.setting)
+                                .withIcon(GoogleMaterial.Icon.gmd_settings_applications)
+                                .withIdentifier(5),
+                        new SectionDrawerItem().withName(R.string.other_resources),
+                        new SecondaryDrawerItem()
+                                .withName(R.string.framework)
+                                .withIcon(FontAwesome.Icon.faw_github)
+                                .withIdentifier(6),
+                        new SecondaryDrawerItem()
+                                .withName(R.string.drawer_item_contact)
+                                .withIcon(GoogleMaterial.Icon.gmd_format_color_fill)
+                                .withTag("Bullhorn")
+                                .withIdentifier(7)
+                )
+                // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -254,19 +290,32 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
                 .build();
 
         //get the CrossfadeDrawerLayout which will be used as alternative DrawerLayout for the Drawer
-        //the CrossfadeDrawerLayout library can be found here: https://github.com/mikepenz/CrossfadeDrawerLayout
-        crossfadeDrawerLayout = (CrossfadeDrawerLayout) result.getDrawerLayout();
+        crossfadeDrawerLayout = (CrossfadeDrawerLayout) result
+                .getDrawerLayout();
 
         //define maxDrawerWidth
-        crossfadeDrawerLayout.setMaxWidthPx(DrawerUIUtils.getOptimalDrawerWidth(this));
+        crossfadeDrawerLayout
+                .setMaxWidthPx(DrawerUIUtils
+                .getOptimalDrawerWidth(this));
+
         //add second view (which is the miniDrawer)
         final MiniDrawer miniResult = result.getMiniDrawer();
+
         //build the view for the MiniDrawer
         View view = miniResult.build(this);
+
         //set the background of the MiniDrawer as this would be transparent
-        view.setBackgroundColor(UIUtils.getThemeColorFromAttrOrRes(this, com.mikepenz.materialdrawer.R.attr.material_drawer_background, com.mikepenz.materialdrawer.R.color.material_drawer_background));
+        view.setBackgroundColor(UIUtils.
+                getThemeColorFromAttrOrRes(this
+                        , com.mikepenz.materialdrawer.R.attr.material_drawer_background
+                        , com.mikepenz.materialdrawer.R.color.material_drawer_background));
+
         //we do not have the MiniDrawer view during CrossfadeDrawerLayout creation so we will add it here
-        crossfadeDrawerLayout.getSmallView().addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        crossfadeDrawerLayout
+                .getSmallView()
+                .addView( view
+                        , ViewGroup.LayoutParams.MATCH_PARENT
+                        , ViewGroup.LayoutParams.MATCH_PARENT);
 
         //define the crossfader to be used with the miniDrawer. This is required to be able to automatically toggle open / close
         miniResult.withCrossFader(new ICrossfader() {
@@ -277,7 +326,8 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
 
                 //only close the drawer if we were already faded and want to close it now
                 if (isFaded) {
-                    result.getDrawerLayout().closeDrawer(GravityCompat.START);
+                    result.getDrawerLayout()
+                            .closeDrawer(GravityCompat.START);
                 }
             }
 
@@ -287,14 +337,19 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
             }
         });
     }
-
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
-        public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+        public void onCheckedChanged(IDrawerItem drawerItem
+                , CompoundButton buttonView
+                , boolean isChecked) {
             if (drawerItem instanceof Nameable) {
-                Log.i("material-drawer", "DrawerItem: " + ((Nameable) drawerItem).getName() + " - toggleChecked: " + isChecked);
+                Log.i("material-drawer", "DrawerItem: "
+                                + ((Nameable) drawerItem).getName()
+                                + " - toggleChecked: "
+                                + isChecked);
             } else {
-                Log.i("material-drawer", "toggleChecked: " + isChecked);
+                Log.i("material-drawer"
+                        , "toggleChecked: " + isChecked);
             }
         }
     };
@@ -313,15 +368,18 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (SystemUtils.getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
+        if (SystemUtils.getScreenOrientation()== Configuration.ORIENTATION_LANDSCAPE) {
             inflater.inflate(R.menu.embedded, menu);
-            menu.findItem(R.id.menu_1).setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_sort).color(Color.WHITE).actionBar());
+            menu.findItem(R.id.menu_1)
+                    .setIcon(new IconicsDrawable(this
+                            , GoogleMaterial.Icon.gmd_sort)
+                            .color(Color.WHITE).actionBar());
         }
         return true;
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed(){
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
@@ -344,7 +402,10 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",
                 "Finding direction..!", true);
+        @Override
+        public void onFragmentInteraction(Uri uri) {
 
+        }
         if (originMarkers != null) {
             for (Marker marker : originMarkers) {
                 marker.remove();
