@@ -1,17 +1,17 @@
 package com.emc.emergency;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,13 +20,32 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 
-import com.emc.emergency.Adapter.PagerAdapterMainMenuBot;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.Fragment.fragment_menu_page2;
+import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Route;
+import com.emc.emergency.utils.DirectionFinder;
+import com.emc.emergency.utils.DirectionFinderListener;
+import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -49,26 +68,56 @@ import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-import devlight.io.library.ntb.NavigationTabBar;
-
-public class MainMenuActivity extends AppCompatActivity implements fragment_menu_page.onFragmentMenu1Interaction, fragment_menu_page2.onFragmentMenu2Interaction,fragment_map_page.onFragmentMapInteraction {
-    private static final String LOG_TAG = "Refresh" ;
-    private static final long PROFILE_SETTING = 10000;
-    private FloatingActionButton floatingActionButton;
-
-    
-    DrawerLayout drawerLayout;
+public class MainMenuActivity extends AppCompatActivity implements fragment_menu_page.onFragmentMenu1Interaction, fragment_menu_page2.onFragmentMenu2Interaction, OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener {
     Toolbar toolbar;
-    ViewPager  pager_menu;
+
     private AccountHeader headerResult = null;
     public Drawer result = null;
-    private ActionBarDrawerToggle toggle;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
-    public ViewPager viewPager;
-    public FragmentManager fragment_manager;
-    private PagerAdapter pagerdApter;
+
+    //    private ActionBarDrawerToggle toggle;
+//    public ViewPager viewPager;
+//    public FragmentManager fragment_manager;
+//    private PagerAdapter pagerdApter;
+//    DrawerLayout drawerLayout;
+//    ViewPager pager_menu;
+//    private static final String LOG_TAG = "Refresh";
+//    private static final long PROFILE_SETTING = 10000;
+//    private FloatingActionButton floatingActionButton;
+    //-----------------------------------------------------------------------
+    private GoogleMap mMap;
+    ProgressDialog pdl;
+    double viDo, kinhDo;
+    String tenATM, diaChi;
+    Button btnVeDuong;
+    double latitude = 0;
+    double longitude = 0;
+    boolean flag = false;
+
+
+    private Button btnFindPath;
+    // XU LY NUT VE DUONG
+//    private EditText etOrigin;
+//    private EditText etDestination;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
+    private ProgressDialog progressDialog;
+    private SupportMapFragment mapFragment;
+    private ArrayList<Accident> arrayAccident;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,47 +128,61 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
         addEvents();
     }
 
-
-
     private void addEvents() {
+        GPSTracker gps = new GPSTracker(MainMenuActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
+        new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+
+        btnVeDuong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendRequest();
+            }
+        });
     }
-
-
 
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        arrayAccident = new ArrayList<>();
+        btnVeDuong= (Button) findViewById(R.id.btnVeDuong);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-
+        mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
+
     private void BuildFragment() {
         FragmentManager managerBot = getSupportFragmentManager();
         FragmentManager managerTop = getSupportFragmentManager();
 
-        fragment_map_page fragment_map = new fragment_map_page();
+//        fragment_map_page fragment_map = new fragment_map_page();
         fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
         fragment_menu_page2 fragment_menu_page2 = new fragment_menu_page2();
 
-        fragment_map.setArguments(getIntent().getExtras());
+//        fragment_map.setArguments(getIntent().getExtras());
         fragment_menu_page1.setArguments((getIntent()).getExtras());
         fragment_menu_page2.setArguments((getIntent()).getExtras());
 
         // Add the fragment to the 'fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_map, fragment_map).commit();
+//        getSupportFragmentManager().beginTransaction()
+//                .add(R.id.fragment_map, fragment_map).commit();
 
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_menu,fragment_menu_page1).commit();
+                .add(R.id.fragment_menu, fragment_menu_page1).commit();
 
    /*     getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_menu,fragment_menu_page2).commit();*/
 
 
-
     }
+
     private void BuildDrawer(Bundle savedInstanceState) {
         // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -168,7 +231,7 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
                         if (drawerItem != null) {
                             Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(MainMenuActivity.this,MainMenuActivity.class);
+                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                                 startActivity(intent);
@@ -184,7 +247,8 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
 
                         }
                         return false;
-                    }})
+                    }
+                })
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
                 .build();
@@ -223,6 +287,7 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
             }
         });
     }
+
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -256,7 +321,7 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
@@ -276,7 +341,194 @@ public class MainMenuActivity extends AppCompatActivity implements fragment_menu
     }
 
     @Override
-    public void onFragmentMapInteraction(Uri uri) {
+    public void onDirectionFinderStart() {
+        progressDialog = ProgressDialog.show(this, "Please wait.",
+                "Finding direction..!", true);
 
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline : polylinePaths) {
+                polyline.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> route) {
+        mMap.clear();
+        progressDialog.dismiss();
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+
+        for (Route route1 : route) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route1.startLocation, 13));
+            ((TextView) findViewById(R.id.tvDuration)).setText(route1.duration.text);
+            ((TextView) findViewById(R.id.tvDistance)).setText(route1.distance.text);
+
+            originMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .title(route1.startAddress)
+                    .position(route1.startLocation)));
+            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .title(tenATM)
+                    .snippet(diaChi)
+                    .position(route1.endLocation)));
+
+            PolylineOptions polylineOptions = new PolylineOptions().
+                    geodesic(true).
+                    color(Color.BLUE).
+                    width(10);
+
+            for (int i = 0; i < route1.points.size(); i++)
+                polylineOptions.add(route1.points.get(i));
+
+            polylinePaths.add(mMap.addPolyline(polylineOptions));
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        googleMap.setOnMarkerClickListener(this);
+        LatLng myLocation = new LatLng(latitude, longitude);
+        mMap.addMarker(new MarkerOptions()
+                .position(myLocation)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .title("Bạn đang ở đây !!")
+                .snippet("You are here !!"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
+    private void sendRequest() {
+        //String origin = "10.738100, 106.677811";
+        String origin = latitude + "," + longitude;
+        String destination = viDo + "," + kinhDo;
+        try {
+            new DirectionFinder(MainMenuActivity.this, origin, destination).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        LatLng position =marker.getPosition();
+        Toast.makeText(
+                MainMenuActivity.this,
+                "Lat " + position.latitude + " "
+                        + "Long " + position.longitude,
+                Toast.LENGTH_LONG).show();
+        viDo = Double.parseDouble(String.valueOf(position.latitude));
+        kinhDo = Double.parseDouble(String.valueOf(position.longitude));
+        return false;
+    }
+
+    class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
+        Activity activity;
+        ArrayList<Accident> arrAccidents;
+//    AccidentAdapter accidentsAdapter;
+
+        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
+            this.activity = activity;
+            this.arrAccidents = arrAccidents;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            arrAccidents.clear();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Accident> accidents) {
+            super.onPostExecute(accidents);
+//        arrAccidents.clear();
+            arrAccidents.addAll(accidents);
+
+            for (int i = 0; i < arrAccidents.size(); i++) {
+                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
+                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+//                moTa=arrAccidents.get(i).getDescription_AC();
+//                diaChi=arrAccidents.get(i).getAddress();
+                LatLng loocation = new LatLng(viDo, kinhDo);
+                mMap.addMarker(new MarkerOptions()
+                        .position(loocation)
+                        .title(arrAccidents.get(i).getDescription_AC())
+                        .snippet(arrAccidents.get(i).getAddress()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+            }
+        }
+
+        @Override
+        protected ArrayList<Accident> doInBackground(Void... params) {
+            ArrayList<Accident> ds = new ArrayList<>();
+            try {
+                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents");
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+                StringBuilder builder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                JSONObject jsonObj = new JSONObject(builder.toString());
+                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
+                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
+
+                Log.d("JsonObject", _embeddedObject.toString());
+                Log.d("JsonArray", accidentsSONArray.toString());
+
+                for (int i = 0; i < accidentsSONArray.length(); i++) {
+                    Accident accident = new Accident();
+                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
+                    if (jsonObject == null) continue;
+                    if (jsonObject.has("description_AC"))
+                        accident.setDescription_AC(jsonObject.getString("description_AC"));
+                    if (jsonObject.has("date_AC"))
+                        accident.setDate_AC(jsonObject.getString("date_AC"));
+                    if (jsonObject.has("long_AC"))
+                        accident.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                    if (jsonObject.has("lat_AC"))
+                        accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                    if (jsonObject.has("status_AC"))
+                        accident.setStatus_AC(jsonObject.getString("status_AC"));
+                    if (jsonObject.has("adress"))
+                        accident.setAddress(jsonObject.getString("adress"));
+                    // Log.d("Accident", accident.toString());
+                    ds.add(accident);
+                    // Log.d("DS", ds.toString());
+                }
+                Log.d("ds", ds.toString());
+            } catch (Exception ex) {
+                Log.e("LOI ", ex.toString());
+            }
+            return ds;
+        }
     }
 }

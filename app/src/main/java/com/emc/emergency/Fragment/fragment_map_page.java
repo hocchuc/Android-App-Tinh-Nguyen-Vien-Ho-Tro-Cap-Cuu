@@ -2,9 +2,11 @@ package com.emc.emergency.Fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,11 +24,18 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.MessageEvent;
+import com.emc.emergency.model.Route;
+import com.emc.emergency.utils.DirectionFinder;
+import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
 import com.google.android.gms.maps.CameraUpdate;
@@ -37,7 +46,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 
 
@@ -49,9 +61,11 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -62,7 +76,7 @@ import java.util.ArrayList;
  * Use the {@link fragment_map_page#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_map_page extends Fragment implements OnMapReadyCallback, LocationListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+public class fragment_map_page extends Fragment implements OnMapReadyCallback, LocationListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "vido";
@@ -71,7 +85,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     GoogleMap mMap;
     OnMapReadyCallback onMapReadyCallback;
     ArrayList<Accident> accidentList;
-    double lat = 0, lon = 0;
+    double lat = 0;
+    double lon = 0;
+    double viDo;
+    double kinhDo;
+    String moTa, diaChi;
 
     private GoogleMap map;
     // TODO: Rename and change types of parameters
@@ -79,6 +97,16 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private double mParam2;
     String mprovider;
     MapView mapView;
+    // XU LY NUT VE DUONG
+//    private EditText etOrigin;
+//    private EditText etDestination;
+
+    Button btnVeDuong;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
+    private ProgressDialog progressDialog;
+
 
     private onFragmentMapInteraction mListener;
 
@@ -125,6 +153,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);//when you already implement OnMapReadyCallback in your fragment
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -133,7 +163,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map_page, container, false);
-
+        btnVeDuong= (Button) view.findViewById(R.id.btnVeDuong);
         return view;
     }
 
@@ -167,7 +197,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onDetach();
         mListener = null;
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -248,12 +277,15 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             arrAccidents.addAll(accidents);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
-                double viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-                double kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
+                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+//                moTa=arrAccidents.get(i).getDescription_AC();
+//                diaChi=arrAccidents.get(i).getAddress();
                 LatLng loocation = new LatLng(viDo, kinhDo);
                 mMap.addMarker(new MarkerOptions()
                         .position(loocation)
-                        .title(arrAccidents.get(i).getAddress()));
+                        .title(arrAccidents.get(i).getDescription_AC())
+                        .snippet(arrAccidents.get(i).getAddress()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
             }
         }
