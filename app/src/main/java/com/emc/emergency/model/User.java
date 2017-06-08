@@ -22,9 +22,8 @@ public class User implements Serializable {
     private String id_user_type;
     private String avatar;
     private String token;
-    private String lat;
-    private String lon;
-    private ArrayList<Link> links;
+    private Double lat;
+    private Double lon;
 
     public int getId_user() {
         return id_user;
@@ -74,31 +73,26 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public String getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public String getLon() {
+    public Double getLon() {
         return lon;
     }
 
-    public void setLon(String lon) {
+    public void setLon(Double lon) {
         this.lon = lon;
     }
 
-    public ArrayList<Link> getLinks() {
-        return links;
+    public User() {
     }
 
-    public void setLinks(ArrayList<Link> links) {
-        this.links = links;
-    }
-
-    public User(int id_user, String user_name, String password, String id_user_type, String avatar, String token, String lat, String lon, ArrayList<Link> links) {
+    public User(int id_user, String user_name, String password, String id_user_type, String avatar, String token, Double lat, Double lon) {
         this.id_user = id_user;
         this.user_name = user_name;
         this.password = password;
@@ -107,7 +101,6 @@ public class User implements Serializable {
         this.token = token;
         this.lat = lat;
         this.lon = lon;
-        this.links = links;
     }
 
     public User(String user_name, String password) {
@@ -115,6 +108,17 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public User() {
+    @Override
+    public String toString() {
+        return "User{" +
+                "id_user=" + id_user +
+                ", user_name='" + user_name + '\'' +
+                ", password='" + password + '\'' +
+                ", id_user_type='" + id_user_type + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", token='" + token + '\'' +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                '}';
     }
 }

@@ -613,8 +613,6 @@ public class MainMenuActivity extends AppCompatActivity
         @Override
         protected ArrayList<User> doInBackground(Void... params) {
             ArrayList<User> ds = new ArrayList<>();
-            ArrayList<Link> links=new ArrayList<>();
-            Link link=new Link();
             try {
                 URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
@@ -646,32 +644,13 @@ public class MainMenuActivity extends AppCompatActivity
                     if (jsonObject.has("password"))
                         user.setPassword(jsonObject.getString("password"));
                     if (jsonObject.has("long_PI"))
-                        user.setLon(jsonObject.getString("long_PI"));
+                        user.setLon(jsonObject.getDouble("long_PI"));
                     if (jsonObject.has("lat_PI"))
-                        user.setLat(jsonObject.getString("lat_PI"));
+                        user.setLat(jsonObject.getDouble("lat_PI"));
                     if (jsonObject.has("id_user_type"))
                         user.setId_user_type(jsonObject.getString("id_user_type"));
                     if (jsonObject.has("avatar"))
                         user.setAvatar(jsonObject.getString("avatar"));
-                    if (jsonObject.has("_link")){
-                        Log.d("Size link: ", String.valueOf(jsonObject.get("_link").toString().length()));
-                        for(int j=0;j<jsonObject.get("_link").toString().length();j++){
-                            if (jsonObject.has("user"))
-                                link.setUser(jsonObject.getString("user"));
-                            if (jsonObject.has("user_type"))
-                                link.setUser_type(jsonObject.getString("user_type"));
-                            if (jsonObject.has("accident"))
-                                link.setAccident(jsonObject.getString("accident"));
-                            if (jsonObject.has("personal_Infomation"))
-                                link.setPersonal_Infomation(jsonObject.getString("personal_Infomation"));
-                            if (jsonObject.has("chat"))
-                                link.setChat(jsonObject.getString("chat"));
-                        }
-                        links.add(link);
-                        Log.d("DS link", links.toString());
-                        user.setLinks(links);
-                    }
-//                        user.setLink((Link) jsonObject.get("_link"));
                     ds.add(user);
                 }
                 Log.d("DS user", ds.toString());
