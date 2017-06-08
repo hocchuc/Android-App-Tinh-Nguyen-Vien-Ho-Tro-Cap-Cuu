@@ -31,7 +31,9 @@ import com.emc.emergency.Fragment.fragment_countdown;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.Fragment.fragment_menu_page2;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Link;
 import com.emc.emergency.model.Route;
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -78,14 +80,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
         , fragment_menu_page2.onFragmentMenu2Interaction
-        ,OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
+        , OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
         , fragment_countdown.OnFragmentInteractionListener {
-
 
 
     Toolbar toolbar;
@@ -95,16 +97,17 @@ public class MainMenuActivity extends AppCompatActivity
 
     //-----------------------------------------------------------------------
     private GoogleMap mMap;
-//    ProgressDialog pdl;
+    //    ProgressDialog pdl;
     double viDo, kinhDo;
     String description, address;
     Button btnVeDuong;
     double latitude = 0;
     double longitude = 0;
     boolean flag = false;
+    int id_user;
 
 
-//    private Button btnFindPath;
+    //    private Button btnFindPath;
     // XU LY NUT VE DUONG
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
@@ -112,7 +115,8 @@ public class MainMenuActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
     private ArrayList<Accident> arrayAccident;
-
+    //------------------------
+    private ArrayList<User> arrUser;
 
 
     @Override
@@ -133,6 +137,8 @@ public class MainMenuActivity extends AppCompatActivity
         }
         new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
+        new GetUsers(MainMenuActivity.this, arrUser).execute();
+
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,7 +150,12 @@ public class MainMenuActivity extends AppCompatActivity
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
-        btnVeDuong= (Button) findViewById(R.id.btnVeDuong);
+        arrUser=new ArrayList<>();
+        btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
+
+        Bundle bundle = getIntent().getExtras();
+        id_user = bundle.getInt("ID_USER");
+        Log.d("ID_USER after put: ", String.valueOf(id_user));
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -225,7 +236,7 @@ public class MainMenuActivity extends AppCompatActivity
                         new PrimaryDrawerItem()
                                 .withName(R.string.chat_room)
                                 .withIcon(FontAwesome
-                                .Icon.faw_comments)
+                                        .Icon.faw_comments)
                                 .withIdentifier(4),
                         new PrimaryDrawerItem()
                                 .withDescription("A more complex sample")
@@ -279,7 +290,7 @@ public class MainMenuActivity extends AppCompatActivity
         //define maxDrawerWidth
         crossfadeDrawerLayout
                 .setMaxWidthPx(DrawerUIUtils
-                .getOptimalDrawerWidth(this));
+                        .getOptimalDrawerWidth(this));
 
         //add second view (which is the miniDrawer)
         final MiniDrawer miniResult = result.getMiniDrawer();
@@ -296,7 +307,7 @@ public class MainMenuActivity extends AppCompatActivity
         //we do not have the MiniDrawer view during CrossfadeDrawerLayout creation so we will add it here
         crossfadeDrawerLayout
                 .getSmallView()
-                .addView( view
+                .addView(view
                         , ViewGroup.LayoutParams.MATCH_PARENT
                         , ViewGroup.LayoutParams.MATCH_PARENT);
 
@@ -320,6 +331,7 @@ public class MainMenuActivity extends AppCompatActivity
             }
         });
     }
+
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem
@@ -327,9 +339,9 @@ public class MainMenuActivity extends AppCompatActivity
                 , boolean isChecked) {
             if (drawerItem instanceof Nameable) {
                 Log.i("material-drawer", "DrawerItem: "
-                                + ((Nameable) drawerItem).getName()
-                                + " - toggleChecked: "
-                                + isChecked);
+                        + ((Nameable) drawerItem).getName()
+                        + " - toggleChecked: "
+                        + isChecked);
             } else {
                 Log.i("material-drawer"
                         , "toggleChecked: " + isChecked);
@@ -351,7 +363,7 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (SystemUtils.getScreenOrientation()== Configuration.ORIENTATION_LANDSCAPE) {
+        if (SystemUtils.getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
             inflater.inflate(R.menu.embedded, menu);
             menu.findItem(R.id.menu_1)
                     .setIcon(new IconicsDrawable(this
@@ -362,7 +374,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
@@ -477,7 +489,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        LatLng position =marker.getPosition();
+        LatLng position = marker.getPosition();
 //        Toast.makeText(
 //                MainMenuActivity.this,
 //                "Lat " + position.latitude + " "
@@ -569,6 +581,100 @@ public class MainMenuActivity extends AppCompatActivity
                     // Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
+            } catch (Exception ex) {
+                Log.e("LOI ", ex.toString());
+            }
+            return ds;
+        }
+    }
+
+    class GetUsers extends AsyncTask<Void, Void, ArrayList<User>> {
+        Activity activity;
+        ArrayList<User> arrUsers;
+
+        public GetUsers(Activity activity, ArrayList<User> arrUsers) {
+            this.activity = activity;
+            this.arrUsers = arrUsers;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            arrUsers.clear();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<User> users) {
+            super.onPostExecute(users);
+//        arrAccidents.clear();
+            arrUsers.addAll(users);
+        }
+
+        @Override
+        protected ArrayList<User> doInBackground(Void... params) {
+            ArrayList<User> ds = new ArrayList<>();
+            ArrayList<Link> links=new ArrayList<>();
+            Link link=new Link();
+            try {
+                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users");
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+                StringBuilder builder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                JSONObject jsonObj = new JSONObject(builder.toString());
+                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
+                JSONArray  userJSONArray= _embeddedObject.getJSONArray("users");
+
+                Log.d("JsonObject User", _embeddedObject.toString());
+                Log.d("JsonArray User", userJSONArray.toString());
+
+                for (int i = 0; i < userJSONArray.length(); i++) {
+                    User user = new User();
+                    JSONObject jsonObject = userJSONArray.getJSONObject(i);
+                    if (jsonObject == null) continue;
+                    if (jsonObject.has("id_user"))
+                        user.setId_user(Integer.parseInt((jsonObject.getString("id_user"))));
+                    if (jsonObject.has("username"))
+                        user.setUser_name(jsonObject.getString("username"));
+                    if (jsonObject.has("token"))
+                        user.setToken(jsonObject.getString("token"));
+                    if (jsonObject.has("password"))
+                        user.setPassword(jsonObject.getString("password"));
+                    if (jsonObject.has("long_PI"))
+                        user.setLon(jsonObject.getString("long_PI"));
+                    if (jsonObject.has("lat_PI"))
+                        user.setLat(jsonObject.getString("lat_PI"));
+                    if (jsonObject.has("id_user_type"))
+                        user.setId_user_type(jsonObject.getString("id_user_type"));
+                    if (jsonObject.has("avatar"))
+                        user.setAvatar(jsonObject.getString("avatar"));
+                    if (jsonObject.has("_link")){
+                        Log.d("Size link: ", String.valueOf(jsonObject.get("_link").toString().length()));
+                        for(int j=0;j<jsonObject.get("_link").toString().length();j++){
+                            if (jsonObject.has("user"))
+                                link.setUser(jsonObject.getString("user"));
+                            if (jsonObject.has("user_type"))
+                                link.setUser_type(jsonObject.getString("user_type"));
+                            if (jsonObject.has("accident"))
+                                link.setAccident(jsonObject.getString("accident"));
+                            if (jsonObject.has("personal_Infomation"))
+                                link.setPersonal_Infomation(jsonObject.getString("personal_Infomation"));
+                            if (jsonObject.has("chat"))
+                                link.setChat(jsonObject.getString("chat"));
+                        }
+                        links.add(link);
+                        Log.d("DS link", links.toString());
+                        user.setLinks(links);
+                    }
+//                        user.setLink((Link) jsonObject.get("_link"));
+                    ds.add(user);
+                }
+                Log.d("DS user", ds.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }

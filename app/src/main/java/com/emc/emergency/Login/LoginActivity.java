@@ -12,8 +12,10 @@ import com.dd.processbutton.iml.ActionProcessButton;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Chat.TokenService;
 import com.emc.emergency.MainMenuActivity;
+import com.emc.emergency.Personal_InfActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.model.FlashMessage;
+import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.Utils;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -107,10 +109,13 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         call.enqueue(new Callback<FlashMessage>() {
             @Override
             public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
+                int id = 0;
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         FlashMessage flashMessage = response.body();
                         Log.d("body", flashMessage.toString());
+                        id= Integer.parseInt(flashMessage.getMessage());
+                        Log.d("ID_USER", String.valueOf(id));
                     }
                     btnLogin.setProgress(0);
                     btnLogin.setText("Done");
@@ -120,6 +125,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     //Call the token service to save the token in the database
 
                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                    intent.putExtra("ID_USER",id);
                     startActivity(intent);
                 }
             }
