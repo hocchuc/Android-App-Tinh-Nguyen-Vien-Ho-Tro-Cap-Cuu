@@ -10,11 +10,9 @@ public class Personal_Infomation implements Serializable  {
 	private Long id_PI;
 	private String name_PI;
 	private Boolean sex__PI;
-	private Date birthday;
+	private String birthday;
 	private Long personal_id;
 	private String work_location;
-	private Float long_PI;
-	private Float lat_PI;
 	private String phone_PI;
 	private String address_PI;
 	private String email_PI;
@@ -45,11 +43,11 @@ public class Personal_Infomation implements Serializable  {
 		this.sex__PI = sex__PI;
 	}
 
-	public Date getBirthday() {
+	public String getBirthday() {
 		return birthday;
 	}
 
-	public void setBirthday(Date birthday) {
+	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}
 
@@ -67,22 +65,6 @@ public class Personal_Infomation implements Serializable  {
 
 	public void setWork_location(String work_location) {
 		this.work_location = work_location;
-	}
-
-	public Float getLong_PI() {
-		return long_PI;
-	}
-
-	public void setLong_PI(Float long_PI) {
-		this.long_PI = long_PI;
-	}
-
-	public Float getLat_PI() {
-		return lat_PI;
-	}
-
-	public void setLat_PI(Float lat_PI) {
-		this.lat_PI = lat_PI;
 	}
 
 	public String getPhone_PI() {
@@ -128,19 +110,14 @@ public class Personal_Infomation implements Serializable  {
 	public Personal_Infomation() {
 	}
 
-	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, Date birthday, Long personal_id, String work_location, Float long_PI, Float lat_PI, String phone_PI, String address_PI, String email_PI, User id_user, ArrayList<Medical_Info> medical_Info) {
-		this.id_PI = id_PI;
+	public Personal_Infomation(String name_PI, Boolean sex__PI, String birthday, Long personal_id, String work_location, String phone_PI, String address_PI, String email_PI) {
 		this.name_PI = name_PI;
 		this.sex__PI = sex__PI;
 		this.birthday = birthday;
 		this.personal_id = personal_id;
 		this.work_location = work_location;
-		this.long_PI = long_PI;
-		this.lat_PI = lat_PI;
 		this.phone_PI = phone_PI;
 		this.address_PI = address_PI;
 		this.email_PI = email_PI;
-		this.id_user = id_user;
-		this.medical_Info = medical_Info;
 	}
 }

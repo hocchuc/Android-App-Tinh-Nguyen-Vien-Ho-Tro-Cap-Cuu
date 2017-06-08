@@ -13,9 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.emc.emergency.Accident.AccidentActivity;
+import com.emc.emergency.AccidentActivity;
 
 import com.emc.emergency.MainMenuActivity;
+import com.emc.emergency.Personal_Inf_Activity;
 import com.emc.emergency.R;
 
 
@@ -102,7 +103,7 @@ public class fragment_menu_page extends Fragment {
         btnPersonalInfomation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent((MainMenuActivity)getActivity(), AccidentActivity.class);
+                Intent intent = new Intent((MainMenuActivity)getActivity(), Personal_Inf_Activity.class);
                 startActivity(intent);
             }
         });

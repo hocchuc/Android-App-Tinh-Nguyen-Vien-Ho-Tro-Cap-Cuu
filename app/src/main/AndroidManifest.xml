@@ -42,9 +42,9 @@
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".Chat.ChatBoxActivity" />
         <activity
-            android:name=".Accident.AccidentActivity"
+            android:name=".AccidentActivity"
             android:label="@string/title_activity_accident"></activity>
-        <activity android:name="Personal_InfActivity"/>
+        <activity android:name=".Personal_Inf_Activity"/>
     </application>
 
 </manifest>

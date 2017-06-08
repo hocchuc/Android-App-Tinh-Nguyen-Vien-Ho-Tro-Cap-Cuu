@@ -31,7 +31,6 @@ import com.emc.emergency.Fragment.fragment_countdown;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.Fragment.fragment_menu_page2;
 import com.emc.emergency.model.Accident;
-import com.emc.emergency.model.Link;
 import com.emc.emergency.model.Route;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.DirectionFinder;
@@ -81,8 +80,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import devlight.io.library.ntb.NavigationTabBar;
-
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
         , fragment_menu_page2.onFragmentMenu2Interaction
@@ -104,7 +101,7 @@ public class MainMenuActivity extends AppCompatActivity
     double latitude = 0;
     double longitude = 0;
     boolean flag = false;
-    int id_user;
+    int id_user=0;
 
 
     //    private Button btnFindPath;
@@ -137,7 +134,7 @@ public class MainMenuActivity extends AppCompatActivity
         }
         new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
-        new GetUsers(MainMenuActivity.this, arrUser).execute();
+//        new GetUsers(MainMenuActivity.this, arrUser).execute();
 
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,9 +150,9 @@ public class MainMenuActivity extends AppCompatActivity
         arrUser=new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
 
-        Bundle bundle = getIntent().getExtras();
-        id_user = bundle.getInt("ID_USER");
-        Log.d("ID_USER after put: ", String.valueOf(id_user));
+//        Bundle bundle = getIntent().getExtras();
+//        id_user = bundle.getInt("ID_USER");
+//       Log.d("ID_USER after put: ", String.valueOf(id_user));
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -171,20 +168,15 @@ public class MainMenuActivity extends AppCompatActivity
 
 //        fragment_map_page fragment_map = new fragment_map_page();
         fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
-        fragment_menu_page2 fragment_menu_page2 = new fragment_menu_page2();
+//        fragment_menu_page2 fragment_menu_page2 = new fragment_menu_page2();
 
 //        fragment_map.setArguments(getIntent().getExtras());
         fragment_menu_page1.setArguments((getIntent()).getExtras());
-        fragment_menu_page2.setArguments((getIntent()).getExtras());
+        //fragment_menu_page2.setArguments((getIntent()).getExtras());
 
         // Add the fragment to the 'fragment_container' FrameLayout
-//        getSupportFragmentManager().beginTransaction()
-//                .add(R.id.fragment_map, fragment_map).commit();
-
-
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_menu, fragment_menu_page1).commit();
-
 
     }
 
@@ -588,76 +580,76 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-    class GetUsers extends AsyncTask<Void, Void, ArrayList<User>> {
-        Activity activity;
-        ArrayList<User> arrUsers;
-
-        public GetUsers(Activity activity, ArrayList<User> arrUsers) {
-            this.activity = activity;
-            this.arrUsers = arrUsers;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            arrUsers.clear();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<User> users) {
-            super.onPostExecute(users);
-//        arrAccidents.clear();
-            arrUsers.addAll(users);
-        }
-
-        @Override
-        protected ArrayList<User> doInBackground(Void... params) {
-            ArrayList<User> ds = new ArrayList<>();
-            try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users");
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-                StringBuilder builder = new StringBuilder();
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    builder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                JSONObject jsonObj = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-                JSONArray  userJSONArray= _embeddedObject.getJSONArray("users");
-
-                Log.d("JsonObject User", _embeddedObject.toString());
-                Log.d("JsonArray User", userJSONArray.toString());
-
-                for (int i = 0; i < userJSONArray.length(); i++) {
-                    User user = new User();
-                    JSONObject jsonObject = userJSONArray.getJSONObject(i);
-                    if (jsonObject == null) continue;
-                    if (jsonObject.has("id_user"))
-                        user.setId_user(Integer.parseInt((jsonObject.getString("id_user"))));
-                    if (jsonObject.has("username"))
-                        user.setUser_name(jsonObject.getString("username"));
-                    if (jsonObject.has("token"))
-                        user.setToken(jsonObject.getString("token"));
-                    if (jsonObject.has("password"))
-                        user.setPassword(jsonObject.getString("password"));
-                    if (jsonObject.has("long_PI"))
-                        user.setLon(jsonObject.getDouble("long_PI"));
-                    if (jsonObject.has("lat_PI"))
-                        user.setLat(jsonObject.getDouble("lat_PI"));
-                    if (jsonObject.has("id_user_type"))
-                        user.setId_user_type(jsonObject.getString("id_user_type"));
-                    if (jsonObject.has("avatar"))
-                        user.setAvatar(jsonObject.getString("avatar"));
-                    ds.add(user);
-                }
-                Log.d("DS user", ds.toString());
-            } catch (Exception ex) {
-                Log.e("LOI ", ex.toString());
-            }
-            return ds;
-        }
-    }
+//    class GetUsers extends AsyncTask<Void, Void, ArrayList<User>> {
+//        Activity activity;
+//        ArrayList<User> arrUsers;
+//
+//        public GetUsers(Activity activity, ArrayList<User> arrUsers) {
+//            this.activity = activity;
+//            this.arrUsers = arrUsers;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            arrUsers.clear();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(ArrayList<User> users) {
+//            super.onPostExecute(users);
+////        arrAccidents.clear();
+//            arrUsers.addAll(users);
+//        }
+//
+//        @Override
+//        protected ArrayList<User> doInBackground(Void... params) {
+//            ArrayList<User> ds = new ArrayList<>();
+//            try {
+//                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users");
+//                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+//                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+//                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+//                StringBuilder builder = new StringBuilder();
+//                String line = bufferedReader.readLine();
+//                while (line != null) {
+//                    builder.append(line);
+//                    line = bufferedReader.readLine();
+//                }
+//                JSONObject jsonObj = new JSONObject(builder.toString());
+//                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
+//                JSONArray  userJSONArray= _embeddedObject.getJSONArray("users");
+//
+//                Log.d("JsonObject User", _embeddedObject.toString());
+//                Log.d("JsonArray User", userJSONArray.toString());
+//
+//                for (int i = 0; i < userJSONArray.length(); i++) {
+//                    User user = new User();
+//                    JSONObject jsonObject = userJSONArray.getJSONObject(i);
+//                    if (jsonObject == null) continue;
+//                    if (jsonObject.has("id_user"))
+//                        user.setId_user(Integer.parseInt((jsonObject.getString("id_user"))));
+//                    if (jsonObject.has("username"))
+//                        user.setUser_name(jsonObject.getString("username"));
+//                    if (jsonObject.has("token"))
+//                        user.setToken(jsonObject.getString("token"));
+//                    if (jsonObject.has("password"))
+//                        user.setPassword(jsonObject.getString("password"));
+//                    if (jsonObject.has("long_PI"))
+//                        user.setLon(jsonObject.getDouble("long_PI"));
+//                    if (jsonObject.has("lat_PI"))
+//                        user.setLat(jsonObject.getDouble("lat_PI"));
+//                    if (jsonObject.has("id_user_type"))
+//                        user.setId_user_type(jsonObject.getString("id_user_type"));
+//                    if (jsonObject.has("avatar"))
+//                        user.setAvatar(jsonObject.getString("avatar"));
+//                    ds.add(user);
+//                }
+//                Log.d("DS user", ds.toString());
+//            } catch (Exception ex) {
+//                Log.e("LOI ", ex.toString());
+//            }
+//            return ds;
+//        }
+//    }
 }

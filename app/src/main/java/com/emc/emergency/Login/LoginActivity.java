@@ -2,24 +2,25 @@ package com.emc.emergency.Login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Chat.TokenService;
+import com.emc.emergency.Fragment.fragment_personal_info_page;
 import com.emc.emergency.MainMenuActivity;
-import com.emc.emergency.Personal_InfActivity;
 import com.emc.emergency.R;
+import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.FlashMessage;
-import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.Utils;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
+
 
 
 import okhttp3.OkHttpClient;
@@ -30,15 +31,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LoginActivity extends AppCompatActivity implements IRequestListener {
+public class LoginActivity extends AppCompatActivity implements IRequestListener,fragment_personal_info_page.OnListFragmentInteractionListener {
     ActionProcessButton btnLogin;
     EditText txtUsername;
     EditText txtPassword;
-    SharedPreferences sharedPreferences;
+    SharedPreferences preferences,preferences1;
     String userState = "StoreUserState";
+    String id_user="ID_USER";
     private TokenService tokenService;
     private Utils utils;
     String token;
+    int id = 0;
+    FlashMessage flashMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,18 +78,19 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences preferences = getSharedPreferences(userState, MODE_PRIVATE);
+        preferences = getSharedPreferences(userState, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("Username", txtUsername.getText().toString());
         editor.putString("Password", txtPassword.getText().toString());
         //editor.commit();
         editor.apply();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences preferences = getSharedPreferences(userState, MODE_PRIVATE);
+        preferences = getSharedPreferences(userState, MODE_PRIVATE);
         String username = preferences.getString("Username", "");
         String password = preferences.getString("Password", "");
         txtUsername.setText(username);
@@ -109,24 +114,42 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         call.enqueue(new Callback<FlashMessage>() {
             @Override
             public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
-                int id = 0;
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        FlashMessage flashMessage = response.body();
+                        flashMessage = response.body();
                         Log.d("body", flashMessage.toString());
                         id= Integer.parseInt(flashMessage.getMessage());
                         Log.d("ID_USER", String.valueOf(id));
                     }
                     btnLogin.setProgress(0);
                     btnLogin.setText("Done");
-                    FirebaseMessaging.getInstance().subscribeToTopic("test");
-                    token = FirebaseInstanceId.getInstance().getToken();
-                    Log.d("LoginToken", "Token: " + token);
+//                    FirebaseMessaging.getInstance().subscribeToTopic("test");
+//                    token = FirebaseInstanceId.getInstance().getToken();
+//                    Log.d("LoginToken", "Token: " + token);
                     //Call the token service to save the token in the database
 
-                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                    intent.putExtra("ID_USER",id);
-                    startActivity(intent);
+                    preferences1 = getSharedPreferences(id_user, MODE_PRIVATE);
+                    SharedPreferences.Editor editor1 = preferences1.edit();
+                    editor1.putInt("id_user",id);
+                    editor1.commit();
+                    Log.d("editor1",editor1.toString());
+
+                    if(flashMessage.getStatus().equals("SUCCESS")){
+                  /*      fragment_personal_info_page newFragment = new fragment_personal_info_page();
+                        Bundle args = new Bundle();
+                        args.putInt("ID_USER", id);
+                        newFragment.setArguments(args);
+
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(newFragment,\\\\\\\\\\\\\\\\\\'');
+                        transaction.commit();*/
+
+                       Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                       startActivity(intent);
+
+
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Tai khoan hoac mat khau khong dung.!",Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -144,6 +167,10 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
     @Override
     public void onError(String message) {
+
+    }
+    @Override
+    public void onListFragmentInteraction(Accident item) {
 
     }
 }

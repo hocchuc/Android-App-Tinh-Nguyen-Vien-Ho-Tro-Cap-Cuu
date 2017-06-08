@@ -13,10 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Personal_Infomation;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
 
 
@@ -34,28 +35,29 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class fragment_accident_page extends Fragment {
+public class fragment_personal_info_page extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<Accident> accidentList;
-    RecyclerView recyclerView;
+    ArrayList<Personal_Infomation> arrPI;
+    //    RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
-    String id_user="ID_USER";
+    String id_user = "ID_USER";
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public fragment_accident_page() {
+    public fragment_personal_info_page() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static fragment_accident_page newInstance(int columnCount) {
-        fragment_accident_page fragment = new fragment_accident_page();
+    public static fragment_personal_info_page newInstance(int columnCount) {
+        fragment_personal_info_page fragment = new fragment_personal_info_page();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -75,17 +77,14 @@ public class fragment_accident_page extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
-        accidentList = new ArrayList<>();
+        arrPI = new ArrayList<>();
+        new GetPersonalInfo(getActivity(), arrPI).execute();
 
-        new GetAccidents(getActivity(), accidentList).execute();
-
-        Context context = view.getContext();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(),accidentList, mListener));
-
-            //Log.d("listtruocasyn", accidentList.toString());
+//        Context context = view.getContext();
+//        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+//        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(),accidentList, mListener));
 
         return view;
     }
@@ -122,36 +121,41 @@ public class fragment_accident_page extends Fragment {
         void onListFragmentInteraction(Accident item);
     }
 
-    class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
+    class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
         Activity activity;
-        ArrayList<Accident> arrAccidents;
-//    AccidentAdapter accidentsAdapter;
+        ArrayList<Personal_Infomation> arrPI;
 
-        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
+        public GetPersonalInfo(Activity activity, ArrayList<Personal_Infomation> arrPI) {
             this.activity = activity;
-            this.arrAccidents = arrAccidents;
+            this.arrPI = arrPI;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            arrAccidents.clear();
+            arrPI.clear();
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Accident> accidents) {
-            super.onPostExecute(accidents);
+        protected void onPostExecute(ArrayList<Personal_Infomation> personalInfomations) {
+            super.onPostExecute(personalInfomations);
 //        arrAccidents.clear();
-            arrAccidents.addAll(accidents);
-            recyclerView.getAdapter().notifyDataSetChanged();
+            arrPI.addAll(personalInfomations);
+//            recyclerView.getAdapter().notifyDataSetChanged();
 
         }
 
         @Override
-        protected ArrayList<Accident> doInBackground(Void... params) {
-            ArrayList<Accident> ds = new ArrayList<>();
+        protected ArrayList<Personal_Infomation> doInBackground(Void... params) {
+            ArrayList<Personal_Infomation> ds = new ArrayList<>();
+            Personal_Infomation pi=new Personal_Infomation();
+
+            sharedPreferences = getActivity().getSharedPreferences(id_user, Context.MODE_PRIVATE);
+            int id = sharedPreferences.getInt("id_user", -1);
+
+            Log.d("ID_USER after put:", String.valueOf(id));
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents");
+                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/" + id + "/personal_Infomation");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -162,35 +166,36 @@ public class fragment_accident_page extends Fragment {
                     line = bufferedReader.readLine();
                 }
                 JSONObject jsonObj = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
+                Log.d("JsonPI: ", jsonObj.toString());
 
-                Log.d("JsonObject", _embeddedObject.toString());
-                Log.d("JsonArray", accidentsSONArray.toString());
+                if(jsonObj.has("work_location"))
+                    pi.setWork_location(jsonObj.getString("work_location"));
+                if(jsonObj.has("birthday"))
+                    pi.setBirthday(jsonObj.getString("birthday"));
+                if(jsonObj.has("phone_PI"))
+                    pi.setPhone_PI(jsonObj.getString("phone_PI"));
+                if(jsonObj.has("sex__PI"))
+                    pi.setSex__PI(jsonObj.getBoolean("sex__PI"));
+                if(jsonObj.has("email_PI"))
+                    pi.setEmail_PI(jsonObj.getString("email_PI"));
+                if(jsonObj.has("address_PI"))
+                    pi.setAddress_PI(jsonObj.getString("address_PI"));
+                if(jsonObj.has("personal_id"))
+                    pi.setPersonal_id(jsonObj.getLong("personal_id"));
+                if(jsonObj.has("name_PI"))
+                    pi.setName_PI(jsonObj.getString("name_PI"));
 
-                for (int i = 0; i < accidentsSONArray.length(); i++) {
-                    Accident accident = new Accident();
-                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
-                    if (jsonObject == null) continue;
-                    if (jsonObject.has("id_AC"))
-                        accident.setId_AC(Long.parseLong(jsonObject.getString("id_AC")));
-                    if (jsonObject.has("description_AC"))
-                        accident.setDescription_AC(jsonObject.getString("description_AC"));
-                    if (jsonObject.has("date_AC"))
-                        accident.setDate_AC(jsonObject.getString("date_AC"));
-                    if (jsonObject.has("long_AC"))
-                        accident.setLong_AC((float) jsonObject.getDouble("long_AC"));
-                    if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
-                    if (jsonObject.has("status_AC"))
-                        accident.setStatus_AC(jsonObject.getString("status_AC"));
-                    if (jsonObject.has("adress"))
-                        accident.setAddress(jsonObject.getString("adress"));
-                    // Log.d("Accident", accident.toString());
-                    ds.add(accident);
-                     Log.d("DS", ds.toString());
-                }
-                Log.d("ds", ds.toString());
+//                String work_location = jsonObj.getString("work_location");
+//                String birth = jsonObj.getString("birthday");
+//                String phone=jsonObj.getString("phone_PI");
+//                Boolean sex = jsonObj.getBoolean("sex__PI");
+//                String email = jsonObj.getString("email_PI");
+//                String address = jsonObj.getString("address_PI");
+//                Long personal_id = jsonObj.getLong("personal_id");
+//                String name = jsonObj.getString("name_PI");
+                //Personal_Infomation pi = new Personal_Infomation(name,sex,birth,personal_id,work_location,phone,address,email);
+                ds.add(pi);
+                Log.d("DS PI", ds.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }

@@ -1,4 +1,4 @@
-package com.emc.emergency.Accident;
+package com.emc.emergency;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,11 +24,11 @@ public class AccidentActivity extends AppCompatActivity implements fragment_acci
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragment_accident_page fragment_accident = new fragment_accident_page();
-                    getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
+//                    fragment_accident_page fragment_accident = new fragment_accident_page();
+//                    getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
                     return true;
                 case R.id.navigation_dashboard:
-                   getSupportFragmentManager().isDestroyed();
+//                   getSupportFragmentManager().isDestroyed();
                     return true;
             }
             return false;
@@ -45,7 +45,7 @@ public class AccidentActivity extends AppCompatActivity implements fragment_acci
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //BuildFragment();
+        BuildFragment();
     }
 
     private void BuildFragment() {
