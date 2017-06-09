@@ -15,7 +15,7 @@ import com.emc.emergency.model.Personal_Infomation;
 
 public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener{
 
-    private TextView mTextMessage;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -24,11 +24,10 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-//                    fragment_accident_page fragment_accident = new fragment_accident_page();
-//                    getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
+
                     return true;
                 case R.id.navigation_dashboard:
-//                   getSupportFragmentManager().isDestroyed();
+//
                     return true;
             }
             return false;
@@ -41,7 +40,7 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
 
-        mTextMessage = (TextView) findViewById(R.id.message1);
+//        mTextMessage = (TextView) findViewById(R.id.message1);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation1);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 

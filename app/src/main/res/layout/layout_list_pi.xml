@@ -2,21 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#0000FF"
     android:orientation="vertical"
     android:weightSum="1">
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:background="@drawable/background_pi">
+        android:layout_margin="10dp">
 
         <ImageView
             android:id="@+id/imageItemHinh"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
@@ -33,17 +31,6 @@
             android:padding="5dp"
             android:textSize="16sp"
             android:textStyle="bold" />
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
         <EditText
             android:id="@+id/txtEmailPI"
             android:layout_width="match_parent"
@@ -94,7 +81,6 @@
         android:layout_width="fill_parent"
         android:layout_height="250dp"
         android:layout_margin="10dp"
-        android:background="@drawable/background_pi"
         android:layout_weight="0.5">
 
         <LinearLayout
@@ -113,19 +99,6 @@
                 android:inputType="textPersonName" />
 
         </LinearLayout>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,19 +113,6 @@
                 android:hint="Personal ID"
                 android:inputType="textPersonName" />
         </LinearLayout>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -168,18 +128,6 @@
                 android:hint="Work location"
                 android:inputType="textPersonName" />
         </LinearLayout>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -195,17 +143,6 @@
                 android:hint="Phone number"
                 android:inputType="textPersonName" />
         </LinearLayout>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -221,17 +158,6 @@
                 android:hint="Address"
                 android:inputType="textPersonName" />
         </LinearLayout>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-
-                />
-        </TableRow>
     </TableLayout>
 
     <LinearLayout
@@ -245,8 +171,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/background_pi"
-            android:text="@string/edit" />
+            android:text="@string/edit"/>
 
     </LinearLayout>
 

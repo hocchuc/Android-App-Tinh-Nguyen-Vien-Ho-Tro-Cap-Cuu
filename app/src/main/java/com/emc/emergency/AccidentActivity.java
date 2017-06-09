@@ -14,42 +14,17 @@ import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 
 public class AccidentActivity extends AppCompatActivity implements fragment_accident_page.OnListFragmentInteractionListener{
-
-    private TextView mTextMessage;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-//                    fragment_accident_page fragment_accident = new fragment_accident_page();
-//                    getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
-                    return true;
-                case R.id.navigation_dashboard:
-//                   getSupportFragmentManager().isDestroyed();
-                    return true;
-            }
-            return false;
-        }
-
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accident);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
+//        mTextMessage = (TextView) findViewById(R.id.message);
         BuildFragment();
     }
 
     private void BuildFragment() {
-        FragmentManager managerTop = getSupportFragmentManager();
+//        FragmentManager managerTop = getSupportFragmentManager();
         fragment_accident_page fragment_accident = new fragment_accident_page();
         getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
 

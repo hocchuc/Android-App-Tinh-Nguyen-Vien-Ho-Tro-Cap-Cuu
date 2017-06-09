@@ -24,12 +24,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.emc.emergency.Fragment.fragment_countdown;
 
 import com.emc.emergency.Fragment.fragment_menu_page;
-import com.emc.emergency.Fragment.fragment_menu_page2;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Route;
 import com.emc.emergency.model.User;
@@ -82,7 +80,6 @@ import java.util.List;
 
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
-        , fragment_menu_page2.onFragmentMenu2Interaction
         , OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
         , fragment_countdown.OnFragmentInteractionListener {
 
@@ -163,17 +160,11 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void BuildFragment() {
-        FragmentManager managerBot = getSupportFragmentManager();
-        FragmentManager managerTop = getSupportFragmentManager();
+//        FragmentManager managerBot = getSupportFragmentManager();
+//        FragmentManager managerTop = getSupportFragmentManager();
 
-//        fragment_map_page fragment_map = new fragment_map_page();
         fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
-//        fragment_menu_page2 fragment_menu_page2 = new fragment_menu_page2();
-
-//        fragment_map.setArguments(getIntent().getExtras());
         fragment_menu_page1.setArguments((getIntent()).getExtras());
-        //fragment_menu_page2.setArguments((getIntent()).getExtras());
-
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_menu, fragment_menu_page1).commit();
@@ -379,12 +370,6 @@ public class MainMenuActivity extends AppCompatActivity
     public void onFragmentMenu1Interaction(Uri uri) {
 
     }
-
-    @Override
-    public void onFragmentMenu2Interaction(Uri uri) {
-
-    }
-
     @Override
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",

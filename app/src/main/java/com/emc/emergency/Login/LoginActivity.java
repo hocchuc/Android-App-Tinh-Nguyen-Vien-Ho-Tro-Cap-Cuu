@@ -135,21 +135,17 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     editor1.commit();
                     Log.d("editor1",editor1.toString());
 
-                    if(flashMessage.getStatus().equals("SUCCESS")){
-                  /*      fragment_personal_info_page newFragment = new fragment_personal_info_page();
-                        Bundle args = new Bundle();
-                        args.putInt("ID_USER", id);
-                        newFragment.setArguments(args);
-
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(newFragment,\\\\\\\\\\\\\\\\\\'');
-                        transaction.commit();*/
-
-                       Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                       startActivity(intent);
+                    try {
+                        if(flashMessage.getStatus().equals("SUCCESS")){
+                           Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                           startActivity(intent);
 
 
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Tai khoan hoac mat khau khong dung.!",Toast.LENGTH_LONG).show();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Tai khoan hoac mat khau khong dung.!",Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

@@ -78,7 +78,7 @@ public class fragment_menu_page extends Fragment {
         btnAccident.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent((MainMenuActivity)getActivity(), AccidentActivity.class);
+                Intent intent = new Intent(getActivity(), AccidentActivity.class);
                 startActivity(intent);
             }
         });
@@ -96,14 +96,14 @@ public class fragment_menu_page extends Fragment {
         btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent((MainMenuActivity)getActivity(), AccidentActivity.class);
+                Intent intent = new Intent(getActivity(), AccidentActivity.class);
                 startActivity(intent);
             }
         });
         btnPersonalInfomation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent((MainMenuActivity)getActivity(), Personal_Inf_Activity.class);
+                Intent intent = new Intent(getActivity(), Personal_Inf_Activity.class);
                 startActivity(intent);
             }
         });

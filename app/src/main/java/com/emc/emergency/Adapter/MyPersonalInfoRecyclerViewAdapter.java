@@ -50,7 +50,10 @@ public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPe
         holder.txtAddressPI.setText(mValues.get(position).getAddress_PI());
         holder.txtBirthdayPI.setText(mValues.get(position).getBirthday());
         holder.txtPID.setText(mValues.get(position).getPersonal_id().toString());
-//        holder.radMale.setText(mValues.get(position).getPersonal_id().toString());
+        if(mValues.get(position).getSex__PI()==true){
+            holder.radMale.toggle();
+        }
+        else holder.radFeMale.toggle();
         holder.imgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,8 +108,8 @@ public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPe
         public final EditText txtAddressPI;
         public final ImageView imgV;
 
-//        public final RadioButton radMale;
-//        public final RadioButton radFeMale;
+        public final RadioButton radMale;
+        public final RadioButton radFeMale;
 
         public final Button btnEdit;
 
@@ -120,8 +123,8 @@ public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPe
             txtAddressPI= (EditText) view.findViewById(R.id.txtAddressPI);
             txtWKPI= (EditText) view.findViewById(R.id.txtWorkLocationPI);
             txtPhonePI= (EditText) view.findViewById(R.id.txtPhonePI);
-//            radFeMale= (RadioButton) view.findViewById(R.id.radFeMale);
-//            radMale= (RadioButton) view.findViewById(R.id.radMale);
+            radFeMale= (RadioButton) view.findViewById(R.id.radFeMale);
+            radMale= (RadioButton) view.findViewById(R.id.radMale);
             imgV = (ImageView) view.findViewById(R.id.imageItemHinh);
             btnEdit= (Button) view.findViewById(R.id.btnEditPI);
 
