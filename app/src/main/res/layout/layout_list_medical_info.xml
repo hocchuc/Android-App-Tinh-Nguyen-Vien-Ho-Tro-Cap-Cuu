@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageButtonMI"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            card_view:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="30dp">
+            <TextView
+                android:id="@+id/txtNameMI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#2c3e50"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtTypeMI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#34495e"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/txtDesMI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#34495e"
+                android:textSize="14dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

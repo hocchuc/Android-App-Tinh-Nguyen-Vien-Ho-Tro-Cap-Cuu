@@ -39,9 +39,9 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     SharedPreferences preferences,preferences1;
     String userState = "StoreUserState";
     String id_user="ID_USER";
-    private TokenService tokenService;
-    private Utils utils;
-    String token;
+//    private TokenService tokenService;
+//    private Utils utils;
+//    String token;
     int id = 0;
     FlashMessage flashMessage;
 
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     SharedPreferences.Editor editor1 = preferences1.edit();
                     editor1.putInt("id_user",id);
                     editor1.commit();
-                    Log.d("editor1",editor1.toString());
+                    //Log.d("editor1",editor1.toString());
 
                     try {
                         if(flashMessage.getStatus().equals("SUCCESS")){
