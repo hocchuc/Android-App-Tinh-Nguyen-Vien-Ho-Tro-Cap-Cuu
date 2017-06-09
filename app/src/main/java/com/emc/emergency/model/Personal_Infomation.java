@@ -120,4 +120,18 @@ public class Personal_Infomation implements Serializable  {
 		this.address_PI = address_PI;
 		this.email_PI = email_PI;
 	}
+
+    @Override
+    public String toString() {
+        return "Personal_Infomation{" +
+                "name_PI='" + name_PI + '\'' +
+                ", sex__PI=" + sex__PI +
+                ", birthday='" + birthday + '\'' +
+                ", personal_id=" + personal_id +
+                ", work_location='" + work_location + '\'' +
+                ", phone_PI='" + phone_PI + '\'' +
+                ", address_PI='" + address_PI + '\'' +
+                ", email_PI='" + email_PI + '\'' +
+                '}';
+    }
 }

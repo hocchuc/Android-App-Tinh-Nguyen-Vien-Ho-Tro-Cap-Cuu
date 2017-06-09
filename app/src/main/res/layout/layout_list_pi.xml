@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#0000FF"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="@drawable/background_pi">
+
+        <ImageView
+            android:id="@+id/imageItemHinh"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:src="@drawable/profile3" />
+
+        <EditText
+            android:id="@+id/txtNamePI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageItemHinh"
+            android:layout_marginLeft="14dp"
+            android:layout_toRightOf="@+id/imageItemHinh"
+            android:hint="Name"
+            android:padding="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+        <EditText
+            android:id="@+id/txtEmailPI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtNamePI"
+            android:layout_below="@+id/txtNamePI"
+            android:enabled="false"
+            android:hint="Email"
+            android:padding="5dp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radSex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtEmailPI"
+            android:layout_below="@+id/txtEmailPI"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:checked="true"
+                android:text="@string/male" />
+
+            <RadioButton
+                android:id="@+id/radFeMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:checked="false"
+                android:text="@string/female" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtEmailPI"
+            android:layout_below="@+id/txtEmailPI"
+            android:orientation="horizontal"
+            android:padding="5dp"></LinearLayout>
+
+    </RelativeLayout>
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/background_pi"
+        android:layout_weight="0.5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txtBirthdayPI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Birthday"
+                android:inputType="textPersonName" />
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txtPI_ID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Personal ID"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <EditText
+                android:id="@+id/txtWorkLocationPI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Work location"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <EditText
+                android:id="@+id/txtPhonePI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Phone number"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <EditText
+                android:id="@+id/txtAddressPI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Address"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnEditPI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/background_pi"
+            android:text="@string/edit" />
+
+    </LinearLayout>
+
+</LinearLayout>

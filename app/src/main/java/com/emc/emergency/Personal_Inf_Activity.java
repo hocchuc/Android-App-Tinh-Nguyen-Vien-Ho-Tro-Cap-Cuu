@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.emc.emergency.Fragment.fragment_accident_page;
 import com.emc.emergency.Fragment.fragment_personal_info_page;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Personal_Infomation;
 
 public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener{
 
@@ -55,7 +56,7 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
     }
 
     @Override
-    public void onListFragmentInteraction(Accident item) {
+    public void onListFragmentInteraction(Personal_Infomation mItem) {
 
     }
 }

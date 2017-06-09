@@ -18,6 +18,7 @@ import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.FlashMessage;
+import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.Utils;
 
@@ -170,7 +171,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
     }
     @Override
-    public void onListFragmentInteraction(Accident item) {
+    public void onListFragmentInteraction(Personal_Infomation mItem) {
 
     }
 }

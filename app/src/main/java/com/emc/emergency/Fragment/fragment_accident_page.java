@@ -188,7 +188,7 @@ public class fragment_accident_page extends Fragment {
                         accident.setAddress(jsonObject.getString("adress"));
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
-                     Log.d("DS", ds.toString());
+//                     Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
             } catch (Exception ex) {

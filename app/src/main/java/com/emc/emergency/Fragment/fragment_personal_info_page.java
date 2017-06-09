@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
+import com.emc.emergency.Adapter.MyPersonalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
@@ -43,7 +44,7 @@ public class fragment_personal_info_page extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     ArrayList<Personal_Infomation> arrPI;
-    //    RecyclerView recyclerView;
+        RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
     String id_user = "ID_USER";
 
@@ -76,15 +77,15 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
+        View view = inflater.inflate(R.layout.fragment_personal_info_page, container, false);
         arrPI = new ArrayList<>();
-        new GetPersonalInfo(getActivity(), arrPI).execute();
+        new GetPersonalInfo(this.getActivity(), arrPI).execute();
 
-//        Context context = view.getContext();
-//        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
-//
-//        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(),accidentList, mListener));
+        Context context = view.getContext();
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview1);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(new MyPersonalInfoRecyclerViewAdapter(getContext(),arrPI, mListener));
 
         return view;
     }
@@ -118,7 +119,7 @@ public class fragment_personal_info_page extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Accident item);
+        void onListFragmentInteraction(Personal_Infomation mItem);
     }
 
     class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
@@ -141,21 +142,19 @@ public class fragment_personal_info_page extends Fragment {
             super.onPostExecute(personalInfomations);
 //        arrAccidents.clear();
             arrPI.addAll(personalInfomations);
-//            recyclerView.getAdapter().notifyDataSetChanged();
+            recyclerView.getAdapter().notifyDataSetChanged();
 
         }
 
         @Override
         protected ArrayList<Personal_Infomation> doInBackground(Void... params) {
             ArrayList<Personal_Infomation> ds = new ArrayList<>();
-            Personal_Infomation pi=new Personal_Infomation();
-
             sharedPreferences = getActivity().getSharedPreferences(id_user, Context.MODE_PRIVATE);
             int id = sharedPreferences.getInt("id_user", -1);
 
             Log.d("ID_USER after put:", String.valueOf(id));
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/" + id + "/personal_Infomation");
+                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/personal_Infomations/"+id);
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -167,35 +166,20 @@ public class fragment_personal_info_page extends Fragment {
                 }
                 JSONObject jsonObj = new JSONObject(builder.toString());
                 Log.d("JsonPI: ", jsonObj.toString());
+                Personal_Infomation pi;
 
-                if(jsonObj.has("work_location"))
-                    pi.setWork_location(jsonObj.getString("work_location"));
-                if(jsonObj.has("birthday"))
-                    pi.setBirthday(jsonObj.getString("birthday"));
-                if(jsonObj.has("phone_PI"))
-                    pi.setPhone_PI(jsonObj.getString("phone_PI"));
-                if(jsonObj.has("sex__PI"))
-                    pi.setSex__PI(jsonObj.getBoolean("sex__PI"));
-                if(jsonObj.has("email_PI"))
-                    pi.setEmail_PI(jsonObj.getString("email_PI"));
-                if(jsonObj.has("address_PI"))
-                    pi.setAddress_PI(jsonObj.getString("address_PI"));
-                if(jsonObj.has("personal_id"))
-                    pi.setPersonal_id(jsonObj.getLong("personal_id"));
-                if(jsonObj.has("name_PI"))
-                    pi.setName_PI(jsonObj.getString("name_PI"));
-
-//                String work_location = jsonObj.getString("work_location");
-//                String birth = jsonObj.getString("birthday");
-//                String phone=jsonObj.getString("phone_PI");
-//                Boolean sex = jsonObj.getBoolean("sex__PI");
-//                String email = jsonObj.getString("email_PI");
-//                String address = jsonObj.getString("address_PI");
-//                Long personal_id = jsonObj.getLong("personal_id");
-//                String name = jsonObj.getString("name_PI");
-                //Personal_Infomation pi = new Personal_Infomation(name,sex,birth,personal_id,work_location,phone,address,email);
+                String work_location = jsonObj.getString("work_location");
+                String birth = jsonObj.getString("birthday");
+                String phone=jsonObj.getString("phone_PI");
+                Boolean sex = jsonObj.getBoolean("sex__PI");
+                String email = jsonObj.getString("email_PI");
+                String address = jsonObj.getString("address_PI");
+                Long personal_id = jsonObj.getLong("personal_id");
+                String name = jsonObj.getString("name_PI");
+                pi = new Personal_Infomation(name,sex,birth,personal_id,work_location,phone,address,email);
+                Log.d("PI", pi.toString());
                 ds.add(pi);
-                Log.d("DS PI", ds.toString());
+                Log.d("DSPI", ds.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }
