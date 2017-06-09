@@ -9,7 +9,6 @@
     android:background="@color/colorPrimary"
     tools:context="com.emc.emergency.Fragment.fragment_countdown">
 
-    <!-- TODO: Update blank fragment layout -->
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"

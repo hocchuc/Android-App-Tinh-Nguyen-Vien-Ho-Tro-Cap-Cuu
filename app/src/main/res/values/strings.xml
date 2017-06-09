@@ -89,4 +89,8 @@
     <string name="male">Male</string>
     <string name="female">FeMale</string>
     <string name="edit">Edit</string>
+    <string name="submit">submit</string>
+    <string name="camera">Camera</string>
+    <string name="enter_your_email_id">Enter your Email ID</string>
+    <string name="description">Description</string>
 </resources>

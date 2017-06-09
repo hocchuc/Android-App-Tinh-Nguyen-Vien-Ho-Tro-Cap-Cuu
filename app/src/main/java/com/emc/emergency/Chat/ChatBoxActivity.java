@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emc.emergency.R;
 import com.emc.emergency.model.Chat;
@@ -49,7 +50,6 @@ public class ChatBoxActivity extends AppCompatActivity implements IRequestListen
         Log.d(TAG, "FCM Token creation logic");
 
         initControl();
-
         //// TODO: 31-May-17 remove this logic and replace with chat box logic
         // Get variables reference
         deviceText = (TextView) findViewById(R.id.deviceText);

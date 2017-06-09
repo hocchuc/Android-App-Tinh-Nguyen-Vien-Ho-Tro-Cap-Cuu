@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:float="http://schemas.android.com/tools"
+    tools:context="com.emc.emergency.Accident.ReportAccidentActivity">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+<com.wrapp.floatlabelededittext.FloatLabeledEditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <EditText
+        android:hint="@string/description"
+        android:id="@+id/edtDes"
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+</com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+    <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="100sp"
+            android:text="@string/submit" />
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+
+</LinearLayout>

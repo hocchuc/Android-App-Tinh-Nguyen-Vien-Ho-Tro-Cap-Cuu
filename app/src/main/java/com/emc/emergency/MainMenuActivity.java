@@ -1,5 +1,6 @@
 package com.emc.emergency;
 
+import android.*;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -8,8 +9,11 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +28,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emc.emergency.Fragment.fragment_countdown;
 
@@ -111,6 +116,7 @@ public class MainMenuActivity extends AppCompatActivity
     private ArrayList<Accident> arrayAccident;
     //------------------------
     private ArrayList<User> arrUser;
+    private static final String LOCATION_PERMS= "android.permission.ACCESS_FINE_LOCATION";
 
 
     @Override
@@ -124,6 +130,16 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addEvents() {
+        // yeu cau quyen doi voi cac thiet chay android M tro len
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    123
+            );
+        }
+
+
         GPSTracker gps = new GPSTracker(MainMenuActivity.this);
         if (gps.canGetLocation()) {
             latitude = gps.getLatitude();
@@ -139,6 +155,36 @@ public class MainMenuActivity extends AppCompatActivity
                 sendRequest();
             }
         });
+    }
+
+    /**
+     * Hàm kiểm tra permission
+     * @param requestCode Số int định nghĩa sẵn
+     * @param permissions Quyền cần xin
+     * @param grantResults kết quả
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 123: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     private void addControls() {
@@ -505,14 +551,21 @@ public class MainMenuActivity extends AppCompatActivity
             arrAccidents.addAll(accidents);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
-                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
                 LatLng loocation = new LatLng(viDo, kinhDo);
-                mMap.addMarker(new MarkerOptions()
-                        .position(loocation)
-                        .title(arrAccidents.get(i).getDescription_AC())
-                        .snippet(arrAccidents.get(i).getAddress()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                try {
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(arrAccidents.get(i).getDescription_AC())
+                            .snippet(arrAccidents.get(i).getAddress()));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
@@ -562,6 +615,31 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.e("LOI ", ex.toString());
             }
             return ds;
+        }
+
+
+
+
+
+
+
+
+        public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+            switch (requestCode) {
+                case 1: {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    } else {
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                    }
+                    return;
+                }
+                // other 'case' lines to check for other
+                // permissions this app might request
+            }
         }
     }
 

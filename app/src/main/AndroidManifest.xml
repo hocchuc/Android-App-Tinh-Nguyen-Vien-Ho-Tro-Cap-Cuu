@@ -45,6 +45,8 @@
             android:name=".AccidentActivity"
             android:label="@string/title_activity_accident"></activity>
         <activity android:name=".Personal_Inf_Activity"/>
+        <activity android:name=".Accident.ReportAccidentActivity"></activity>
+
     </application>
 
 </manifest>

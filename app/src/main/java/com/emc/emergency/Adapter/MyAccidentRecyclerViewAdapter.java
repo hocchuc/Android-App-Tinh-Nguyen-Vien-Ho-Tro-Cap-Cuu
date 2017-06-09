@@ -71,10 +71,10 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
                 EventBus.getDefault().post(new MessageEvent(SystemUtils.TAG_GO_MESSAGE, mValues.get(position).getDescription_AC()));
             }
         });
-
+        // request cho glide
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .placeholder(R.drawable.material_drawer_circle_mask)
+                .placeholder(R.drawable.marker)
                 .error(R.drawable.material_drawer_circle_mask)
                 .priority(Priority.HIGH);
         Glide.with(context)

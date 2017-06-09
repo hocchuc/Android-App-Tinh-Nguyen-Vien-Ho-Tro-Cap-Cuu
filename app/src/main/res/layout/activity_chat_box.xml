@@ -84,7 +84,7 @@
             android:id="@+id/llMsgCompose"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryLight"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal"
             android:weightSum="3" >
 
