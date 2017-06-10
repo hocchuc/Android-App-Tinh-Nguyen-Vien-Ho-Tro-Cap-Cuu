@@ -21,6 +21,23 @@ import android.util.Log;
  */
 
 public class GPSTracker extends Service implements LocationListener {
+    private static final String[] INITIAL_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_CONTACTS
+    };
+    private static final String[] CAMERA_PERMS={
+            Manifest.permission.CAMERA
+    };
+    private static final String[] CONTACTS_PERMS={
+            Manifest.permission.READ_CONTACTS
+    };
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    private static final int INITIAL_REQUEST=1337;
+    private static final int CAMERA_REQUEST=INITIAL_REQUEST+1;
+    private static final int CONTACTS_REQUEST=INITIAL_REQUEST+2;
+    private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
     private final Context mContext;
 
     // flag for GPS status
@@ -205,4 +222,5 @@ public class GPSTracker extends Service implements LocationListener {
         // Showing Alert Message
         alertDialog.show();
     }
+
 }
