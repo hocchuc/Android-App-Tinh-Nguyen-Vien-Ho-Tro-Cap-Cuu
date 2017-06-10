@@ -78,7 +78,7 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
                 .error(R.drawable.material_drawer_circle_mask)
                 .priority(Priority.HIGH);
         Glide.with(context)
-                .load("https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=640x250&maptype=roadmap&markers=color:red%7Clabel:C%7C" + mValues.get(position).getLong_AC() + "," + mValues.get(position).getLat_AC())
+                .load("https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=640x250&maptype=roadmap&markers=color:red%7Clabel:C%7C" + mValues.get(position).getLat_AC() + "," + mValues.get(position).getLong_AC())
                 .apply(options)
                 .into(holder.imageButton);
 

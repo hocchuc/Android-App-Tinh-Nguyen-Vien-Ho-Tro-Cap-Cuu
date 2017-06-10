@@ -3,10 +3,12 @@ package com.emc.emergency;
 import android.*;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,9 +29,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Fragment.fragment_countdown;
 
 import com.emc.emergency.Fragment.fragment_menu_page;
@@ -69,6 +76,8 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
@@ -100,10 +109,11 @@ public class MainMenuActivity extends AppCompatActivity
     double viDo, kinhDo;
     String description, address;
     Button btnVeDuong;
+    ImageButton btnToGMap;
     double latitude = 0;
     double longitude = 0;
     boolean flag = false;
-    int id_user=0;
+    int id_user = 0;
 
 
     //    private Button btnFindPath;
@@ -116,7 +126,7 @@ public class MainMenuActivity extends AppCompatActivity
     private ArrayList<Accident> arrayAccident;
     //------------------------
     private ArrayList<User> arrUser;
-    private static final String LOCATION_PERMS= "android.permission.ACCESS_FINE_LOCATION";
+    private static final String LOCATION_PERMS = "android.permission.ACCESS_FINE_LOCATION";
 
 
     @Override
@@ -127,6 +137,49 @@ public class MainMenuActivity extends AppCompatActivity
         BuildDrawer(savedInstanceState);
         BuildFragment();
         addEvents();
+        setLoadImageLogic();
+
+
+    }
+
+
+    private void setLoadImageLogic() {
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+                RequestOptions options = new RequestOptions()
+                        .centerCrop()
+                        .placeholder(R.drawable.marker)
+                        .error(R.drawable.material_drawer_circle_mask)
+                        .priority(Priority.HIGH);
+                Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+                    return DrawerUIUtils.getPlaceHolder(ctx);
+                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+                } else if ("customUrlItem".equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+                }
+
+                //we use the default one for
+                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+
+                return super.placeholder(ctx, tag);
+            }
+        });
+
     }
 
     private void addEvents() {
@@ -134,7 +187,7 @@ public class MainMenuActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     123
             );
         }
@@ -155,44 +208,29 @@ public class MainMenuActivity extends AppCompatActivity
                 sendRequest();
             }
         });
-    }
 
-    /**
-     * Hàm kiểm tra permission
-     * @param requestCode Số int định nghĩa sẵn
-     * @param permissions Quyền cần xin
-     * @param grantResults kết quả
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 123: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+        btnToGMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Dùng navigation turn by turn
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + latitude + "," + longitude + "&avoid=tf");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                // kiểm tra có cài map chưa, có ứng dụng nào có thể nhận intent hay không ?
+                if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mapIntent);
                 }
-                return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
+        });
     }
+
 
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
-        arrUser=new ArrayList<>();
+        arrUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
-
+        btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
 //        Bundle bundle = getIntent().getExtras();
 //        id_user = bundle.getInt("ID_USER");
 //       Log.d("ID_USER after put: ", String.valueOf(id_user));
@@ -206,8 +244,6 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void BuildFragment() {
-//        FragmentManager managerBot = getSupportFragmentManager();
-//        FragmentManager managerTop = getSupportFragmentManager();
 
         fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
         fragment_menu_page1.setArguments((getIntent()).getExtras());
@@ -228,8 +264,8 @@ public class MainMenuActivity extends AppCompatActivity
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
         final IProfile profile = new ProfileDrawerItem()
-                .withName("Mike Penz")
-                .withEmail("mikepenz@gmail.com")
+                .withName("Trần Cao Tuấn")
+                .withEmail("caotuan@gmail.com")
                 .withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
 
         // Create the AccountHeader
@@ -405,10 +441,11 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
-        View mSwipeButton= findViewById(R.id.btnSwipe2Confirm);
+        View mSwipeButton = findViewById(R.id.btnSwipe2Confirm);
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         }
+        // neu swipe button dang mo, nguoi dung nhan backpress
         if (!mSwipeButton.isActivated()) {
             mSwipeButton.setVisibility(View.INVISIBLE);
         } else {
@@ -420,6 +457,7 @@ public class MainMenuActivity extends AppCompatActivity
     public void onFragmentMenu1Interaction(Uri uri) {
 
     }
+
     @Override
     public void onDirectionFinderStart() {
         progressDialog = ProgressDialog.show(this, "Please wait.",
@@ -475,6 +513,7 @@ public class MainMenuActivity extends AppCompatActivity
                 polylineOptions.add(route1.points.get(i));
 
             polylinePaths.add(mMap.addPolyline(polylineOptions));
+            btnToGMap.setVisibility(View.VISIBLE);
         }
     }
 
@@ -622,30 +661,8 @@ public class MainMenuActivity extends AppCompatActivity
         }
 
 
-
-
-
-
-
-
-        public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-            switch (requestCode) {
-                case 1: {
-                    // If request is cancelled, the result arrays are empty.
-                    if (grantResults.length > 0
-                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    } else {
-                        // permission denied, boo! Disable the
-                        // functionality that depends on this permission.
-                    }
-                    return;
-                }
-                // other 'case' lines to check for other
-                // permissions this app might request
-            }
-        }
     }
+
 
 //    class GetUsers extends AsyncTask<Void, Void, ArrayList<User>> {
 //        Activity activity;
