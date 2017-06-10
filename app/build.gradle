@@ -87,8 +87,11 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.wrapp.floatlabelededittext:library:0.0.6'
+    compile 'com.ebanx:swipe-button:0.4.2'
+
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+
 }
 android {
     defaultConfig {

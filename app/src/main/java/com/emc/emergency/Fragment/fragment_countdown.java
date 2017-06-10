@@ -38,6 +38,8 @@ public class fragment_countdown extends DialogFragment {
     private String mParam2;
     ActionProcessButton btnCancle;
     TextView txtCoundDown;
+    MyCountDownTimer myCountDownTimer;
+
     private OnFragmentInteractionListener mListener;
 
     public fragment_countdown() {
@@ -85,26 +87,17 @@ public class fragment_countdown extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         btnCancle.setMode(ActionProcessButton.Mode.PROGRESS);
-        new CountDownTimer(6000, 1000) {
+        myCountDownTimer = new MyCountDownTimer(6000, 1000);
+        myCountDownTimer.start();
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            public void onTick(long millisUntilFinished) {
-                txtCoundDown.setText(""+millisUntilFinished / 1000);
-//                btnCancle.setProgress(Math.toIntExact(millisUntilFinished / 1000)*20);
-            }
 
-            public void onFinish() {
-                btnCancle.setProgress(0);
-                txtCoundDown.setText("Sending request rescue to SOS Center");
-                Intent intent = new Intent(getActivity(), ChatBoxActivity.class);
-                startActivity(intent);
-            }
-        }.start();
         btnCancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                myCountDownTimer.cancel();
                 getExitTransition();
                 getFragmentManager().popBackStack();
+
             }
         });
     }
@@ -147,4 +140,47 @@ public class fragment_countdown extends DialogFragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    public class MyCountDownTimer extends CountDownTimer {
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            txtCoundDown.setText(""+millisUntilFinished / 1000);
+
+
+        }
+
+        @Override
+        public void onFinish() {
+            btnCancle.setProgress(0);
+            txtCoundDown.setText("Sending request rescue to SOS Center");
+            try {
+                Intent intent = new Intent(getActivity(), ChatBoxActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(!getFragmentManager().isDestroyed())
+                getFragmentManager().popBackStack();
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        myCountDownTimer.cancel();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 }
+

@@ -1,81 +1,130 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.emc.emergency.Fragment.fragment_menu_page"
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:layout_marginRight="8dp"
+        custom:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        custom:layout_constraintLeft_toLeftOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/linearLayout"
+        custom:layout_constraintVertical_bias="0.0"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="match_parent"
-            android:padding="10dp"
-
-            android:drawableStart="@mipmap/ic_request_accident"
-            android:text="@string/yeu_cau_cap_cuu"
-            android:textColor="@android:color/black"
-            android:id="@+id/btnRequestRescue"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            />
-
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />.
-        <Button
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="-236dp">
 
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:drawableStart="@mipmap/ic_accident_list"
-            android:text="@string/danh_sach_tai_nan_gan_day"
-            android:layout_weight="3"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:id="@+id/button_accident"
-            android:scaleType="fitCenter" />
+            <Button
+                android:id="@+id/btnReportAccident"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:drawableStart="@mipmap/ic_report_accident"
+                android:text="@string/bao_tai_nan" />
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnPI"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:drawableStart="@mipmap/ic_personal_info"
+                android:lines="2"
+                android:text="@string/thong_tin_ca_nhan"
+                android:textColor="@android:color/black" />
 
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:drawableStart="@mipmap/ic_report_accident"
-            android:layout_weight="3"
-            android:id="@+id/btnReportAccident"
-            android:text="@string/bao_tai_nan"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
-
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="match_parent"
-            android:drawableStart="@mipmap/ic_personal_info"
-            android:text="@string/thong_tin_ca_nhan"
-            android:lines="2"
-            android:textColor="@android:color/black"
-            android:id="@+id/btnPI"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="-575dp">
 
+            <Button
+                android:id="@+id/btnRequestRescue"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
 
-    </LinearLayout>
+                android:layout_weight="3"
+                android:drawableStart="@mipmap/ic_request_accident"
+                android:padding="10dp"
+                android:text="@string/yeu_cau_cap_cuu"
+                android:textColor="@android:color/black" />
 
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+
+                android:id="@+id/button_accident"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:drawableStart="@mipmap/ic_accident_list"
+                android:scaleType="fitCenter"
+                android:text="@string/danh_sach_tai_nan_gan_day" />
+        </LinearLayout>
 </LinearLayout>
+    <com.ebanx.swipebtn.SwipeButton
+        android:id="@+id/btnSwipe2Confirm"
+        android:layout_width="330dp"
+        android:layout_height="150dp"
+        android:visibility="invisible"
+        app:inner_text="SWIPE TO SOS"
+        app:inner_text_color="@android:color/holo_red_light"
+        app:inner_text_size="18sp"
+        app:inner_text_top_padding="18dp"
+        app:inner_text_bottom_padding="18dp"
+        app:inner_text_background="@drawable/shape_rounded"
+        app:button_image_disabled="@drawable/ic_lock_open_black_24dp"
+        app:button_image_enabled="@drawable/ic_lock_outline_black_24dp"
+        app:button_left_padding="20dp"
+        app:button_right_padding="20dp"
+        app:button_top_padding="20dp"
+        app:button_bottom_padding="20dp"
+        app:button_background="@drawable/shape_button"
+        android:layout_marginRight="8dp"
+        custom:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        custom:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        custom:layout_constraintTop_toTopOf="@+id/linearLayout"
+        android:layout_marginTop="8dp"
+        custom:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        android:layout_marginBottom="8dp" />
+
+
+</android.support.constraint.ConstraintLayout>

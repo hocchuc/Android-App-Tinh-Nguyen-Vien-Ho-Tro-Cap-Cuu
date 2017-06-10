@@ -405,8 +405,12 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        View mSwipeButton= findViewById(R.id.btnSwipe2Confirm);
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
+        }
+        if (!mSwipeButton.isActivated()) {
+            mSwipeButton.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }

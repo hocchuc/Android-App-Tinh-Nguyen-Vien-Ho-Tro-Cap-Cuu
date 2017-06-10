@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ebanx.swipebtn.OnStateChangeListener;
+import com.ebanx.swipebtn.SwipeButton;
 import com.emc.emergency.Accident.ReportAccidentActivity;
 import com.emc.emergency.AccidentActivity;
 
@@ -40,7 +42,7 @@ public class fragment_menu_page extends Fragment {
     private String mParam2;
     private Button btnAccident,btnRequest, btnReport, btnPersonalInfomation;
     private onFragmentMenu1Interaction mListener;
-
+    private SwipeButton swipeButton;
     public fragment_menu_page() {
         // Required empty public constructor
     }
@@ -73,6 +75,15 @@ public class fragment_menu_page extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if(swipeButton.isShown()||!swipeButton.isActive()) {
+            swipeButton.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -86,12 +97,7 @@ public class fragment_menu_page extends Fragment {
         btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment_countdown fragmentCountdown = new fragment_countdown();
-                FragmentManager fragmentManager = getFragmentManager();
-                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(fragmentCountdown,"Count down");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+               swipeButton.setVisibility(View.VISIBLE);
             }
         });
         btnReport.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +115,21 @@ public class fragment_menu_page extends Fragment {
             }
         });
 
+        swipeButton.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onStateChange(boolean active) {
+                if(swipeButton.isActive()) {
+                   swipeButton.setVisibility(View.INVISIBLE);
+                    fragment_countdown fragmentCountdown = new fragment_countdown();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.add(fragmentCountdown, "Count down");
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -120,6 +141,7 @@ public class fragment_menu_page extends Fragment {
         btnReport = (Button) v.findViewById(R.id.btnReportAccident);
         btnRequest = (Button) v.findViewById(R.id.btnRequestRescue);
         btnAccident = (Button) v.findViewById(R.id.button_accident);
+        swipeButton = (SwipeButton) v.findViewById(R.id.btnSwipe2Confirm);
 
         return v;
     }

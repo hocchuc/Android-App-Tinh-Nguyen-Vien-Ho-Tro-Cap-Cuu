@@ -117,27 +117,27 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             @Override
             public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
                 if (response.isSuccessful()) {
-                    if (response.body() != null) {
+                    if (response.body() != null )
+                    {
                         flashMessage = response.body();
                         Log.d("body", flashMessage.toString());
-                        id= Integer.parseInt(flashMessage.getMessage());
-                        Log.d("ID_USER", String.valueOf(id));
+
                     }
-                    btnLogin.setProgress(0);
-                    btnLogin.setText("Done");
-//                    FirebaseMessaging.getInstance().subscribeToTopic("test");
+                  //    FirebaseMessaging.getInstance().subscribeToTopic("test");
 //                    token = FirebaseInstanceId.getInstance().getToken();
 //                    Log.d("LoginToken", "Token: " + token);
                     //Call the token service to save the token in the database
-
-                    preferences1 = getSharedPreferences(id_user, MODE_PRIVATE);
-                    SharedPreferences.Editor editor1 = preferences1.edit();
-                    editor1.putInt("id_user",id);
-                    editor1.commit();
-                    Log.d("editor1",editor1.toString());
-
                     try {
                         if(flashMessage.getStatus().equals("SUCCESS")){
+                            id= Integer.parseInt(flashMessage.getMessage()); // khi sai mat khau thi vang o day
+                            Log.d("ID_USER", String.valueOf(id));
+                            preferences1 = getSharedPreferences(id_user, MODE_PRIVATE);
+                            SharedPreferences.Editor editor1 = preferences1.edit();
+                            editor1.putInt("id_user",id);
+                            editor1.commit();
+                            btnLogin.setProgress(0);
+                            btnLogin.setText("Done");
+                            Log.d("editor1",editor1.toString());
                            Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                            startActivity(intent);
 
