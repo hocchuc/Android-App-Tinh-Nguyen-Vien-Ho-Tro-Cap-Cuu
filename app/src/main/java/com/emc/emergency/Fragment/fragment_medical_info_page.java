@@ -13,10 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
+import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.Adapter.MyPersonalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Medical_Info;
 import com.emc.emergency.model.Personal_Infomation;
 
 import org.json.JSONArray;
@@ -26,10 +27,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Date;
 import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -38,34 +36,29 @@ import static android.content.Context.MODE_PRIVATE;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class fragment_personal_info_page extends Fragment {
+public class fragment_medical_info_page extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<Personal_Infomation> arrPI;
-        RecyclerView recyclerView;
+    ArrayList<Medical_Info> arrMI;
+    RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
-    String id_user = "ID_USER";
-
-    SharedPreferences preferences,preferences1;
     String id_pi="ID_PI";
-
-    Long idPI;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public fragment_personal_info_page() {
+    public fragment_medical_info_page() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static fragment_personal_info_page newInstance(int columnCount) {
-        fragment_personal_info_page fragment = new fragment_personal_info_page();
+    public static fragment_medical_info_page newInstance(int columnCount) {
+        fragment_medical_info_page fragment = new fragment_medical_info_page();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -84,15 +77,15 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_personal_info_page, container, false);
-        arrPI = new ArrayList<>();
-        new GetPersonalInfo(this.getActivity(), arrPI).execute();
+        View view = inflater.inflate(R.layout.fragment_medical_info_page, container, false);
+        arrMI = new ArrayList<>();
+        new GetMedicalInfo(this.getActivity(), arrMI).execute();
 
         Context context = view.getContext();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview1);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview2);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MyPersonalInfoRecyclerViewAdapter(getContext(),arrPI, mListener));
+        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI, mListener));
 
         return view;
     }
@@ -126,43 +119,42 @@ public class fragment_personal_info_page extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Personal_Infomation mItem);
+        void onListFragmentInteraction(Medical_Info mItem);
     }
 
-    class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
+    class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Info>> {
         Activity activity;
-        ArrayList<Personal_Infomation> arrPI;
+        ArrayList<Medical_Info> arrMI;
 
-        public GetPersonalInfo(Activity activity, ArrayList<Personal_Infomation> arrPI) {
+        public GetMedicalInfo(Activity activity, ArrayList<Medical_Info> arrMI) {
             this.activity = activity;
-            this.arrPI = arrPI;
+            this.arrMI = arrMI;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            arrPI.clear();
+            arrMI.clear();
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Personal_Infomation> personalInfomations) {
-            super.onPostExecute(personalInfomations);
+        protected void onPostExecute(ArrayList<Medical_Info> medical_infos) {
+            super.onPostExecute(medical_infos);
 //        arrAccidents.clear();
-            arrPI.addAll(personalInfomations);
+            arrMI.addAll(medical_infos);
             recyclerView.getAdapter().notifyDataSetChanged();
 
-
         }
 
         @Override
-        protected ArrayList<Personal_Infomation> doInBackground(Void... params) {
-            ArrayList<Personal_Infomation> ds = new ArrayList<>();
-            sharedPreferences = getActivity().getSharedPreferences(id_user, MODE_PRIVATE);
-            int id = sharedPreferences.getInt("id_user", -1);
+        protected ArrayList<Medical_Info> doInBackground(Void... params) {
+            ArrayList<Medical_Info> ds = new ArrayList<>();
+            sharedPreferences = getActivity().getSharedPreferences(id_pi, Context.MODE_PRIVATE);
+            long id = sharedPreferences.getLong("id_PI", -1);
 
-            Log.d("ID_USER after put:", String.valueOf(id));
+            Log.d("ID_PI after put:", String.valueOf(id));
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/"+id+"/personal_Infomation");
+                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/personal_Infomations/"+id+"/medical_Info");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -173,40 +165,28 @@ public class fragment_personal_info_page extends Fragment {
                     line = bufferedReader.readLine();
                 }
                 JSONObject jsonObj = new JSONObject(builder.toString());
-                Log.d("JsonPI: ", jsonObj.toString());
-                Personal_Infomation pi=new Personal_Infomation();
+                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
+                JSONArray miJsonArr = _embeddedObject.getJSONArray("medical_Infoes");
 
-                if(jsonObj.has("work_location"))
-                    pi.setWork_location(jsonObj.getString("work_location"));
-                if(jsonObj.has("birthday"))
-                   pi.setBirthday(jsonObj.getString("birthday"));
-                if(jsonObj.has("phone_PI"))
-                    pi.setPhone_PI(jsonObj.getString("phone_PI"));
-                if(jsonObj.has("sex__PI"))
-                    pi.setSex__PI(jsonObj.getBoolean("sex__PI"));
-                if(jsonObj.has("email_PI"))
-                    pi.setEmail_PI(jsonObj.getString("email_PI"));
-                if(jsonObj.has("address_PI"))
-                    pi.setAddress_PI(jsonObj.getString("address_PI"));
-                if(jsonObj.has("personal_id"))
-                    pi.setPersonal_id(jsonObj.getLong("personal_id"));
-                if(jsonObj.has("name_PI"))
-                    pi.setName_PI(jsonObj.getString("name_PI"));
-                if(jsonObj.has("id_PI")){
-                    pi.setId_PI(jsonObj.getLong("id_PI"));
-                    idPI=jsonObj.getLong("id_PI");
-                    Log.d("idPI",idPI.toString());
+                Log.d("JsonObject MI", _embeddedObject.toString());
+                Log.d("JsonArray MI", miJsonArr.toString());
 
-                    preferences1 = getActivity().getSharedPreferences(id_pi, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = preferences1.edit();
-                    editor.putLong("id_PI",idPI);
-                    editor.apply();
-                    Log.d("editorPI",editor.toString());
-
+                for (int i = 0; i < miJsonArr.length(); i++) {
+                    Medical_Info medicalInfo = new Medical_Info();
+                    JSONObject jsonObject = miJsonArr.getJSONObject(i);
+                    if (jsonObject == null) continue;
+                    if (jsonObject.has("id_MI"))
+                        medicalInfo.setId_MI(Long.parseLong(jsonObject.getString("id_MI")));
+                    if (jsonObject.has("name_MI"))
+                         medicalInfo.setName_MI(jsonObject.getString("name_MI"));
+                    if (jsonObject.has("type_MI"))
+                        medicalInfo.setType_MI(jsonObject.getInt("type_MI"));
+                    if (jsonObject.has("description"))
+                        medicalInfo.setDescriptionMI(jsonObject.getString("description"));
+                    ds.add(medicalInfo);
+//                     Log.d("DS", ds.toString());
                 }
-                Log.d("PI", pi.toString());
-                ds.add(pi);
-                Log.d("DSPI", ds.toString());
+                Log.d("DSMI", ds.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }
