@@ -1,4 +1,4 @@
-package com.emc.emergency.Accident;
+package com.emc.emergency;
 
 import android.content.Context;
 import android.content.SharedPreferences;

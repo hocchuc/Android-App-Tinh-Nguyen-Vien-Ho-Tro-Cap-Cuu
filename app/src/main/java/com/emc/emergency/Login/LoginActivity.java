@@ -22,7 +22,7 @@ import com.emc.emergency.model.FlashMessage;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.Utils;
-
+import com.google.firebase.iid.FirebaseInstanceId;
 
 
 import okhttp3.OkHttpClient;
@@ -40,9 +40,9 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     SharedPreferences preferences,preferences1;
     String userState = "StoreUserState";
     String id_user="ID_USER";
-//    private TokenService tokenService;
+    private TokenService tokenService;
 //    private Utils utils;
-//    String token;
+    String token;
     int id = 0;
     FlashMessage flashMessage;
 
@@ -59,6 +59,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         txtPassword = (EditText) findViewById(R.id.loginPassword);
         btnLogin = (ActionProcessButton) findViewById(R.id.btnLogin);
         btnLogin.setMode(ActionProcessButton.Mode.ENDLESS);
+
+        tokenService=new TokenService(this,this);
 
     }
 
@@ -124,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
                     }
                   //    FirebaseMessaging.getInstance().subscribeToTopic("test");
-//                    token = FirebaseInstanceId.getInstance().getToken();
+
 //                    Log.d("LoginToken", "Token: " + token);
                     //Call the token service to save the token in the database
                     try {
@@ -137,6 +139,10 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                             editor1.commit();
                             btnLogin.setProgress(0);
                             btnLogin.setText("Done");
+
+                            token = FirebaseInstanceId.getInstance().getToken();
+                            tokenService.registerTokenInDB(token,id+"");
+
                             Log.d("editor1",editor1.toString());
                            Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                            startActivity(intent);

@@ -15,7 +15,7 @@ import android.widget.Button;
 
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
-import com.emc.emergency.Accident.ReportAccidentActivity;
+import com.emc.emergency.ReportAccidentActivity;
 import com.emc.emergency.AccidentActivity;
 
 import com.emc.emergency.MainMenuActivity;

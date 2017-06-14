@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:float="http://schemas.android.com/tools"
-    tools:context="com.emc.emergency.Accident.ReportAccidentActivity">
+    tools:context="com.emc.emergency.ReportAccidentActivity">
 
     <Space
         android:layout_width="match_parent"

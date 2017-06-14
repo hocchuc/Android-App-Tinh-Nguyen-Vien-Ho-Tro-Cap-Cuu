@@ -41,7 +41,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.R;
-import com.emc.emergency.model.Chat;
+import com.emc.emergency.model.FriendlyMessage;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

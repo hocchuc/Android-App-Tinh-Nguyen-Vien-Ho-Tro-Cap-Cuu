@@ -16,8 +16,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dd.processbutton.iml.ActionProcessButton;
-import com.emc.emergency.Chat.ChatBoxActivity;
+
 import com.emc.emergency.R;
+import com.emc.emergency.RequestRescueActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -160,7 +161,7 @@ public class fragment_countdown extends DialogFragment {
             btnCancle.setProgress(0);
             txtCoundDown.setText("Sending request rescue to SOS Center");
             try {
-                Intent intent = new Intent(getActivity(), ChatBoxActivity.class);
+                Intent intent = new Intent(getActivity(), RequestRescueActivity.class);
                 startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();

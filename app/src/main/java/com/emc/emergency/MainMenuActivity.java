@@ -496,14 +496,14 @@ public class MainMenuActivity extends AppCompatActivity
             ((TextView) findViewById(R.id.tvDuration)).setText(route1.duration.text);
             ((TextView) findViewById(R.id.tvDistance)).setText(route1.distance.text);
 
-//            originMarkers.add(mMap.addMarker(new MarkerOptions()
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-//                    .title(route1.startAddress)
-//                    .position(route1.startLocation)));
-//            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-//                    .title(description)
-//                    .snippet(address)
-//                    .position(route1.endLocation)));
+            originMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .title(route1.startAddress)
+                    .position(route1.startLocation)));
+            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .title(description)
+                    .snippet(address)
+                    .position(route1.endLocation)));
 
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).

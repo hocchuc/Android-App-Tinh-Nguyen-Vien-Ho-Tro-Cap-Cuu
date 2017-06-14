@@ -1,6 +1,10 @@
 package com.emc.emergency.Chat;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
+import android.os.StrictMode;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -9,10 +13,28 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.emc.emergency.ReportAccidentActivity;
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.SystemUtils;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+
+import static com.emc.emergency.RequestRescueActivity.mediaType;
 
 /**
  * Token service to handle the registration into the database
@@ -23,52 +45,129 @@ public class TokenService {
     private static final String TAG = "TokenService";
     public static final String BACKEND_SERVER_IP = SystemUtils.getServerBaseUrl();
 
+    private okhttp3.Response putResponse;
+    private User user = new User();
     private Context context;
     private IRequestListener listener;
+    String json;
 
     public TokenService(Context context, IRequestListener listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    public void registerTokenInDB(final String token,final String id_user) {
-        // The call should have a back off strategy
+    public void registerTokenInDB(final String token, final String id_user) {
 
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(context);
-        String url = BACKEND_SERVER_IP + "refreshToken";
+        new GetUsers(this.context, user,id_user,token).execute();
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        listener.onComplete();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                listener.onError(error.getMessage());
+
+        PutToken putToke = new PutToken();
+        try {
+            putToke.put(BACKEND_SERVER_IP + "users/" + id_user, json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public class PutToken {
+
+        OkHttpClient client = new OkHttpClient();
+
+        String put(String url, String txt) throws IOException {
+            RequestBody body = RequestBody.create(mediaType, txt);
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(url)
+                    .put(body)
+                    .addHeader("content-type", "text/uri-list")
+                    .addHeader("cache-control", "no-cache")
+                    .build();
+            int SDK_INT = android.os.Build.VERSION.SDK_INT;
+            if (SDK_INT > 8)
+            {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                try {
+                    putResponse = client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("token", token);
-                params.put("id_user",id_user);
-                return params;
-            }
+            return putResponse.body().string();
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                //params.put("Content-Type", "application/x-www-form-urlencoded");
-                params.put("Content-Type","application/json");
-                return params;
-            }
-        };
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        }
+    }
 
+    class GetUsers extends AsyncTask<Void, String, User> {
+        Context context;
+       User user;
+        String id_user;
+        String token;
+
+        public GetUsers(Context context, User user, String id_user, String token) {
+            this.context = context;
+            this.user = user;
+            this.id_user=id_user;
+            this.token=token;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(User users) {
+            super.onPostExecute(users);
+
+            users.setToken(token);
+            Log.d("user after: ",users.toString());
+            Gson gson = new Gson();
+            json = gson.toJson(users);
+            Log.d("jsonToken",json);
+
+        }
+
+        @Override
+        protected User doInBackground(Void... params) {
+            User user1=new User();
+            try {
+                URL url = new URL(SystemUtils.getServerBaseUrl()+"users/"+id_user);
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+                StringBuilder builder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                JSONObject jsonObj = new JSONObject(builder.toString());
+                Log.d("jsonObj",jsonObj.toString());
+//                    User user = new User();
+                    if (jsonObj.has("id_user"))
+                        user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));
+                    if (jsonObj.has("username"))
+                        user1.setUser_name(jsonObj.getString("username"));
+                    if (jsonObj.has("token"))
+                        user1.setToken(jsonObj.getString("token"));
+                    if (jsonObj.has("password"))
+                        user1.setPassword(jsonObj.getString("password"));
+                    if (jsonObj.has("long_PI"))
+                        user1.setLon(jsonObj.getDouble("long_PI"));
+                    if (jsonObj.has("lat_PI"))
+                        user1.setLat(jsonObj.getDouble("lat_PI"));
+                    if (jsonObj.has("id_user_type"))
+                        user1.setId_user_type(jsonObj.getString("id_user_type"));
+                    if (jsonObj.has("avatar"))
+                        user1.setAvatar(jsonObj.getString("avatar"));
+                Log.d("User1",user1.toString());
+            } catch (Exception ex) {
+                Log.e("LOI ", ex.toString());
+            }
+            return user1;
+        }
     }
 }

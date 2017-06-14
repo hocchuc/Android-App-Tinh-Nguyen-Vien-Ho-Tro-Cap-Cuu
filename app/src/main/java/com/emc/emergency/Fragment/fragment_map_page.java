@@ -171,7 +171,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         accidentList = new ArrayList<>();
-        new GetAccidents(getActivity(), accidentList).execute();
+//        new GetAccidents(getActivity(), accidentList).execute();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -203,16 +203,16 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap = googleMap;
 
 
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
 
         LatLng myLocation = new LatLng(lat, lon);
-        /*mMap.addMarker(new MarkerOptions()
+        mMap.addMarker(new MarkerOptions()
                 .position(myLocation)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Bạn đang ở đây !!")
-                .snippet("You are here !!"));*/
+                .snippet("You are here !!"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -225,33 +225,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             return;
         }
         mMap.setMyLocationEnabled(true);
-
-//        LatLng lat_1 = new LatLng(mParam1, mParam2);
-//        // LatLng lat_my = new LatLng().
-//        try {
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(lat_1));
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(lat_1)
-//                    .title("You")
-//                    .snippet("Đây là vị trí của bạn")
-//                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_marker)));
-//
-//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-//            builder.include(lat_1);
-//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lat_1, 15);
-//            mMap.moveCamera(cameraUpdate);
-//            mMap.getUiSettings().setAllGesturesEnabled(false);
-//            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//            /*LatLngBounds bounds = builder.build();
-//            int width = getResources().getDisplayMetrics().widthPixels;
-//            int height = getResources().getDisplayMetrics().heightPixels;
-//            int padding = 550 ;
-//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-//            mMap.moveCamera(cameraUpdate);*/
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-         //mapView = mMap;
     }
 
     class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {

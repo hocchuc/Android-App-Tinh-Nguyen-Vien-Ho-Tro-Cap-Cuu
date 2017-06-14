@@ -53,8 +53,8 @@
             android:name=".AccidentActivity"
             android:label="@string/title_activity_accident" />
         <activity android:name=".Personal_Inf_Activity" />
-        <activity android:name=".Accident.ReportAccidentActivity" />
-        <activity android:name=".Accident.RequestRescueActivity"></activity>
+        <activity android:name=".ReportAccidentActivity" />
+        <activity android:name=".RequestRescueActivity"></activity>
         <service android:name=".Chat.FirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>

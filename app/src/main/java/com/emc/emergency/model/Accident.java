@@ -34,6 +34,18 @@ public class Accident implements Parcelable {
     }
 
 
+    public static final Creator<Accident> CREATOR = new Creator<Accident>() {
+        @Override
+        public Accident createFromParcel(Parcel in) {
+            return new Accident(in);
+        }
+
+        @Override
+        public Accident[] newArray(int size) {
+            return new Accident[size];
+        }
+    };
+
     public String getAddress() {
         return address;
     }
@@ -135,16 +147,22 @@ public class Accident implements Parcelable {
     public String toString() {
         return "Accident{" +
                 "id_AC=" + id_AC +
-                ", id_user=" + id_user +
                 ", description_AC='" + description_AC + '\'' +
                 ", date_AC='" + date_AC + '\'' +
                 ", long_AC=" + long_AC +
                 ", lat_AC=" + lat_AC +
                 ", status_AC='" + status_AC + '\'' +
-                ", chat=" + chat +
-                ", image=" + image +
                 ", address='" + address + '\'' +
                 '}';
+    }
+
+    public Accident(Long id_AC, String description_AC, String date_AC, Float long_AC, Float lat_AC, String status_AC) {
+        this.id_AC = id_AC;
+        this.description_AC = description_AC;
+        this.date_AC = date_AC;
+        this.long_AC = long_AC;
+        this.lat_AC = lat_AC;
+        this.status_AC = status_AC;
     }
 
     @Override
