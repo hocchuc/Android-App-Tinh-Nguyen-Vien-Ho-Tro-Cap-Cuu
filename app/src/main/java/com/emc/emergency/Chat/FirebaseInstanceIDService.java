@@ -30,7 +30,7 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
         sharedPreferences = getSharedPreferences(String.valueOf(id_user), Context.MODE_PRIVATE);
         final int id = sharedPreferences.getInt("id_user", -1);
         try {
-            tokenService.registerTokenInDB(token,"2");
+            tokenService.registerTokenInDB(token, String.valueOf(id));
         } catch (IOException e) {
             e.printStackTrace();
         }

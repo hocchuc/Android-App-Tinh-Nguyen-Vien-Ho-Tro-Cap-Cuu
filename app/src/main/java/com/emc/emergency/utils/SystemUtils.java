@@ -8,6 +8,7 @@ public class SystemUtils {
     public static final String FCM_PROJECT_SENDER_ID = "728085231482";
     public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
     public static final String BACKEND_ACTION_MESSAGE = "MESSAGE";
+    public static final String BACKEND_ACTION_ACCIDENT = "new_accident";
     public static final String BACKEND_ACTION_ECHO = "com.emc.emergency.ECHO";
     public static final Random RANDOM = new Random();
     public static final String API_MODE="HEROKU";//"HEROKU" hoặc "LOCAL"

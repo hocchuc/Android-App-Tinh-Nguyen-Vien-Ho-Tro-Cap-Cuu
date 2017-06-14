@@ -21,6 +21,7 @@ import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.FlashMessage;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
+import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.Utils;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -41,6 +42,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     String userState = "StoreUserState";
     String id_user="ID_USER";
     private TokenService tokenService;
+     double latitude = 0;
+    double longitude = 0;
 //    private Utils utils;
     String token;
     int id = 0;
@@ -65,6 +68,11 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
+        GPSTracker gps = new GPSTracker(LoginActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +81,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 String password = txtPassword.getText().toString();
 
                 User user = new User(username, password);
+                user.setLat_PI(latitude);
+                user.setLong_PI(longitude);
                 btnLogin.setProgress(1);
                 xulyDangNhap(user);
             }
