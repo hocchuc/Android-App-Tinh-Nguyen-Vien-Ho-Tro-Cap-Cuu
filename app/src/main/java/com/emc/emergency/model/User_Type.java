@@ -41,8 +41,11 @@ public class User_Type   {
 	}
 
 
+	@Override
 	public String toString() {
-		return String.valueOf(getId_user_type());
+		return "User_Type{" +
+				"id_user_type:" + id_user_type +
+				", name_user_type:" + name_user_type + '\'' +
+				'}';
 	}
-
 }

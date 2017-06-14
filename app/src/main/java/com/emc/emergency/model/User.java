@@ -22,8 +22,8 @@ public class User implements Serializable {
     private String id_user_type;
     private String avatar;
     private String token;
-    private Double lat;
-    private Double lon;
+    private Double lat_PI;
+    private Double long_PI;
 
     public int getId_user() {
         return id_user;
@@ -73,34 +73,35 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public Double getLat() {
-        return lat;
+    public Double getLat_PI() {
+        return lat_PI;
     }
 
-    public void setLat(Double lat) {
-        this.lat = lat;
+    public void setLat_PI(Double lat_PI) {
+        this.lat_PI = lat_PI;
     }
 
-    public Double getLon() {
-        return lon;
+    public Double getLong_PI() {
+        return long_PI;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
+    public void setLong_PI(Double long_PI) {
+        this.long_PI = long_PI;
     }
 
     public User() {
     }
 
-    public User(int id_user, String user_name, String password, String id_user_type, String avatar, String token, Double lat, Double lon) {
+
+    public User(int id_user, String user_name, String password, String id_user_type, String avatar, String token, Double lat_PI, Double long_PI) {
         this.id_user = id_user;
         this.user_name = user_name;
         this.password = password;
         this.id_user_type = id_user_type;
         this.avatar = avatar;
         this.token = token;
-        this.lat = lat;
-        this.lon = lon;
+        this.lat_PI = lat_PI;
+        this.long_PI = long_PI;
     }
 
     public User(String user_name, String password) {
@@ -117,8 +118,8 @@ public class User implements Serializable {
                 ", id_user_type='" + id_user_type + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", token='" + token + '\'' +
-                ", lat=" + lat +
-                ", lon=" + lon +
+                ", lat_PI=" + lat_PI +
+                ", long_PI=" + long_PI +
                 '}';
     }
 }

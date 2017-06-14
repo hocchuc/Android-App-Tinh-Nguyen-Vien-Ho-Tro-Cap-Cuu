@@ -56,8 +56,6 @@ import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.Indexable;
 import com.google.firebase.appindexing.builders.Indexables;
 import com.google.firebase.appindexing.builders.PersonBuilder;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -112,8 +110,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
     private ProgressBar mProgressBar;
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
+//    private FirebaseAuth mFirebaseAuth;
+//    private FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
@@ -393,9 +391,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 causeCrash();
                 return true;
             case R.id.sign_out_menu:
-                mFirebaseAuth.signOut();
-                //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                mFirebaseUser = null;
+//                mFirebaseAuth.signOut();
+//                //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+//                mFirebaseUser = null;
                 mUsername = ANONYMOUS;
                 mPhotoUrl = null;
                 startActivity(new Intent(this, LoginActivity.class));
@@ -466,14 +464,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                 public void onComplete(DatabaseError databaseError,
                                                        DatabaseReference databaseReference) {
                                     if (databaseError == null) {
-                                        String key = databaseReference.getKey();
-                                        StorageReference storageReference =
-                                                FirebaseStorage.getInstance()
-                                                        .getReference(mFirebaseUser.getUid())
-                                                        .child(key)
-                                                        .child(uri.getLastPathSegment());
-
-                                        putImageInStorage(storageReference, uri, key);
+//                                        String key = databaseReference.getKey();
+//                                        StorageReference storageReference =
+//                                                FirebaseStorage.getInstance()
+//                                                        .getReference(mFirebaseUser.getUid())
+//                                                        .child(key)
+//                                                        .child(uri.getLastPathSegment());
+//
+//                                        putImageInStorage(storageReference, uri, key);
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
                                                 databaseError.toException());

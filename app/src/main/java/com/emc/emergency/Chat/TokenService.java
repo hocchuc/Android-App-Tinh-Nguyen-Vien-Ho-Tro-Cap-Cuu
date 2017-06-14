@@ -7,12 +7,7 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+
 import com.emc.emergency.ReportAccidentActivity;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.SystemUtils;
@@ -30,9 +25,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.emc.emergency.RequestRescueActivity.mediaType;
 
@@ -46,27 +44,43 @@ public class TokenService {
     public static final String BACKEND_SERVER_IP = SystemUtils.getServerBaseUrl();
 
     private okhttp3.Response putResponse;
-    private User user = new User();
+    private User user1 = new User();
     private Context context;
     private IRequestListener listener;
     String json;
+    private final OkHttpClient client = new OkHttpClient();
+
 
     public TokenService(Context context, IRequestListener listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    public void registerTokenInDB(final String token, final String id_user) {
+    public void registerTokenInDB(final String token, final String id_user) throws IOException {
+        Response response = null;
 
-        new GetUsers(this.context, user,id_user,token).execute();
+            RequestBody formBody = new FormBody.Builder()
+                    .add("token", token)
+                    .add("id_user", id_user)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(SystemUtils.getServerBaseUrl()+"refreshToken")
+                    .post(formBody)
+                    .build();
 
-
-        PutToken putToke = new PutToken();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         try {
-            putToke.put(BACKEND_SERVER_IP + "users/" + id_user, json);
+             response = client.newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            System.out.println(response.body().string());
+
+
 
     }
 
@@ -79,9 +93,10 @@ public class TokenService {
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(url)
                     .put(body)
-                    .addHeader("content-type", "text/uri-list")
+                    .addHeader("content-type", "application/json")
                     .addHeader("cache-control", "no-cache")
                     .build();
+
             int SDK_INT = android.os.Build.VERSION.SDK_INT;
             if (SDK_INT > 8)
             {
@@ -102,7 +117,7 @@ public class TokenService {
 
     class GetUsers extends AsyncTask<Void, String, User> {
         Context context;
-       User user;
+        User user;
         String id_user;
         String token;
 
@@ -127,6 +142,13 @@ public class TokenService {
             Gson gson = new Gson();
             json = gson.toJson(users);
             Log.d("jsonToken",json);
+           // user1 = users;
+            PutToken putToke = new PutToken();
+            try {
+                putToke.put(BACKEND_SERVER_IP + "users/" + id_user, json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
 
@@ -156,9 +178,9 @@ public class TokenService {
                     if (jsonObj.has("password"))
                         user1.setPassword(jsonObj.getString("password"));
                     if (jsonObj.has("long_PI"))
-                        user1.setLon(jsonObj.getDouble("long_PI"));
+                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
                     if (jsonObj.has("lat_PI"))
-                        user1.setLat(jsonObj.getDouble("lat_PI"));
+                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
                     if (jsonObj.has("id_user_type"))
                         user1.setId_user_type(jsonObj.getString("id_user_type"));
                     if (jsonObj.has("avatar"))

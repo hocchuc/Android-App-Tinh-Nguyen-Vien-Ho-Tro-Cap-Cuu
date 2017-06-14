@@ -1,9 +1,13 @@
 package com.emc.emergency.Chat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+
+import java.io.IOException;
 
 /**
  * FirebaseInstanceIDService to register token in the database
@@ -12,7 +16,8 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
 
     private static final String TAG = "FCMInstanceIDService";
     private TokenService tokenService;
-
+    SharedPreferences sharedPreferences;
+    String id_user = "ID_USER";
     @Override
     public void onTokenRefresh() {
 
@@ -22,11 +27,13 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
 
         //Call the token service to save the token in the database
         tokenService = new TokenService(this, this);
-        /**
-         *
-         * TODO  replace "2" with real user_id from shared preferent
-         */
-        tokenService.registerTokenInDB(token,"2");
+        sharedPreferences = getSharedPreferences(String.valueOf(id_user), Context.MODE_PRIVATE);
+        final int id = sharedPreferences.getInt("id_user", -1);
+        try {
+            tokenService.registerTokenInDB(token,"2");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

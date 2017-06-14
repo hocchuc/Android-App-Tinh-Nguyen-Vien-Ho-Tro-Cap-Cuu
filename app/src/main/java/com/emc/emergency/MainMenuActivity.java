@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
+import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
 
 import com.emc.emergency.Fragment.fragment_menu_page;
@@ -95,7 +96,7 @@ import java.util.List;
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
         , OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
-        , fragment_countdown.OnFragmentInteractionListener {
+        , fragment_countdown.OnFragmentInteractionListener, IRequestListener {
 
 
     Toolbar toolbar;
@@ -569,6 +570,16 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onComplete() {
+
+    }
+
+    @Override
+    public void onError(String message) {
 
     }
 

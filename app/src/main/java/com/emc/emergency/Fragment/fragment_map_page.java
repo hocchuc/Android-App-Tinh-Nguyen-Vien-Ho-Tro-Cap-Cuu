@@ -255,10 +255,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //                moTa=arrAccidents.get(i).getDescription_AC();
 //                diaChi=arrAccidents.get(i).getAddress();
                 LatLng loocation = new LatLng(viDo, kinhDo);
-             /*   mMap.addMarker(new MarkerOptions()
+                  mMap.addMarker(new MarkerOptions()
                         .position(loocation)
                         .title(arrAccidents.get(i).getDescription_AC())
-                        .snippet(arrAccidents.get(i).getAddress()));*/
+                        .snippet(arrAccidents.get(i).getAddress()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
             }
         }
