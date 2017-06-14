@@ -9,6 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.emc.emergency.utils.SystemUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +21,7 @@ import java.util.Map;
 public class TokenService {
 
     private static final String TAG = "TokenService";
-    public static final String BACKEND_SERVER_IP = "app-tnv-ho-tro-cap-cuu.herokuapp.com";
-    public static final String BACKEND_URL_BASE = "http://" + BACKEND_SERVER_IP;
+    public static final String BACKEND_SERVER_IP = SystemUtils.getServerBaseUrl();
 
     private Context context;
     private IRequestListener listener;
@@ -31,12 +31,12 @@ public class TokenService {
         this.listener = listener;
     }
 
-    public void registerTokenInDB(final String token) {
+    public void registerTokenInDB(final String token,final String id_user) {
         // The call should have a back off strategy
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = BACKEND_URL_BASE + "/fcm/register";
+        String url = BACKEND_SERVER_IP + "refreshToken";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -55,6 +55,7 @@ public class TokenService {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("token", token);
+                params.put("id_user",id_user);
                 return params;
             }
 
@@ -62,6 +63,7 @@ public class TokenService {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 //params.put("Content-Type", "application/x-www-form-urlencoded");
+                params.put("Content-Type","application/json");
                 return params;
             }
         };

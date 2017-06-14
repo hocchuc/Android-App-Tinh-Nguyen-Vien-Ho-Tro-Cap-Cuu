@@ -1,0 +1,42 @@
+{
+  "chats": [
+    {
+      "id_chat": 2,
+      "comment": "Chuy?n gì thế ?",
+      "date_chat": "2017-06-11T14:10:20.000+0000",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2"
+        },
+        "id_AC": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2/id_AC"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2/id_user"
+        }
+      }
+    },
+    {
+      "id_chat": 12,
+      "comment": "Chúng tôi sẽ đến trong thời gian sớm nhất?",
+      "date_chat": "2017-06-11T14:11:20.000+0000",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12"
+        },
+        "id_AC": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12/id_AC"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12/id_user"
+        }
+      }
+    }
+  ]
+}

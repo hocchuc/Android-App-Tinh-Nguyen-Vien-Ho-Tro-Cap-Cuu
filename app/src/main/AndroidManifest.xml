@@ -15,8 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,16 +35,50 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="friendlychat.firebase.google.com"
+                    android:scheme="http"
+                    android:pathPrefix="/message"
+                    />
+            </intent-filter>
         </activity>
         <activity android:name=".Register.RegisterActivity" />
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".Chat.ChatBoxActivity" />
         <activity
             android:name=".AccidentActivity"
-            android:label="@string/title_activity_accident"></activity>
-        <activity android:name=".Personal_Inf_Activity"/>
-        <activity android:name=".Accident.ReportAccidentActivity"></activity>
-
+            android:label="@string/title_activity_accident" />
+        <activity android:name=".Personal_Inf_Activity" />
+        <activity android:name=".Accident.ReportAccidentActivity" />
+        <activity android:name=".Accident.RequestRescueActivity"></activity>
+        <service android:name=".Chat.FirebaseInstanceIDService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:name=".Chat.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notifications_black_24dp" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        AndroidManifest.xml
     </application>
+
 
 </manifest>

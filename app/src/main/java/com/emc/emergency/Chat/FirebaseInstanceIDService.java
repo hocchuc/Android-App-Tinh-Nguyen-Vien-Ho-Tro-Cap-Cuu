@@ -22,7 +22,11 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
 
         //Call the token service to save the token in the database
         tokenService = new TokenService(this, this);
-        tokenService.registerTokenInDB(token);
+        /**
+         *
+         * TODO  replace "2" with real user_id from shared preferent
+         */
+        tokenService.registerTokenInDB(token,"2");
     }
 
     @Override

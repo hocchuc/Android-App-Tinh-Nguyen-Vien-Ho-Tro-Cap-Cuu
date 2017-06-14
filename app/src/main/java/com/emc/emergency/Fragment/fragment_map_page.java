@@ -208,11 +208,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //        }
 
         LatLng myLocation = new LatLng(lat, lon);
-        mMap.addMarker(new MarkerOptions()
+        /*mMap.addMarker(new MarkerOptions()
                 .position(myLocation)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Bạn đang ở đây !!")
-                .snippet("You are here !!"));
+                .snippet("You are here !!"));*/
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -282,10 +282,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //                moTa=arrAccidents.get(i).getDescription_AC();
 //                diaChi=arrAccidents.get(i).getAddress();
                 LatLng loocation = new LatLng(viDo, kinhDo);
-                mMap.addMarker(new MarkerOptions()
+             /*   mMap.addMarker(new MarkerOptions()
                         .position(loocation)
                         .title(arrAccidents.get(i).getDescription_AC())
-                        .snippet(arrAccidents.get(i).getAddress()));
+                        .snippet(arrAccidents.get(i).getAddress()));*/
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
             }
         }

@@ -93,4 +93,8 @@
     <string name="camera">Camera</string>
     <string name="enter_your_email_id">Enter your Email ID</string>
     <string name="description">Description</string>
+    <string name="sign_out">Sign out</string>
+    <string name="fresh_config">Config</string>
+    <string name="invite_menu_label">Invite</string>
+    <string name="cause_crash">Crash</string>
 </resources>

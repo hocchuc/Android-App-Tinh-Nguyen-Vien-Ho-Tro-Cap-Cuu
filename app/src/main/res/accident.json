@@ -1,0 +1,293 @@
+{
+  "accidents": [
+    {
+      "id_AC": 2,
+      "description_AC": "Gãy chân ? Tân Phú",
+      "date_AC": "2017-06-10T10:10:15.000+0000",
+      "long_AC": 106.649,
+      "lat_AC": 10.7973,
+      "status_AC": "active",
+      "adress": "S? 2 Lô L chung c? Bàu cát 3 Tân Phú H? Chí Minh",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/2"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/2"
+        },
+        "image": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/2/image"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/2/chat"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/2/id_user"
+        }
+      }
+    },
+    {
+      "id_AC": 12,
+      "description_AC": "Té xe vì b? bò ?á",
+      "date_AC": "2017-06-11T14:10:15.000+0000",
+      "long_AC": 106.638,
+      "lat_AC": 10.7153,
+      "status_AC": "active",
+      "adress": "S? 3 Nguy?n Th? Minh Khai Qu?n 1 H? Chí Minh",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/12"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/12"
+        },
+        "image": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/12/image"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/12/chat"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/12/id_user"
+        }
+      }
+    },
+    {
+      "id_AC": 22,
+      "description_AC": "Chó c?n",
+      "date_AC": "2017-06-11T14:10:15.000+0000",
+      "long_AC": 106.645,
+      "lat_AC": 10.7143,
+      "status_AC": "active",
+      "adress": "S? 123 Âu C? Tân Binh H? Chí Minh",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/22"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/22"
+        },
+        "image": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/22/image"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/22/chat"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/22/id_user"
+        }
+      }
+    },
+    {
+      "id_AC": 32,
+      "description_AC": "Chó c?n",
+      "date_AC": "2017-06-11T14:10:15.000+0000",
+      "long_AC": 106.69,
+      "lat_AC": 10.7133,
+      "status_AC": "active",
+      "adress": "S? 4353 Âu C? Tân Binh H? Chí Minh",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/32"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/32"
+        },
+        "image": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/32/image"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/32/chat"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/32/id_user"
+        }
+      }
+    },
+    {
+      "id_AC": 42,
+      "description_AC": "Chó c?n",
+      "date_AC": "2017-06-11T14:10:15.000+0000",
+      "long_AC": 106.613,
+      "lat_AC": 10.7123,
+      "status_AC": "active",
+      "adress": "S? 454 Âu C? Tân Binh H? Chí Minh",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/42"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/42"
+        },
+        "image": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/42/image"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/42/chat"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/42/id_user"
+        }
+      }
+    }
+  ],
+  "chats": [
+    {
+      "id_chat": 2,
+      "comment": "Chuy?n gì thế ?",
+      "date_chat": "2017-06-11T14:10:20.000+0000",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2"
+        },
+        "id_AC": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2/id_AC"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/2/id_user"
+        }
+      }
+    },
+    {
+      "id_chat": 12,
+      "comment": "Chúng tôi sẽ đến trong thời gian sớm nhất?",
+      "date_chat": "2017-06-11T14:11:20.000+0000",
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12"
+        },
+        "id_AC": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12/id_AC"
+        },
+        "id_user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/chats/12/id_user"
+        }
+      }
+    }
+  ],
+  "users": [
+    {
+      "id_user": 2,
+      "username": "hocanhchuc@gmail.com",
+      "token": null,
+      "password": "123",
+      "long_PI": 10.712746,
+      "lat_PI": 106.614751,
+      "id_user_type": {
+        "id_user_type": 2,
+        "name_user_type": "admin"
+      },
+      "avatar": null,
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2"
+        },
+        "user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2/chat"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2/accident"
+        },
+        "user_type": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2/user_type"
+        },
+        "personal_Infomation": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/2/personal_Infomation"
+        }
+      }
+    },
+    {
+      "id_user": 12,
+      "username": "trancaotri@gmail.com",
+      "token": null,
+      "password": "123",
+      "long_PI": 10.777437,
+      "lat_PI": 106.630484,
+      "id_user_type": {
+        "id_user_type": 2,
+        "name_user_type": "admin"
+      },
+      "avatar": null,
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12"
+        },
+        "user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12/chat"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12/accident"
+        },
+        "user_type": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12/user_type"
+        },
+        "personal_Infomation": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/12/personal_Infomation"
+        }
+      }
+    },
+    {
+      "id_user": 22,
+      "username": "nguyenhuunghia@gmail.com",
+      "token": null,
+      "password": "123",
+      "long_PI": 10.78004,
+      "lat_PI": 106.62925,
+      "id_user_type": {
+        "id_user_type": 12,
+        "name_user_type": "volunteer"
+      },
+      "avatar": null,
+      "_links": {
+        "self": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22"
+        },
+        "user": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22"
+        },
+        "chat": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22/chat"
+        },
+        "accident": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22/accident"
+        },
+        "user_type": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22/user_type"
+        },
+        "personal_Infomation": {
+          "href": "https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/22/personal_Infomation"
+        }
+      }
+    }
+  ],
+
+  "messages" : {
+    "-K2ib4H77rj0LYewF7dP" : {
+      "text" : "Hello",
+      "name" : "anonymous"
+    },
+    "-K2ib5JHRbbL0NrztUfO" : {
+      "text" : "How are you",
+      "name" : "anonymous"
+    },
+    "-K2ib62mjHh34CAUbide" : {
+      "text" : "I am fine",
+      "name" : "anonymous"
+    }
+  }
+}
+
+
+
