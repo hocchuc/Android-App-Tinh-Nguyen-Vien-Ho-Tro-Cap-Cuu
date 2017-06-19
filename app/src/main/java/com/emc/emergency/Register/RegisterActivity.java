@@ -179,6 +179,8 @@ public class RegisterActivity extends AppCompatActivity {
                                                 mDatabase.child(userId).setValue(new User(username, pass, lat, lng, id_user));
 
                                                 pi.setEmail_PI(username);
+                                                pi.setSex__PI(true);
+                                                pi.setPersonal_id(Long.valueOf(0));
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 

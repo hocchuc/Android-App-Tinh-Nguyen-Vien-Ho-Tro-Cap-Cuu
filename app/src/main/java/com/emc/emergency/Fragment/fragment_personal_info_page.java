@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 
@@ -16,19 +17,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.utils.SystemUtils;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Date;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -119,6 +130,47 @@ public class fragment_personal_info_page extends Fragment {
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Personal_Infomation pi1=new Personal_Infomation();
+
+                pi1.setName_PI(txtNamePI.getText().toString());
+                pi1.setEmail_PI(txtEmailPI.getText().toString());
+                pi1.setPersonal_id(Long.valueOf(txtPID.getId()));
+                pi1.setAddress_PI(txtAddressPI.getText().toString());
+                pi1.setBirthday(txtBirthdayPI.getText().toString());
+                pi1.setPhone_PI(txtPhonePI.getText().toString());
+                pi1.setWork_location(txtWKPI.getText().toString());
+                if(radMale.isChecked()){
+                    pi1.setSex__PI(radMale.isChecked());
+                }else pi1.setSex__PI(radFeMale.isChecked());
+
+                Gson gson = new Gson();
+                String json = gson.toJson(pi1);
+
+                OkHttpClient client = new OkHttpClient();
+
+                MediaType mediaType = MediaType.parse("application/json");
+                RequestBody body = RequestBody.create(mediaType, json);
+                Request request = new Request.Builder()
+                        .url(SystemUtils.getServerBaseUrl()+"personal_Infomations/"+idPI)
+                        .put(body)
+                        .addHeader("content-type", "application/json")
+                        .build();
+
+
+                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                if (SDK_INT > 8) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    try {
+                        Response response = client.newCall(request).execute();
+                        Toast.makeText(getContext(), "Saved!!!", Toast.LENGTH_SHORT).show();
+                        Log.d("reponsePI_PUT",response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
 
             }
         });
@@ -176,17 +228,25 @@ public class fragment_personal_info_page extends Fragment {
         @Override
         protected void onPostExecute(Personal_Infomation pi) {
             super.onPostExecute(pi);
-            txtNamePI.setText(pi.getName_PI());
-            txtEmailPI.setText(pi.getEmail_PI());
-            txtPhonePI.setText((pi.getPhone_PI().toString()));
-            txtWKPI.setText((pi.getWork_location().toString()));
-            txtAddressPI.setText(pi.getAddress_PI());
-            txtBirthdayPI.setText(pi.getBirthday());
-            txtPID.setText(pi.getPersonal_id().toString());
-            if(pi.getSex__PI()==true){
-                radMale.toggle();
+            try {
+                txtNamePI.setText(pi.getName_PI().toString());
+                txtEmailPI.setText(pi.getEmail_PI().toString());
+                txtPhonePI.setText((pi.getPhone_PI().toString()));
+                txtWKPI.setText((pi.getWork_location().toString()));
+                txtAddressPI.setText(pi.getAddress_PI().toString());
+                txtBirthdayPI.setText(pi.getBirthday().toString());
+                txtPID.setText(pi.getPersonal_id().toString());
+                try {
+                    if(pi.getSex__PI()==true){
+                        radMale.toggle();
+                    }
+                    else radFeMale.toggle();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            else radFeMale.toggle();
         }
 
         @Override
