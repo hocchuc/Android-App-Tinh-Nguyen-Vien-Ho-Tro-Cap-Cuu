@@ -18,6 +18,7 @@ import com.emc.emergency.Adapter.MyPersonalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
+import com.emc.emergency.utils.SystemUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,6 +92,7 @@ public class fragment_personal_info_page extends Fragment {
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview1);
 
+
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(new MyPersonalInfoRecyclerViewAdapter(getContext(),arrPI, mListener));
 
@@ -129,7 +131,7 @@ public class fragment_personal_info_page extends Fragment {
         void onListFragmentInteraction(Personal_Infomation mItem);
     }
 
-    class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
+    private class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
         Activity activity;
         ArrayList<Personal_Infomation> arrPI;
 
@@ -162,7 +164,7 @@ public class fragment_personal_info_page extends Fragment {
 
             Log.d("ID_USER after put:", String.valueOf(id));
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/users/"+id+"/personal_Infomation");
+                URL url = new URL(SystemUtils.getServerBaseUrl()+"users/"+id+"/personal_Infomation");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);

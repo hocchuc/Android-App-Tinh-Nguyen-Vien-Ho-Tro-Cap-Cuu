@@ -21,6 +21,7 @@ android {
         applicationId "com.emc.emergency"
         minSdkVersion 17
         targetSdkVersion 25
+        multiDexEnabled = true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -73,8 +74,9 @@ dependencies {
     compile 'com.mikepenz:octicons-typeface:3.2.0.2@aar'
     compile 'com.github.bumptech.glide:glide:4.0.0-RC0'
     compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+//    compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.3.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
@@ -95,7 +97,7 @@ dependencies {
     compile 'com.google.firebase:firebase-analytics:10.2.1'
     compile 'com.google.firebase:firebase-database:10.2.1'
     compile 'com.google.firebase:firebase-storage:10.2.1'
-    //compile 'com.google.firebase:firebase-auth:10.2.1'
+    compile 'com.google.firebase:firebase-auth:10.2.1'
     compile 'com.google.firebase:firebase-config:10.2.1'
    // compile 'com.google.android.gms:play-services-appinvite:10.2.1'
     //compile 'com.google.firebase:firebase-messaging:10.2.1'
@@ -105,6 +107,11 @@ dependencies {
 
     // Firebase UI
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
+
+
+//    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'de.greenrobot:eventbus:2.2.+'
+    compile 'com.firebase:firebase-client-android:2.3.1'
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'

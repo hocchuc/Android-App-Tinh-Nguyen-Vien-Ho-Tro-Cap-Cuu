@@ -11,27 +11,19 @@ import java.util.ArrayList;
  */
 
 public class User implements Serializable {
-    private int id_user;
-
     @SerializedName("username")
     @Expose
     private String user_name;
     @SerializedName("password")
     @Expose
     private String password;
+
     private String id_user_type;
     private String avatar;
     private String token;
     private Double lat_PI;
     private Double long_PI;
-
-    public int getId_user() {
-        return id_user;
-    }
-
-    public void setId_user(int id_user) {
-        this.id_user = id_user;
-    }
+    private long id_user;
 
     public String getUser_name() {
         return user_name;
@@ -89,19 +81,12 @@ public class User implements Serializable {
         this.long_PI = long_PI;
     }
 
-    public User() {
+    public long getId_user() {
+        return id_user;
     }
 
-
-    public User(int id_user, String user_name, String password, String id_user_type, String avatar, String token, Double lat_PI, Double long_PI) {
+    public void setId_user(long id_user) {
         this.id_user = id_user;
-        this.user_name = user_name;
-        this.password = password;
-        this.id_user_type = id_user_type;
-        this.avatar = avatar;
-        this.token = token;
-        this.lat_PI = lat_PI;
-        this.long_PI = long_PI;
     }
 
     public User(String user_name, String password) {
@@ -109,17 +94,13 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id_user=" + id_user +
-                ", user_name='" + user_name + '\'' +
-                ", password='" + password + '\'' +
-                ", id_user_type='" + id_user_type + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", token='" + token + '\'' +
-                ", lat_PI=" + lat_PI +
-                ", long_PI=" + long_PI +
-                '}';
+    public User(String user_name, String password, Double lat_PI, Double long_PI) {
+        this.user_name = user_name;
+        this.password = password;
+        this.lat_PI = lat_PI;
+        this.long_PI = long_PI;
+    }
+
+    public User() {
     }
 }

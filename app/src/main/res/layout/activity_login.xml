@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:float="http://schemas.android.com/tools"
-    android:id="@+id/scrollView">
+    android:id="@+id/scrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
     <LinearLayout
         android:id="@+id/line_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dip" >
+        android:padding="10dip">
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="100dp" />
+
         <com.wrapp.floatlabelededittext.FloatLabeledEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,21 +55,22 @@
 
 
         <com.dd.processbutton.iml.ActionProcessButton
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Sign in"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        custom:pb_colorComplete="@color/green_complete"
-        custom:pb_colorNormal="@color/blue_normal"
-        custom:pb_colorPressed="@color/blue_pressed"
-        custom:pb_colorProgress="@color/purple_progress"
-        custom:pb_textComplete="Success"
-        custom:pb_textProgress="Loading"
-        custom:pb_textError="Error"
-        custom:pb_colorError="@color/red_error" />
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Sign in"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            custom:pb_colorComplete="@color/green_complete"
+            custom:pb_colorError="@color/red_error"
+            custom:pb_colorNormal="@color/blue_normal"
+            custom:pb_colorPressed="@color/blue_pressed"
+            custom:pb_colorProgress="@color/purple_progress"
+            custom:pb_textComplete="Success"
+            custom:pb_textError="Error"
+            custom:pb_textProgress="Loading" />
+
         <Button
             android:id="@+id/btnSignUp"
             android:layout_width="fill_parent"
@@ -78,6 +81,7 @@
             android:text="Signup"
             android:textColor="#228b22"
             android:textStyle="bold" />
+
         <TextView
             android:id="@+id/txtBaoLoi"
             android:layout_width="match_parent"
@@ -85,6 +89,14 @@
             android:layout_marginTop="40px"
             android:gravity="center_horizontal"
             android:textSize="18sp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </ScrollView>
