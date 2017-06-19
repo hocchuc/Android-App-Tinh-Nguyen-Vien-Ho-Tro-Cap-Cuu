@@ -10,6 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -110,9 +113,10 @@ public class MainMenuActivity extends AppCompatActivity
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
-
     //-----------------------------------------------------------------------
-    private GoogleMap mMap;
+    private  MarkerOptions myMarkerOption;
+    public Marker myMarker;
+    GoogleMap mMap;
     double viDo, kinhDo;
     String description, address;
     Button btnVeDuong;
@@ -120,8 +124,8 @@ public class MainMenuActivity extends AppCompatActivity
     double latitude = 0;
     double longitude = 0;
 
-    boolean flag = false;
-    int id_user = 0;
+//    boolean flag = false;
+//    int id_user = 0;
 
 
     //    private Button btnFindPath;
@@ -135,6 +139,7 @@ public class MainMenuActivity extends AppCompatActivity
     //------------------------
 //    private ArrayList<User> arrUser;
 //    private static final String LOCATION_PERMS = "android.permission.ACCESS_FINE_LOCATION";
+    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +150,44 @@ public class MainMenuActivity extends AppCompatActivity
         BuildFragment();
         addEvents();
         setLoadImageLogic();
+    }
 
+    private void GPS() {
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+// Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                LatLng latLng = new LatLng(latitude,longitude);
+                myMarker.setPosition(latLng);
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+// Register the listener with the Location Manager to receive location updates
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
     private void setLoadImageLogic() {
@@ -189,6 +230,13 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addEvents() {
+        GPSTracker gps = new GPSTracker(MainMenuActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
+        GPS();
+
         // yeu cau quyen doi voi cac thiet chay android M tro len
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -196,13 +244,6 @@ public class MainMenuActivity extends AppCompatActivity
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     123
             );
-        }
-
-
-        GPSTracker gps = new GPSTracker(MainMenuActivity.this);
-        if (gps.canGetLocation()) {
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
         }
         new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
@@ -524,11 +565,14 @@ public class MainMenuActivity extends AppCompatActivity
 
         googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
-        mMap.addMarker(new MarkerOptions()
+         myMarkerOption = new MarkerOptions()
                 .position(myLocation)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Bạn đang ở đây !!")
-                .snippet("You are here !!"));
+                .snippet("You are here !!");
+
+        myMarker = mMap.addMarker(myMarkerOption);
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -540,7 +584,10 @@ public class MainMenuActivity extends AppCompatActivity
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mMap.setMyLocationEnabled(true);
+        //tat dau cham mau xanh
+        mMap.setMyLocationEnabled(false);
+        //mo nut hien thi GPS
+//        mMap.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
     private void sendRequest() {
@@ -653,7 +700,7 @@ public class MainMenuActivity extends AppCompatActivity
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL(SystemUtils.getServerBaseUrl()+"accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);

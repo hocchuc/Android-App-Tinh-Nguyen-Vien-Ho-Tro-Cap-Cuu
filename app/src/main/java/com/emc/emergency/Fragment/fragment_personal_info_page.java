@@ -51,7 +51,7 @@ public class fragment_personal_info_page extends Fragment {
     SharedPreferences sharedPreferences;
     String id_user = "ID_USER";
 
-    SharedPreferences preferences,preferences1;
+    SharedPreferences preferences1;
     String id_pi="ID_PI";
 
     Long idPI;

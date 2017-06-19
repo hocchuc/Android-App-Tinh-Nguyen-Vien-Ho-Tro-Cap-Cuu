@@ -34,6 +34,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Map;
@@ -99,9 +103,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+
     private void xulyDangKy() {
-        final String username=txtRegitersUsername.getText().toString();
-        final String pass=txtRegisterPassword.getText().toString();
+        final String username = txtRegitersUsername.getText().toString();
+        final String pass = txtRegisterPassword.getText().toString();
+
 
         if (TextUtils.isEmpty(username)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
@@ -137,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
         Retrofit retrofit = builder.build();
 
         RegisterClient client = retrofit.create(RegisterClient.class);
-        final Call<FlashMessage> call = client.registerAccount(new User(username,pass));
+        final Call<FlashMessage> call = client.registerAccount(new User(username, pass));
 
         //create user
         auth.createUserWithEmailAndPassword(username, pass)
@@ -153,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Authentication failed." + task.getException(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            final Personal_Infomation pi=new Personal_Infomation();
+                            final Personal_Infomation pi = new Personal_Infomation();
                             call.enqueue(new Callback<FlashMessage>() {
                                 @Override
                                 public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
@@ -170,36 +176,65 @@ public class RegisterActivity extends AppCompatActivity {
                                                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
                                                 String userId = auth.getCurrentUser().getUid();
                                                 // pushing user to 'users' node using the userId
-                                                mDatabase.child(userId).setValue(new User(username,pass, lat, lng, id_user));
+                                                mDatabase.child(userId).setValue(new User(username, pass, lat, lng, id_user));
 
                                                 pi.setEmail_PI(username);
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 
+                                                //tao va gui PI len server
                                                 OkHttpClient client = new OkHttpClient();
                                                 MediaType mediaType = MediaType.parse("application/json");
                                                 RequestBody body = RequestBody.create(mediaType, json);
                                                 Request request = new Request.Builder()
-                                                        .url("http://192.168.1.223:8080/api/personal_Infomations")
+                                                        .url(SystemUtils.getServerBaseUrl() + "personal_Infomations")
                                                         .post(body)
                                                         .addHeader("content-type", "application/json")
                                                         .build();
-
+                                                //-------------------------------------------------------------------
                                                 int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                                                if (SDK_INT > 8)
-                                                {
+                                                if (SDK_INT > 8) {
                                                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                                                             .permitAll().build();
                                                     StrictMode.setThreadPolicy(policy);
                                                     try {
                                                         okhttp3.Response response2 = client.newCall(request).execute();
-                                                        Log.d("responsePI",response2.body().string());
+
+                                                        Personal_Infomation pi = new Personal_Infomation();
+                                                        String jsonPI = response2.body().string();
+
+                                                        JSONObject jsonObject = null;
+                                                        try {
+                                                            jsonObject = new JSONObject(jsonPI);
+                                                            for (int i = 0; i < jsonObject.length(); i++) {
+                                                                if (jsonObject == null) continue;
+                                                                if (jsonObject.has("id_PI"))
+                                                                    pi.setId_PI(jsonObject.getLong("id_PI"));
+                                                            }
+                                                        } catch (JSONException e) {
+                                                            e.printStackTrace();
+                                                        }
+//                                                        Log.d("ID_PI",pi.toString());
+
+                                                        //Lien ket moi quan he
+                                                        OkHttpClient client1 = new OkHttpClient();
+
+                                                        String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user+"\n";
+
+                                                        MediaType mediaType1 = MediaType.parse("text/uri-list");
+                                                        RequestBody body1 = RequestBody.create(mediaType1, link_id_user);
+                                                        Request request1 = new Request.Builder()
+                                                                .url(SystemUtils.getServerBaseUrl() + "personal_Infomations/" + pi.getId_PI() + "/id_user")
+                                                                .put(body1)
+                                                                .addHeader("content-type", "text/uri-list")
+                                                                .build();
+                                                        okhttp3.Response response3 = client1.newCall(request1).execute();
+
                                                     } catch (IOException e) {
                                                         e.printStackTrace();
                                                     }
 
                                                 }
-
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 startActivity(intent);
