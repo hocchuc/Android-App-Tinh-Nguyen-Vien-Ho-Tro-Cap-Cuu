@@ -3,6 +3,7 @@ package com.emc.emergency.Register;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.model.FlashMessage;
+import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 
 import com.emc.emergency.utils.SystemUtils;
@@ -31,12 +33,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -148,6 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Authentication failed." + task.getException(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            final Personal_Infomation pi=new Personal_Infomation();
                             call.enqueue(new Callback<FlashMessage>() {
                                 @Override
                                 public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
@@ -165,6 +171,35 @@ public class RegisterActivity extends AppCompatActivity {
                                                 String userId = auth.getCurrentUser().getUid();
                                                 // pushing user to 'users' node using the userId
                                                 mDatabase.child(userId).setValue(new User(username,pass, lat, lng, id_user));
+
+                                                pi.setEmail_PI(username);
+                                                Gson gson = new Gson();
+                                                String json = gson.toJson(pi);
+
+                                                OkHttpClient client = new OkHttpClient();
+                                                MediaType mediaType = MediaType.parse("application/json");
+                                                RequestBody body = RequestBody.create(mediaType, json);
+                                                Request request = new Request.Builder()
+                                                        .url("http://192.168.1.223:8080/api/personal_Infomations")
+                                                        .post(body)
+                                                        .addHeader("content-type", "application/json")
+                                                        .build();
+
+                                                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                                                if (SDK_INT > 8)
+                                                {
+                                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                            .permitAll().build();
+                                                    StrictMode.setThreadPolicy(policy);
+                                                    try {
+                                                        okhttp3.Response response2 = client.newCall(request).execute();
+                                                        Log.d("responsePI",response2.body().string());
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+                                                }
+
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 startActivity(intent);
