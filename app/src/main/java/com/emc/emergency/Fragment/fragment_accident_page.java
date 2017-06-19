@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.utils.SystemUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -151,7 +152,7 @@ public class fragment_accident_page extends Fragment {
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl()+"accidents");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);

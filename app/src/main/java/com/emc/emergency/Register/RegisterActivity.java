@@ -159,11 +159,11 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                         try {
                                             if (flashMessage.getStatus().equals("SUCCESS")) {
-
+                                                Long id_user = Long.parseLong(flashMessage.getMessage());
                                                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
                                                 String userId = auth.getCurrentUser().getUid();
                                                 // pushing user to 'users' node using the userId
-                                                mDatabase.child(userId).setValue(new User(username,pass, lat, lng));
+                                                mDatabase.child(userId).setValue(new User(username,pass, lat, lng, id_user));
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 startActivity(intent);

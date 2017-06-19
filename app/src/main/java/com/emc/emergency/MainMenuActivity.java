@@ -653,7 +653,7 @@ public class MainMenuActivity extends AppCompatActivity
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL("https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl()+"accidents");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
