@@ -66,17 +66,6 @@ public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPe
             }
         });
 
-
-//        RequestOptions options = new RequestOptions()
-//                .centerCrop()
-//                .placeholder(R.drawable.material_drawer_circle_mask)
-//                .error(R.drawable.material_drawer_circle_mask)
-//                .priority(Priority.HIGH);
-//        Glide.with(context)
-//                .load("https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=640x250&maptype=roadmap&markers=color:red%7Clabel:C%7C" + mValues.get(position).getLong_AC() + "," + mValues.get(position).getLat_AC())
-//                .apply(options)
-//                .into(holder.imageButton);
-
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -5,22 +5,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 
-import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
-import com.emc.emergency.Adapter.MyPersonalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.utils.SystemUtils;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,7 +29,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Date;
-import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -46,8 +46,6 @@ public class fragment_personal_info_page extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<Personal_Infomation> arrPI;
-        RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
     String id_user = "ID_USER";
 
@@ -55,6 +53,19 @@ public class fragment_personal_info_page extends Fragment {
     String id_pi="ID_PI";
 
     Long idPI;
+    public Personal_Infomation mItem;
+
+    public  EditText txtNamePI;
+    public  EditText txtEmailPI;
+    public  EditText txtBirthdayPI;
+    public  EditText txtPID;
+    public  EditText txtWKPI;
+    public  EditText txtPhonePI;
+    public  EditText txtAddressPI;
+    public  ImageView imgV;
+    public  RadioButton radMale;
+    public  RadioButton radFeMale;
+    public  FloatingActionButton btnEdit;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -86,15 +97,32 @@ public class fragment_personal_info_page extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_personal_info_page, container, false);
-        arrPI = new ArrayList<>();
-        new GetPersonalInfo(this.getActivity(), arrPI).execute();
+        txtNamePI = (EditText) view.findViewById(R.id.txtNamePI);
+        txtEmailPI= (EditText) view.findViewById(R.id.txtEmailPI);
+        txtBirthdayPI= (EditText) view.findViewById(R.id.txtBirthdayPI);
+        txtPID= (EditText) view.findViewById(R.id.txtPI_ID);
+        txtAddressPI= (EditText) view.findViewById(R.id.txtAddressPI);
+        txtWKPI= (EditText) view.findViewById(R.id.txtWorkLocationPI);
+        txtPhonePI= (EditText) view.findViewById(R.id.txtPhonePI);
+        radFeMale= (RadioButton) view.findViewById(R.id.radFeMale);
+        radMale= (RadioButton) view.findViewById(R.id.radMale);
+        imgV = (ImageView) view.findViewById(R.id.imageItemHinh);
+        btnEdit= (FloatingActionButton) view.findViewById(R.id.btnEditPI);
 
-        Context context = view.getContext();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview1);
+        new GetPersonalInfo(this.getActivity(), mItem).execute();
 
+        imgV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MyPersonalInfoRecyclerViewAdapter(getContext(),arrPI, mListener));
+            }
+        });
+
 
         return view;
     }
@@ -131,34 +159,38 @@ public class fragment_personal_info_page extends Fragment {
         void onListFragmentInteraction(Personal_Infomation mItem);
     }
 
-    private class GetPersonalInfo extends AsyncTask<Void, Void, ArrayList<Personal_Infomation>> {
+    private class GetPersonalInfo extends AsyncTask<Void, Void,Personal_Infomation> {
         Activity activity;
-        ArrayList<Personal_Infomation> arrPI;
+        Personal_Infomation pi;
 
-        public GetPersonalInfo(Activity activity, ArrayList<Personal_Infomation> arrPI) {
+        public GetPersonalInfo(Activity activity, Personal_Infomation pi) {
             this.activity = activity;
-            this.arrPI = arrPI;
+            this.pi = pi;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            arrPI.clear();
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Personal_Infomation> personalInfomations) {
-            super.onPostExecute(personalInfomations);
-//        arrAccidents.clear();
-            arrPI.addAll(personalInfomations);
-            recyclerView.getAdapter().notifyDataSetChanged();
-
-
+        protected void onPostExecute(Personal_Infomation pi) {
+            super.onPostExecute(pi);
+            txtNamePI.setText(pi.getName_PI());
+            txtEmailPI.setText(pi.getEmail_PI());
+            txtPhonePI.setText((pi.getPhone_PI().toString()));
+            txtWKPI.setText((pi.getWork_location().toString()));
+            txtAddressPI.setText(pi.getAddress_PI());
+            txtBirthdayPI.setText(pi.getBirthday());
+            txtPID.setText(pi.getPersonal_id().toString());
+            if(pi.getSex__PI()==true){
+                radMale.toggle();
+            }
+            else radFeMale.toggle();
         }
 
         @Override
-        protected ArrayList<Personal_Infomation> doInBackground(Void... params) {
-            ArrayList<Personal_Infomation> ds = new ArrayList<>();
+        protected Personal_Infomation doInBackground(Void... params) {
             sharedPreferences = getActivity().getSharedPreferences(id_user, MODE_PRIVATE);
             int id = sharedPreferences.getInt("id_user", -1);
 
@@ -176,7 +208,7 @@ public class fragment_personal_info_page extends Fragment {
                 }
                 JSONObject jsonObj = new JSONObject(builder.toString());
                 Log.d("JsonPI: ", jsonObj.toString());
-                Personal_Infomation pi=new Personal_Infomation();
+                pi=new Personal_Infomation();
 
                 if(jsonObj.has("work_location"))
                     pi.setWork_location(jsonObj.getString("work_location"));
@@ -207,12 +239,11 @@ public class fragment_personal_info_page extends Fragment {
 
                 }
                 Log.d("PI", pi.toString());
-                ds.add(pi);
-                Log.d("DSPI", ds.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }
-            return ds;
+            return pi;
         }
     }
+
 }

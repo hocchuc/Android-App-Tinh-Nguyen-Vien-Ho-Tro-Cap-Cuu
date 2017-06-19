@@ -52,9 +52,11 @@
         <activity
             android:name=".AccidentActivity"
             android:label="@string/title_activity_accident" />
-        <activity android:name=".Personal_Inf_Activity" />
+        <activity android:name=".Personal_Inf_Activity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ReportAccidentActivity" />
-        <activity android:name=".RequestRescueActivity"></activity>
+        <activity android:name=".RequestRescueActivity"
+            android:windowSoftInputMode="adjustPan" />
         <service android:name=".Chat.FirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>
