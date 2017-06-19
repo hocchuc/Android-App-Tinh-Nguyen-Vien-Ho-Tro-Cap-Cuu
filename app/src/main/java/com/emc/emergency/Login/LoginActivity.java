@@ -163,24 +163,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         final LoginClient client = retrofit.create(LoginClient.class);
         final Call<FlashMessage> call = client.loginAccount(user);
 
-        //authenticate user
-//        auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
-//                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        // If sign in fails, display a message to the user. If sign in succeeds
-//                        // the auth state listener will be notified and logic to handle the
-//                        // signed in user can be handled in the listener.
-//                        if (!task.isSuccessful()) {
-//                            // there was an error
-//                            if (txtPassword.length() < 6) {
-//                                txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
-//                            } else {
-//                                Toast.makeText(LoginActivity.this,"auth bị lỗi", Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//                    }
-//                });
         progressBar.setVisibility(View.GONE);
             call.enqueue(new Callback<FlashMessage>() {
                 @Override
@@ -205,6 +187,25 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
                                 token = FirebaseInstanceId.getInstance().getToken();
                                 tokenService.registerTokenInDB(token,id+"");
+
+                                //authenticate user
+                                auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
+                                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                                // If sign in fails, display a message to the user. If sign in succeeds
+                                                // the auth state listener will be notified and logic to handle the
+                                                // signed in user can be handled in the listener.
+                                                if (!task.isSuccessful()) {
+                                                    // there was an error
+                                                    if (txtPassword.length() < 6) {
+                                                        txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
+                                                    } else {
+                                                        Toast.makeText(LoginActivity.this,"auth bị lỗi", Toast.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            }
+                                        });
 
 //                                                Log.d("editor1",editor1.toString());
                                 Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);

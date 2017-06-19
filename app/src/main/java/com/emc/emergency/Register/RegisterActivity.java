@@ -159,6 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                         try {
                                             if (flashMessage.getStatus().equals("SUCCESS")) {
+
                                                 Long id_user = Long.parseLong(flashMessage.getMessage());
                                                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
                                                 String userId = auth.getCurrentUser().getUid();
