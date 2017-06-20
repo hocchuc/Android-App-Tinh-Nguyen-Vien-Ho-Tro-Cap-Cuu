@@ -93,7 +93,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setSound(alarmSound)
                 .setContentIntent(pendingIntent);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder.setSmallIcon(R.drawable.ic_notifications_black_24dp);
+            builder.setSmallIcon(R.drawable.ic_accident_2);
         } else {
             builder.setSmallIcon(R.mipmap.ic_accident_noti);
         }
@@ -112,8 +112,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle("Inbox Style notification")
                 .setContentText(message)
-                .setSmallIcon(R.mipmap.ic_accident_noti)
-                .addAction(R.mipmap.ic_accident_noti, "show activity", pendingIntent);
+                .setSmallIcon(R.drawable.ic_notification)
+                .addAction(R.drawable.ic_notification, "show activity", pendingIntent);
 
         Notification notification = new Notification.InboxStyle(builder)
                 .addLine(message).addLine("Second message")

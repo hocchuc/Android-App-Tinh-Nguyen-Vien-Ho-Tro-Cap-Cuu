@@ -128,9 +128,23 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     @Override
     protected void onResume() {
         super.onResume();
-        preferences = getSharedPreferences(userState, MODE_PRIVATE);
-        String username = preferences.getString("Username", "");
-        String password = preferences.getString("Password", "");
+        String username = "";
+        String password = "";
+        Intent intent = getIntent();
+        if(intent.hasExtra("action")) {
+            if(intent.getStringExtra("action").equals("registed")) {
+                username = intent.getStringExtra("username");
+                password = intent.getStringExtra("password");
+            }
+
+        }
+        else {
+            preferences = getSharedPreferences(userState, MODE_PRIVATE);
+            username = preferences.getString("Username", "");
+            password = preferences.getString("Password", "");
+        }
+
+
         txtUsername.setText(username);
         txtPassword.setText(password);
 

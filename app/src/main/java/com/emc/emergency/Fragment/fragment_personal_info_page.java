@@ -131,7 +131,6 @@ public class fragment_personal_info_page extends Fragment {
             @Override
             public void onClick(View v) {
                 Personal_Infomation pi1=new Personal_Infomation();
-
                 pi1.setName_PI(txtNamePI.getText().toString());
                 pi1.setEmail_PI(txtEmailPI.getText().toString());
                 pi1.setPersonal_id(Long.valueOf(txtPID.getId()));
@@ -139,9 +138,10 @@ public class fragment_personal_info_page extends Fragment {
                 pi1.setBirthday(txtBirthdayPI.getText().toString());
                 pi1.setPhone_PI(txtPhonePI.getText().toString());
                 pi1.setWork_location(txtWKPI.getText().toString());
-                if(radMale.isChecked()){
-                    pi1.setSex__PI(radMale.isChecked());
-                }else pi1.setSex__PI(radFeMale.isChecked());
+                pi1.setSex__PI(radMale.isChecked());
+//                if(radMale.isChecked()){
+//                    pi1.setSex__PI(radMale.isChecked());
+//                }else pi1.setSex__PI(radFeMale.isChecked());
 
                 Gson gson = new Gson();
                 String json = gson.toJson(pi1);
@@ -164,7 +164,7 @@ public class fragment_personal_info_page extends Fragment {
                     StrictMode.setThreadPolicy(policy);
                     try {
                         Response response = client.newCall(request).execute();
-                        Toast.makeText(getContext(), "Saved!!!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
                         Log.d("reponsePI_PUT",response.body().string());
                     } catch (IOException e) {
                         e.printStackTrace();

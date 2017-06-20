@@ -180,7 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                 pi.setEmail_PI(username);
                                                 pi.setSex__PI(true);
-                                                pi.setPersonal_id(Long.valueOf(0));
+                                               // pi.setPersonal_id(Long.valueOf(0));
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 
@@ -239,7 +239,11 @@ public class RegisterActivity extends AppCompatActivity {
                                                 }
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                                intent.putExtra("action","registed");
+                                                intent.putExtra("username",username);
+                                                intent.putExtra("password",pass);
                                                 startActivity(intent);
+
                                                 finish();
                                             } else {
                                                 Toast.makeText(getApplication(), "Email đã tồn tại!!!", Toast.LENGTH_SHORT).show();

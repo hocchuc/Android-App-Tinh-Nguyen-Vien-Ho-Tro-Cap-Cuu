@@ -124,10 +124,6 @@ public class MainMenuActivity extends AppCompatActivity
     double latitude = 0;
     double longitude = 0;
 
-//    boolean flag = false;
-//    int id_user = 0;
-
-
     //    private Button btnFindPath;
     // XU LY NUT VE DUONG
     private List<Marker> originMarkers = new ArrayList<>();
@@ -137,8 +133,6 @@ public class MainMenuActivity extends AppCompatActivity
     private SupportMapFragment mapFragment;
     private ArrayList<Accident> arrayAccident;
     //------------------------
-//    private ArrayList<User> arrUser;
-//    private static final String LOCATION_PERMS = "android.permission.ACCESS_FINE_LOCATION";
     private LocationListener mLocationListener;
 
     @Override
@@ -162,6 +156,7 @@ public class MainMenuActivity extends AppCompatActivity
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 LatLng latLng = new LatLng(latitude,longitude);
+                // thay đổi market dựa trên location của bản thân
                 myMarker.setPosition(latLng);
 
             }
@@ -575,19 +570,14 @@ public class MainMenuActivity extends AppCompatActivity
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //tat dau cham mau xanh
-        mMap.setMyLocationEnabled(false);
-        //mo nut hien thi GPS
-//        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        //tat/mo dau cham mau xanh
+        mMap.setMyLocationEnabled(true);
+        //tat/mo nut hien thi GPS
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        // tinh trang giao thong
+        googleMap.setTrafficEnabled(true);
     }
 
     private void sendRequest() {
@@ -687,7 +677,8 @@ public class MainMenuActivity extends AppCompatActivity
                             .position(loocation)
                             .title(arrAccidents.get(i).getDescription_AC())
                             .snippet(arrAccidents.get(i).getAddress()));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                    // tắt chuyển camera tới các tai nạn vừa load
+                   // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
                 } catch (Exception e) {
                     e.printStackTrace();
