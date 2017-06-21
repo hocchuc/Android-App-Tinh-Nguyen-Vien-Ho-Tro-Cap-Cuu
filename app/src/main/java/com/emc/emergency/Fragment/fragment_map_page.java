@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +26,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.MessageEvent;
 import com.emc.emergency.model.Route;
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -43,6 +48,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -87,10 +93,43 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     ArrayList<Accident> accidentList;
     double lat = 0;
     double lon = 0;
-    double viDo;
-    double kinhDo;
+    double viDo = 0;
+    double kinhDo = 0;
     String moTa, diaChi;
+    private final Handler mHandler;
+    private Runnable mAnimation;
 
+
+    /**
+     * Performs a bounce animation on a {@link Marker}.
+     */
+    private static class BounceAnimation implements Runnable {
+
+        private final long mStart, mDuration;
+        private final Interpolator mInterpolator;
+        private final Marker mMarker;
+        private final Handler mHandler;
+
+        private BounceAnimation(long start, long duration, Marker marker, Handler handler) {
+            mStart = start;
+            mDuration = duration;
+            mMarker = marker;
+            mHandler = handler;
+            mInterpolator = new BounceInterpolator();
+        }
+
+        @Override
+        public void run() {
+            long elapsed = SystemClock.uptimeMillis() - mStart;
+            float t = Math.max(1 - mInterpolator.getInterpolation((float) elapsed / mDuration), 0f);
+            mMarker.setAnchor(0.5f, 1.0f + 1.2f * t);
+
+            if (t > 0.0) {
+                // Post again 16ms later.
+                mHandler.postDelayed(this, 16L);
+            }
+        }
+    }
     private GoogleMap map;
     // TODO: Rename and change types of parameters
     private double mParam1;
@@ -110,8 +149,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
     private onFragmentMapInteraction mListener;
 
+    /**
+     * Lưu ý khởi tạo Handler
+     */
     public fragment_map_page() {
-        // Required empty public constructor
+        mHandler = new Handler();
     }
 
     /**
@@ -154,7 +196,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mapView.onResume();
         mapView.getMapAsync(this);//when you already implement OnMapReadyCallback in your fragment
 
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -170,8 +211,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        accidentList = new ArrayList<>();
-//        new GetAccidents(getActivity(), accidentList).execute();
+
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -208,23 +250,37 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         }
 
         LatLng myLocation = new LatLng(lat, lon);
-        mMap.addMarker(new MarkerOptions()
+        MarkerOptions markerOptions = new MarkerOptions()
                 .position(myLocation)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Bạn đang ở đây !!")
-                .snippet("You are here !!"));
+                .snippet("You are here !!");
+        Marker marker =  mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-        if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
+
+        /**
+         * Tạo accident xung quanh và các user
+         */
+        accidentList = new ArrayList<>();
+        new GetAccidents(getActivity(), accidentList).execute();
+        new  GetAllUsers(getContext()).execute();
         mMap.setMyLocationEnabled(true);
+        /**
+         * Tạo hiệu ứng nảy
+         */
+        // This causes the marker at Perth to bounce into position when it is clicked.
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500L;
+
+        // Cancels the previous animation
+        mHandler.removeCallbacks(mAnimation);
+
+        // Starts the bounce animation
+        mAnimation = new BounceAnimation(start, duration, marker, mHandler);
+        mHandler.post(mAnimation);
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+
     }
 
     class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
@@ -246,20 +302,16 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         @Override
         protected void onPostExecute(ArrayList<Accident> accidents) {
             super.onPostExecute(accidents);
-//        arrAccidents.clear();
             arrAccidents.addAll(accidents);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
                 kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-//                moTa=arrAccidents.get(i).getDescription_AC();
-//                diaChi=arrAccidents.get(i).getAddress();
                 LatLng loocation = new LatLng(viDo, kinhDo);
                   mMap.addMarker(new MarkerOptions()
                         .position(loocation)
                         .title(arrAccidents.get(i).getDescription_AC())
                         .snippet(arrAccidents.get(i).getAddress()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
             }
         }
 
@@ -293,16 +345,14 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     if (jsonObject.has("date_AC"))
                         accident.setDate_AC(jsonObject.getString("date_AC"));
                     if (jsonObject.has("long_AC"))
-                        accident.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                        accident.setLong_AC( jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                        accident.setLat_AC( jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("adress"))
                         accident.setAddress(jsonObject.getString("adress"));
-                    // Log.d("Accident", accident.toString());
                     ds.add(accident);
-                    // Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
             } catch (Exception ex) {
@@ -448,6 +498,97 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    class GetAllUsers extends AsyncTask<Void, String, List<User> > {
+        Context context;
+
+        String json;
+
+        public GetAllUsers(Context context) {
+            this.context = context;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<User> userList) {
+            super.onPostExecute(userList);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_volunteer);
+
+            for (int i = 0; i < userList.size(); i++) {
+                User user = userList.get(i);
+//                if(user.getId_user_type().equals("2"))
+                viDo = user.getLat_PI();
+                kinhDo = user.getLong_PI();
+                LatLng loocation = new LatLng(viDo, kinhDo);
+                try {
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(user.getUser_name())
+                            .snippet(user.getId_user_type()))
+                            .setIcon(icon);
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+
+        @Override
+        protected List<User>  doInBackground(Void... params) {
+            List<User> userList = new ArrayList<>();
+            try {
+
+                URL url = new URL(SystemUtils.getServerBaseUrl()+"users");
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+                StringBuilder builder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                JSONObject jsonObject = new JSONObject(builder.toString());
+                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
+                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
+                Log.d("jsonObj",jsonObject.toString());
+                User user1=new User();
+                for (int i = 0; i < usersJSONArray.length(); i++) {
+                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+                    if (jsonObj.has("id_user"))
+                        user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));
+                    if (jsonObj.has("username"))
+                        user1.setUser_name(jsonObj.getString("username"));
+                    if (jsonObj.has("token"))
+                        user1.setToken(jsonObj.getString("token"));
+                    if (jsonObj.has("password"))
+                        user1.setPassword(jsonObj.getString("password"));
+                    if (jsonObj.has("long_PI"))
+                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
+                    if (jsonObj.has("lat_PI"))
+                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
+                    if (jsonObj.has("id_user_type"))
+                        user1.setId_user_type(jsonObj.getString("id_user_type"));
+                    if (jsonObj.has("avatar"))
+                        user1.setAvatar(jsonObj.getString("avatar"));
+                    Log.d("User1", user1.toString());
+                    userList.add(user1);
+                }
+            } catch (Exception ex) {
+                Log.e("LOI ", ex.toString());
+            }
+            return userList;
+        }
     }
 
 }

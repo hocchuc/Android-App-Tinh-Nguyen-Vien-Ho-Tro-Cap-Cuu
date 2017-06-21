@@ -8,9 +8,10 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat.WearableExtender;
 import com.emc.emergency.R;
 import com.emc.emergency.utils.FirebaseUtils;
 import com.emc.emergency.utils.SystemUtils;
@@ -29,7 +30,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private static final String TAG = "FCMMessagingService";
     private TokenService tokenService;
     private Utils utils;
-
+    private int notificationId = 001;
+    private Double Latitude =null;
+    private Double Longtitude = null;
+    private String location="";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -40,7 +44,11 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             // In this case the XMPP Server sends a payload data
-            String message = remoteMessage.getData().get("message");
+             String message = remoteMessage.getData().get("message");
+             Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+             Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+            location = remoteMessage.getData().get("address");
+
             Log.d(TAG, "Message received: " + message);
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
             {
@@ -86,20 +94,42 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+        Uri geoUri = Uri.parse("geo:0,0?q=" + Uri.encode(location));
+        mapIntent.setData(geoUri);
+
+        String uriBegin = "geo:" + Latitude + "," + Longtitude;
+        String query = Latitude + "," + Longtitude + "(" + message + ")";
+        String encodedQuery = Uri.encode(query);
+        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
+        Uri uri = Uri.parse(uriString);
+
+        mapIntent.setData(geoUri);
+        PendingIntent mapPendingIntent =
+                PendingIntent.getActivity(this, 0, mapIntent, 0);
+        // Create a WearableExtender to add functionality for wearables
+        NotificationCompat.WearableExtender wearableExtender =
+                new NotificationCompat.WearableExtender()
+                        .setHintHideIcon(true);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(false)
-                .setContentTitle("Có tai nạn gần bạn")
+                .setContentTitle("Tai nạn "+location)
                 .setContentText(message)
                 .setSound(alarmSound)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .addAction(R.drawable.ic_map,
+                getString(R.string.map), mapPendingIntent)
+                .extend(wearableExtender);
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setSmallIcon(R.drawable.ic_accident_2);
         } else {
             builder.setSmallIcon(R.mipmap.ic_accident_noti);
         }
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        manager.notify(0,builder.build());
+        notificationManager.notify(notificationId,builder.build());
 
     }
 

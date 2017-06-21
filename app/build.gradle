@@ -108,10 +108,9 @@ dependencies {
     // Firebase UI
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
 
-
-//    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'de.greenrobot:eventbus:2.2.+'
     compile 'com.firebase:firebase-client-android:2.3.1'
+    compile "com.android.support:support-v4:25.3.1"
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'

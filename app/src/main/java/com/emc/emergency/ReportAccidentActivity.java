@@ -97,8 +97,8 @@ public class ReportAccidentActivity extends AppCompatActivity {
 
                 accident.setStatus_AC("Active");
 
-                accident.setLat_AC(latitude.floatValue());
-                accident.setLong_AC(longitude.floatValue());
+                accident.setLat_AC(latitude);
+                accident.setLong_AC(longitude);
 
                 // convert object to json
                 Gson gson = new Gson();
@@ -135,9 +135,9 @@ public class ReportAccidentActivity extends AppCompatActivity {
                         if (jsonObject.has("date_AC"))
                             accident2.setDate_AC(jsonObject.getString("date_AC"));
                         if (jsonObject.has("long_AC"))
-                            accident2.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                            accident2.setLong_AC( jsonObject.getDouble("long_AC"));
                         if (jsonObject.has("lat_AC"))
-                            accident2.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                            accident2.setLat_AC( jsonObject.getDouble("lat_AC"));
                         if (jsonObject.has("status_AC"))
                             accident2.setStatus_AC(jsonObject.getString("status_AC"));
                         if (jsonObject.has("adress"))

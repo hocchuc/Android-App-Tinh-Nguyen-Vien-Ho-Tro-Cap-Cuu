@@ -3,25 +3,38 @@ package com.emc.emergency;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.emc.emergency.Chat.TokenService;
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -32,7 +45,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class RequestRescueActivity extends AppCompatActivity implements fragment_map_page.onFragmentMapInteraction {
+public class RequestRescueActivity extends AppCompatActivity
+        implements fragment_map_page.onFragmentMapInteraction {
 
 
     String id_user="ID_USER";
@@ -80,7 +94,7 @@ public class RequestRescueActivity extends AppCompatActivity implements fragment
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().setValue(accident2);
 //        mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
     }
-
+    // TODO đổi tên hàm này
     private void SenData() {
         sharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
         final int id = sharedPreferences.getInt("id_user", -1);
@@ -95,8 +109,8 @@ public class RequestRescueActivity extends AppCompatActivity implements fragment
 
         accident.setStatus_AC("Active");
 
-        accident.setLat_AC(latitude.floatValue());
-        accident.setLong_AC(longitude.floatValue());
+        accident.setLat_AC(latitude);
+        accident.setLong_AC(longitude);
 
         // convert object to json
         Gson gson = new Gson();
@@ -133,9 +147,9 @@ public class RequestRescueActivity extends AppCompatActivity implements fragment
                 if (jsonObject.has("date_AC"))
                     accident2.setDate_AC(jsonObject.getString("date_AC"));
                 if (jsonObject.has("long_AC"))
-                    accident2.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                    accident2.setLong_AC(jsonObject.getDouble("long_AC"));
                 if (jsonObject.has("lat_AC"))
-                    accident2.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                    accident2.setLat_AC( jsonObject.getDouble("lat_AC"));
                 if (jsonObject.has("status_AC"))
                     accident2.setStatus_AC(jsonObject.getString("status_AC"));
                 if (jsonObject.has("adress"))
@@ -201,7 +215,7 @@ public class RequestRescueActivity extends AppCompatActivity implements fragment
     }
 
     /**
-     * Gởi put lên server
+     * Gởi put lên server để tạo relation giữa user và accident
      */
     public class PutRelation{
 

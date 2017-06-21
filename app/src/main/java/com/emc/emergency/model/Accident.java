@@ -10,8 +10,8 @@ public class Accident implements Parcelable {
 	private Long id_user;
 	private String description_AC;
 	private String date_AC;
-	private Float long_AC;
-	private Float lat_AC;
+	private Double long_AC;
+	private Double lat_AC;
 	private String status_AC;
 	private List<Chat> chat = new ArrayList<>();
 	private List<Image> image = new ArrayList<>();
@@ -29,8 +29,8 @@ public class Accident implements Parcelable {
         this.description_AC = data[0];
         this.date_AC = data[1];
         this.status_AC = data[2];
-        this.long_AC=Float.valueOf(data[3]);
-        this.lat_AC=Float.valueOf(data[4]);
+        this.long_AC=Double.valueOf(data[3]);
+        this.lat_AC=Double.valueOf(data[4]);
     }
 
 
@@ -86,19 +86,19 @@ public class Accident implements Parcelable {
         this.date_AC = date_AC;
     }
 
-    public Float getLong_AC() {
+    public Double getLong_AC() {
         return long_AC;
     }
 
-    public void setLong_AC(Float long_AC) {
+    public void setLong_AC(Double long_AC) {
         this.long_AC = long_AC;
     }
 
-    public Float getLat_AC() {
+    public Double getLat_AC() {
         return lat_AC;
     }
 
-    public void setLat_AC(Float lat_AC) {
+    public void setLat_AC(Double lat_AC) {
         this.lat_AC = lat_AC;
     }
 
@@ -126,7 +126,7 @@ public class Accident implements Parcelable {
         this.image = image;
     }
 
-    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Float long_AC, Float lat_AC, String status_AC, List<Chat> chat, List<Image> image, String address) {
+    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, List<Chat> chat, List<Image> image, String address) {
         this.id_AC = id_AC;
         this.id_user = id_user;
         this.description_AC = description_AC;
@@ -156,7 +156,7 @@ public class Accident implements Parcelable {
                 '}';
     }
 
-    public Accident(Long id_AC, String description_AC, String date_AC, Float long_AC, Float lat_AC, String status_AC) {
+    public Accident(Long id_AC, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC) {
         this.id_AC = id_AC;
         this.description_AC = description_AC;
         this.date_AC = date_AC;
@@ -176,8 +176,8 @@ public class Accident implements Parcelable {
         dest.writeString(description_AC);
         dest.writeString(date_AC);
         dest.writeString(status_AC);
-        dest.writeFloat(long_AC);
-        dest.writeFloat(lat_AC);
+        dest.writeDouble(long_AC);
+        dest.writeDouble(lat_AC);
         dest.writeString(address);
 
     }

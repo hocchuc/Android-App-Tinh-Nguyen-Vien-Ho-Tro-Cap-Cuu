@@ -180,9 +180,9 @@ public class fragment_accident_page extends Fragment {
                     if (jsonObject.has("date_AC"))
                         accident.setDate_AC(jsonObject.getString("date_AC"));
                     if (jsonObject.has("long_AC"))
-                        accident.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                        accident.setLong_AC( jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("adress"))

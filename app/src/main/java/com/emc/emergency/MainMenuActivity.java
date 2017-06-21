@@ -58,6 +58,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -185,6 +186,9 @@ public class MainMenuActivity extends AppCompatActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
+    /**
+     * Load hinh cho drawler
+     */
     private void setLoadImageLogic() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
@@ -562,7 +566,7 @@ public class MainMenuActivity extends AppCompatActivity
         LatLng myLocation = new LatLng(latitude, longitude);
          myMarkerOption = new MarkerOptions()
                 .position(myLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .title("Bạn đang ở đây !!")
                 .snippet("You are here !!");
 
@@ -666,6 +670,7 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
             arrAccidents.addAll(accidents);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_accident_marker);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
@@ -676,7 +681,8 @@ public class MainMenuActivity extends AppCompatActivity
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(arrAccidents.get(i).getDescription_AC())
-                            .snippet(arrAccidents.get(i).getAddress()));
+                            .snippet(arrAccidents.get(i).getAddress()))
+                            .setIcon(icon);
                     // tắt chuyển camera tới các tai nạn vừa load
                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
@@ -717,9 +723,9 @@ public class MainMenuActivity extends AppCompatActivity
                     if (jsonObject.has("date_AC"))
                         accident.setDate_AC(jsonObject.getString("date_AC"));
                     if (jsonObject.has("long_AC"))
-                        accident.setLong_AC((float) jsonObject.getDouble("long_AC"));
+                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC((float) jsonObject.getDouble("lat_AC"));
+                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("adress"))
