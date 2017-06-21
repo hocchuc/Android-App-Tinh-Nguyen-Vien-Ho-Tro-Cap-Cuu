@@ -7,6 +7,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -29,6 +30,8 @@
             android:background="@color/md_red_500">
 
             <ImageView
+                android:layout_centerVertical="true"
+                android:scaleType="fitXY"
                 android:id="@+id/imageItemHinh"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -186,6 +189,7 @@
         </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnEditPI"
         android:layout_width="wrap_content"
@@ -201,5 +205,6 @@
         android:layout_marginTop="486dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.809" />
+        app:layout_constraintVertical_bias="0.809"
+        android:elevation="10sp"/>
 </android.support.constraint.ConstraintLayout>

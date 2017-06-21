@@ -107,6 +107,7 @@ dependencies {
 
     // Firebase UI
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
+    compile 'com.firebaseui:firebase-ui-storage:0.6.0'
 
     compile 'de.greenrobot:eventbus:2.2.+'
     compile 'com.firebase:firebase-client-android:2.3.1'

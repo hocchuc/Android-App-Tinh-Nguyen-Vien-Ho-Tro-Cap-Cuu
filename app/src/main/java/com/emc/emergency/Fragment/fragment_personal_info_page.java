@@ -1,37 +1,66 @@
 package com.emc.emergency.Fragment;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.utils.SystemUtils;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Date;
 
@@ -41,6 +70,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 
 
@@ -62,10 +92,10 @@ public class fragment_personal_info_page extends Fragment {
 
     SharedPreferences preferences1;
     String id_pi="ID_PI";
-
+    private int id;
     Long idPI;
     public Personal_Infomation mItem;
-
+    Bitmap bitmap = null;
     public  EditText txtNamePI;
     public  EditText txtEmailPI;
     public  EditText txtBirthdayPI;
@@ -77,11 +107,18 @@ public class fragment_personal_info_page extends Fragment {
     public  RadioButton radMale;
     public  RadioButton radFeMale;
     public  FloatingActionButton btnEdit;
+    /** Biến để chọn và chụp hình  */
+    private static final int REQUEST_CHOOSE_PHOTO = 123;
+    private static final int RESQUEST_TAKE_PHOTO = 321;
+    //Image properties
+    private String mCurrentImagePath = null;
+    private Uri mCapturedImageURI = null;
+    private StorageReference imagesRef;
+    /* biến dùng cho firebase */
+    FirebaseStorage storage;
+    StorageReference storageRef ;
+    Uri uriAvatar = null;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public fragment_personal_info_page() {
     }
 
@@ -93,6 +130,7 @@ public class fragment_personal_info_page extends Fragment {
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
+
     }
 
     @Override
@@ -107,6 +145,9 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
         View view = inflater.inflate(R.layout.fragment_personal_info_page, container, false);
         txtNamePI = (EditText) view.findViewById(R.id.txtNamePI);
         txtEmailPI= (EditText) view.findViewById(R.id.txtEmailPI);
@@ -125,6 +166,8 @@ public class fragment_personal_info_page extends Fragment {
         imgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                xuLyCustomDialog();
+
             }
         });
         btnEdit.setOnClickListener(new View.OnClickListener() {
@@ -138,10 +181,8 @@ public class fragment_personal_info_page extends Fragment {
                 pi1.setBirthday(txtBirthdayPI.getText().toString());
                 pi1.setPhone_PI(txtPhonePI.getText().toString());
                 pi1.setWork_location(txtWKPI.getText().toString());
+                //// TODO: 21-Jun-17 cần kiểm tra lại logic
                 pi1.setSex__PI(radMale.isChecked());
-//                if(radMale.isChecked()){
-//                    pi1.setSex__PI(radMale.isChecked());
-//                }else pi1.setSex__PI(radFeMale.isChecked());
 
                 Gson gson = new Gson();
                 String json = gson.toJson(pi1);
@@ -211,6 +252,126 @@ public class fragment_personal_info_page extends Fragment {
         void onListFragmentInteraction(Personal_Infomation mItem);
     }
 
+    /**
+     * Hiện dialog để chụp hình
+     */
+    private void xuLyCustomDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.imageview_customdialog_sv);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
+        wmlp.x = 50;   //x position
+        wmlp.y = 20;
+        dialog.setTitle("Please choose using camera or gallery to load new image");
+        Button btnCamera = (Button) dialog.findViewById(R.id.btnCamera);
+        Button btnGallery = (Button) dialog.findViewById(R.id.btnGallery);
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, RESQUEST_TAKE_PHOTO);
+                dialog.cancel();
+            }
+        });
+        btnGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_CHOOSE_PHOTO);
+                dialog.cancel();
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // xu ly intent tra ve tu trinh gallery va camera
+        if(resultCode == RESULT_OK){ // neu ket qua ok
+            if(requestCode == REQUEST_CHOOSE_PHOTO){
+                try {
+                    Uri imageUri = data.getData();
+                    InputStream is = getActivity().getContentResolver().openInputStream(imageUri);
+                    bitmap = BitmapFactory.decodeStream(is);
+                    imgV.setImageBitmap(bitmap);
+                    sendImageToFirebase(bitmap);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }else if(requestCode == RESQUEST_TAKE_PHOTO){
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                imgV.setImageBitmap(bitmap);
+                sendImageToFirebase(bitmap);
+            }
+        }
+    }
+
+    private void sendImageToFirebase(Bitmap image) {
+
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // todo Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                sendPatchAvatarToUser(downloadUrl);
+
+            }
+        });
+    }
+    public void sendPatchAvatarToUser(Uri link){
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+
+        String strRequest = "{\n      \"avatar\": \""+link+"\"\n}";
+        Log.d("PatchBody",strRequest);
+        RequestBody body = RequestBody.create
+                (mediaType, strRequest);
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl()+"users/"+id)
+                .patch(body)
+                .addHeader("content-type", "application/json")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        // TODO: 21-Jun-17 kiểm soát lỗi từ responge
+        try {
+            Response response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private byte[] getByteArrayFromImageView(ImageView imgv){
+        // ham xu ly anh tu imageView sang BitmapDrawble => byte[]
+        BitmapDrawable drawable = (BitmapDrawable) imgv.getDrawable();
+        Bitmap bmp = drawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        // COMPRESS to JPEG LOW QUALITY
+        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
+    }
+
+
+    /**
+     * Hàm get thông tin personal_info đổ vào forrm
+     */
     private class GetPersonalInfo extends AsyncTask<Void, Void,Personal_Infomation> {
         Activity activity;
         Personal_Infomation pi;
@@ -228,7 +389,11 @@ public class fragment_personal_info_page extends Fragment {
         @Override
         protected void onPostExecute(Personal_Infomation pi) {
             super.onPostExecute(pi);
+
             try {
+                mItem = pi;
+                imagesRef = storageRef.child("images/"+id+".jpg");
+
                 txtNamePI.setText(pi.getName_PI().toString());
                 txtEmailPI.setText(pi.getEmail_PI().toString());
                 txtPhonePI.setText((pi.getPhone_PI().toString()));
@@ -236,6 +401,32 @@ public class fragment_personal_info_page extends Fragment {
                 txtAddressPI.setText(pi.getAddress_PI().toString());
                 txtBirthdayPI.setText(pi.getBirthday().toString());
                 txtPID.setText(pi.getPersonal_id().toString());
+
+                imagesRef.getDownloadUrl()
+                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        uriAvatar = uri;
+                        RequestOptions options = new RequestOptions()
+                                .centerCrop()
+                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                                .placeholder(R.drawable.profile3)
+                                .error(R.drawable.material_drawer_circle_mask)
+                                .priority(Priority.HIGH);
+                        Glide.with(getContext()).load(uriAvatar).apply(options).into(imgV);
+                        Log.d("getDownloadUrlSuccess",uri.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                     e.printStackTrace();
+
+                    }
+                });
+
+
+
+
                 try {
                     if(pi.getSex__PI()==true){
                         radMale.toggle();
@@ -252,7 +443,7 @@ public class fragment_personal_info_page extends Fragment {
         @Override
         protected Personal_Infomation doInBackground(Void... params) {
             sharedPreferences = getActivity().getSharedPreferences(id_user, MODE_PRIVATE);
-            int id = sharedPreferences.getInt("id_user", -1);
+            id = sharedPreferences.getInt("id_user", -1);
 
             Log.d("ID_USER after put:", String.valueOf(id));
             try {
@@ -291,6 +482,7 @@ public class fragment_personal_info_page extends Fragment {
                     idPI=jsonObj.getLong("id_PI");
                     Log.d("idPI",idPI.toString());
 
+                    /* viết id_pi vào preferent */
                     preferences1 = getActivity().getSharedPreferences(id_pi, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences1.edit();
                     editor.putLong("id_PI",idPI);
