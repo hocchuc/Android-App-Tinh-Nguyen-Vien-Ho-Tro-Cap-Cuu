@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     editor2.putString("token", user1.getToken());
                                     editor2.putString("lat_PI", String.valueOf(user1.getLat_PI()));
                                     editor2.putString("long_PI", String.valueOf(user1.getLong_PI()));
-                                    editor2.putString("id_user_type", String.valueOf(user1.getUser_type().getId_user_type()));
+                                    editor2.putLong("id_user_type", (user1.getUser_type().getId_user_type()));
                                     editor2.putString("name_user_type", String.valueOf(user1.getUser_type().getName_user_type()));
 
                                 } catch (IOException e) {

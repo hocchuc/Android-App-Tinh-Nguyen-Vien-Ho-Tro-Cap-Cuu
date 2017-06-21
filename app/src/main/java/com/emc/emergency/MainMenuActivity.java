@@ -133,6 +133,7 @@ public class MainMenuActivity extends AppCompatActivity
     ImageButton btnToGMap;
     double latitude = 0;
     double longitude = 0;
+    SharedPreferences sharedPreferences;
 
     //    private Button btnFindPath;
     // XU LY NUT VE DUONG
@@ -258,6 +259,11 @@ public class MainMenuActivity extends AppCompatActivity
                     123
             );
         }
+
+        sharedPreferences = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
+        Long id_usertype = sharedPreferences.getLong("id_user_type", -1);
+        Log.d("id_usertype",id_usertype.toString());
+
         new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
