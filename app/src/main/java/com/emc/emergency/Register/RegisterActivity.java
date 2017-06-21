@@ -9,9 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 
@@ -56,19 +59,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity {
     Button btnRegister, btnLogin;
-    EditText txtRegitersUsername;
-    EditText txtRegisterPassword;
+    EditText txtRegitersUsername,txtRegisterEmai,txtRegisterPassword,txtRegisterDay,txtRegisterYear,txtRegisterPhone;
+    Spinner spRegisterMonth,spRegisterGender;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     double lat = 0;
     double lng = 0;
+    String[] month;
+    String [] gender;
+    String selected = "";
+    String selected1="";
+
 
     FlashMessage flashMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_taotaikhoan);
 
 //        Firebase.setAndroidContext(this);
 
@@ -81,14 +89,59 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void addControls() {
-        txtRegitersUsername = (EditText) findViewById(R.id.registerEmail);
-        txtRegisterPassword = (EditText) findViewById(R.id.registerPassword);
-        btnRegister = (Button) findViewById(R.id.btnRegister);
+        txtRegitersUsername = (EditText) findViewById(R.id.txtRegisName);
+        txtRegisterEmai= (EditText) findViewById(R.id.txtRegisEmail);
+        txtRegisterPassword = (EditText) findViewById(R.id.txtRegisPassword);
+        txtRegisterDay= (EditText) findViewById(R.id.txtRegisDay);
+        txtRegisterYear= (EditText) findViewById(R.id.txtRegisYear);
+        txtRegisterPhone= (EditText) findViewById(R.id.txtRegisPhoneNumer);
+        spRegisterMonth= (Spinner) findViewById(R.id.spRegisMonth);
+        month = new String[] {"1", "2", "3","4","5","6","7","8","9","10","11","12"};
+
+        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
+        gender=new String[]{"Male","Female"};
+        btnRegister = (Button) findViewById(R.id.btnRegist);
+
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-        btnLogin = (Button) findViewById(R.id.btnLinkToLoginScreen);
+        btnLogin = (Button) findViewById(R.id.btnRegistLogin);
     }
 
     private void addEvents() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, month);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spRegisterMonth.setAdapter(adapter);
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, gender);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spRegisterGender.setAdapter(adapter1);
+
+        spRegisterGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                gender[0]="Male";
+                selected1=gender[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spRegisterMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                month[0]="1";
+                selected=month[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,11 +158,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void xulyDangKy() {
-        final String username = txtRegitersUsername.getText().toString();
+        final String email = txtRegisterEmai.getText().toString();
         final String pass = txtRegisterPassword.getText().toString();
 
 
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -143,10 +196,10 @@ public class RegisterActivity extends AppCompatActivity {
         Retrofit retrofit = builder.build();
 
         RegisterClient client = retrofit.create(RegisterClient.class);
-        final Call<FlashMessage> call = client.registerAccount(new User(username, pass));
+        final Call<FlashMessage> call = client.registerAccount(new User(email, pass));
 
         //create user
-        auth.createUserWithEmailAndPassword(username, pass)
+        auth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -182,11 +235,16 @@ public class RegisterActivity extends AppCompatActivity {
                                                 editor1.commit();
 
                                                 // pushing user to 'users' node using the userId
-                                                mDatabase.child(userId).setValue(new User(username, pass, lat, lng, id_user));
+                                                mDatabase.child(userId).setValue(new User(email, pass, lat, lng, id_user));
 
-                                                pi.setEmail_PI(username);
-                                                pi.setSex__PI(true);
-//                                                pi.setPersonal_id(null);
+                                                pi.setEmail_PI(email);
+                                                pi.setName_PI(txtRegitersUsername.getText().toString());
+                                                pi.setPhone_PI(txtRegisterPhone.getText().toString());
+                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
+                                                pi.setBirthday(date);
+                                                if(selected1.equals("Male")){
+                                                    pi.setSex__PI(true);
+                                                }else {pi.setSex__PI(false);}
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 
@@ -246,7 +304,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 intent.putExtra("action","registed");
-                                                intent.putExtra("username",username);
+                                                intent.putExtra("username",email);
                                                 intent.putExtra("password",pass);
                                                 startActivity(intent);
 
