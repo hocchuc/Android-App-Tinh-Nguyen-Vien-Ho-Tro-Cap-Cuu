@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -56,12 +57,14 @@ import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
 
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -122,6 +125,7 @@ public class MainMenuActivity extends AppCompatActivity
     //-----------------------------------------------------------------------
     private MarkerOptions myMarkerOption;
     public Marker myMarker;
+    LatLng myLocation;
     GoogleMap mMap;
     double viDo, kinhDo;
     String description, address;
@@ -167,7 +171,7 @@ public class MainMenuActivity extends AppCompatActivity
                 mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
                 mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
                 // thay đổi market dựa trên location của bản thân
-                myMarker.setPosition(latLng);
+//                myMarker.setPosition(latLng);
 
             }
 
@@ -574,27 +578,37 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        googleMap.setOnMarkerClickListener(this);
+//
+//        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
-        myMarkerOption = new MarkerOptions()
-                .position(myLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .title("Bạn đang ở đây !!")
-                .snippet("You are here !!");
-
-        myMarker = mMap.addMarker(myMarkerOption);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+//        myMarkerOption = new MarkerOptions()
+//                .position(myLocation)
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+//                .title("Bạn đang ở đây !!")
+//                .snippet("You are here !!");
+//
+//        myMarker = mMap.addMarker(myMarkerOption);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//        }
+//        //tat/mo dau cham mau xanh
+//        mMap.setMyLocationEnabled(true);
+//        //tat/mo nut hien thi GPS
+//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        // tinh trang giao thong
+//        googleMap.setTrafficEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setPadding(0, 400, 0, 0);
+            // tinh trang giao thong
+            googleMap.setTrafficEnabled(true);
         }
-        //tat/mo dau cham mau xanh
-        mMap.setMyLocationEnabled(true);
-        //tat/mo nut hien thi GPS
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // tinh trang giao thong
-        googleMap.setTrafficEnabled(true);
     }
 
     private void sendRequest() {
