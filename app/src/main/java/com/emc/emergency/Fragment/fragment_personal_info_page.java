@@ -258,11 +258,6 @@ public class fragment_personal_info_page extends Fragment {
     private void xuLyCustomDialog() {
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.imageview_customdialog_sv);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
-        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
-        wmlp.x = 50;   //x position
-        wmlp.y = 20;
         dialog.setTitle("Please choose using camera or gallery to load new image");
         Button btnCamera = (Button) dialog.findViewById(R.id.btnCamera);
         Button btnGallery = (Button) dialog.findViewById(R.id.btnGallery);
