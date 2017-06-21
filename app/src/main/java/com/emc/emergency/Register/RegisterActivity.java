@@ -180,7 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                 pi.setEmail_PI(username);
                                                 pi.setSex__PI(true);
-                                               // pi.setPersonal_id(Long.valueOf(0));
+//                                                pi.setPersonal_id(null);
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 

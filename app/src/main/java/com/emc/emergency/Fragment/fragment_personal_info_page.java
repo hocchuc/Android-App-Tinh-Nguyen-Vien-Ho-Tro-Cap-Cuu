@@ -133,7 +133,7 @@ public class fragment_personal_info_page extends Fragment {
                 Personal_Infomation pi1=new Personal_Infomation();
                 pi1.setName_PI(txtNamePI.getText().toString());
                 pi1.setEmail_PI(txtEmailPI.getText().toString());
-                pi1.setPersonal_id(Long.valueOf(txtPID.getId()));
+                pi1.setPersonal_id(txtPID.getText().toString());
                 pi1.setAddress_PI(txtAddressPI.getText().toString());
                 pi1.setBirthday(txtBirthdayPI.getText().toString());
                 pi1.setPhone_PI(txtPhonePI.getText().toString());
@@ -283,7 +283,7 @@ public class fragment_personal_info_page extends Fragment {
                 if(jsonObj.has("address_PI"))
                     pi.setAddress_PI(jsonObj.getString("address_PI"));
                 if(jsonObj.has("personal_id"))
-                    pi.setPersonal_id(jsonObj.getLong("personal_id"));
+                    pi.setPersonal_id(jsonObj.getString("personal_id"));
                 if(jsonObj.has("name_PI"))
                     pi.setName_PI(jsonObj.getString("name_PI"));
                 if(jsonObj.has("id_PI")){

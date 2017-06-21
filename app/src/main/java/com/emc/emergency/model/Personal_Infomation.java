@@ -11,7 +11,7 @@ public class Personal_Infomation implements Serializable  {
 	private String name_PI;
 	private Boolean sex__PI;
 	private String birthday;
-	private Long personal_id;
+	private String personal_id;
 	private String work_location;
 	private String phone_PI;
 	private String address_PI;
@@ -51,11 +51,11 @@ public class Personal_Infomation implements Serializable  {
 		this.birthday = birthday;
 	}
 
-	public Long getPersonal_id() {
+	public String getPersonal_id() {
 		return personal_id;
 	}
 
-	public void setPersonal_id(Long personal_id) {
+	public void setPersonal_id(String personal_id) {
 		this.personal_id = personal_id;
 	}
 
@@ -110,7 +110,7 @@ public class Personal_Infomation implements Serializable  {
 	public Personal_Infomation() {
 	}
 
-	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, String birthday, Long personal_id, String work_location, String phone_PI, String address_PI, String email_PI) {
+	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, String birthday, String personal_id, String work_location, String phone_PI, String address_PI, String email_PI) {
 		this.id_PI = id_PI;
 		this.name_PI = name_PI;
 		this.sex__PI = sex__PI;
