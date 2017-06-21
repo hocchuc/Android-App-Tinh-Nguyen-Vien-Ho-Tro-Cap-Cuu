@@ -124,8 +124,6 @@ public class ReportAccidentActivity extends AppCompatActivity {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response);
-
-
                     for (int i = 0; i < jsonObject.length(); i++) {
                         if (jsonObject == null) continue;
                         if (jsonObject.has("id_AC"))

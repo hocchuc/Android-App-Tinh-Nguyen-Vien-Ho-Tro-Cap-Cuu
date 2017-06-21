@@ -18,7 +18,7 @@ public class User implements Serializable {
     @Expose
     private String password;
 
-    private String id_user_type;
+    private User_Type user_type;
     private String avatar;
     private String token;
     private Double lat_PI;
@@ -41,12 +41,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getId_user_type() {
-        return id_user_type;
+    public User_Type getUser_type() {
+        return user_type;
     }
 
-    public void setId_user_type(String id_user_type) {
-        this.id_user_type = id_user_type;
+    public void setUser_type(User_Type user_type) {
+        this.user_type = user_type;
     }
 
     public String getAvatar() {
@@ -108,5 +108,19 @@ public class User implements Serializable {
     }
 
     public User() {
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "user_name='" + user_name + '\'' +
+                ", password='" + password + '\'' +
+                ", user_type=" + user_type +
+                ", avatar='" + avatar + '\'' +
+                ", token='" + token + '\'' +
+                ", lat_PI=" + lat_PI +
+                ", long_PI=" + long_PI +
+                ", id_user=" + id_user +
+                '}';
     }
 }

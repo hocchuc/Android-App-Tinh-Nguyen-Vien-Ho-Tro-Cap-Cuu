@@ -39,6 +39,7 @@ import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.MessageEvent;
 import com.emc.emergency.model.Route;
 import com.emc.emergency.model.User;
+import com.emc.emergency.model.User_Type;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -63,6 +64,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -82,7 +84,7 @@ import java.util.List;
  * Use the {@link fragment_map_page#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_map_page extends Fragment implements OnMapReadyCallback, LocationListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
+public class fragment_map_page extends Fragment implements OnMapReadyCallback, LocationListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "vido";
@@ -130,6 +132,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             }
         }
     }
+
     private GoogleMap map;
     // TODO: Rename and change types of parameters
     private double mParam1;
@@ -204,14 +207,13 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_map_page, container, false);
-        btnVeDuong= (Button) view.findViewById(R.id.btnVeDuong);
+        btnVeDuong = (Button) view.findViewById(R.id.btnVeDuong);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
 
     }
@@ -239,6 +241,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onDetach();
         mListener = null;
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -255,7 +258,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Bạn đang ở đây !!")
                 .snippet("You are here !!");
-        Marker marker =  mMap.addMarker(markerOptions);
+        Marker marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
 
         /**
@@ -263,7 +266,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
          */
         accidentList = new ArrayList<>();
         new GetAccidents(getActivity(), accidentList).execute();
-        new  GetAllUsers(getContext()).execute();
+        new GetAllUsers(getContext()).execute();
         mMap.setMyLocationEnabled(true);
         /**
          * Tạo hiệu ứng nảy
@@ -308,7 +311,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
                 kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
                 LatLng loocation = new LatLng(viDo, kinhDo);
-                  mMap.addMarker(new MarkerOptions()
+                mMap.addMarker(new MarkerOptions()
                         .position(loocation)
                         .title(arrAccidents.get(i).getDescription_AC())
                         .snippet(arrAccidents.get(i).getAddress()));
@@ -319,7 +322,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL(SystemUtils.getServerBaseUrl()+"accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -345,9 +348,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     if (jsonObject.has("date_AC"))
                         accident.setDate_AC(jsonObject.getString("date_AC"));
                     if (jsonObject.has("long_AC"))
-                        accident.setLong_AC( jsonObject.getDouble("long_AC"));
+                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC( jsonObject.getDouble("lat_AC"));
+                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("adress"))
@@ -464,30 +467,31 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         public void onFragmentMapInteraction(Uri uri);
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING,priority = 1)
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 1)
     public void MapListerner(MessageEvent event) {
-        if(event.type.equals(SystemUtils.TAG_LOAD_MAP)){
+        if (event.type.equals(SystemUtils.TAG_LOAD_MAP)) {
 
         }
 
-        if(event.type.equals(SystemUtils.TAG_GO_MAP)) {
+        if (event.type.equals(SystemUtils.TAG_GO_MAP)) {
 
-            Accident accident = new Gson().fromJson(event.message,Accident.class);
-                    LatLng lat_1 = new LatLng(accident.getLong_AC(), accident.getLat_AC());
-            Toast.makeText(this.getContext(),accident.getDescription_AC(),Toast.LENGTH_SHORT).show();
+            Accident accident = new Gson().fromJson(event.message, Accident.class);
+            LatLng lat_1 = new LatLng(accident.getLong_AC(), accident.getLat_AC());
+            Toast.makeText(this.getContext(), accident.getDescription_AC(), Toast.LENGTH_SHORT).show();
 
             try {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(lat_1));
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            builder.include(lat_1);
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lat_1, 15);
-            mMap.moveCamera(cameraUpdate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(lat_1));
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(lat_1);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lat_1, 15);
+                mMap.moveCamera(cameraUpdate);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -500,7 +504,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onStop();
     }
 
-    class GetAllUsers extends AsyncTask<Void, String, List<User> > {
+    class GetAllUsers extends AsyncTask<Void, String, List<User>> {
         Context context;
 
         String json;
@@ -531,7 +535,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(user.getUser_name())
-                            .snippet(user.getId_user_type()))
+                            .snippet(String.valueOf(user.getUser_type().getId_user_type())))
                             .setIcon(icon);
 
 
@@ -544,11 +548,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         }
 
         @Override
-        protected List<User>  doInBackground(Void... params) {
+        protected List<User> doInBackground(Void... params) {
             List<User> userList = new ArrayList<>();
             try {
 
-                URL url = new URL(SystemUtils.getServerBaseUrl()+"users");
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -561,8 +565,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 JSONObject jsonObject = new JSONObject(builder.toString());
                 JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
                 JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-                Log.d("jsonObj",jsonObject.toString());
-                User user1=new User();
+                Log.d("jsonObj", jsonObject.toString());
+                User user1 = new User();
                 for (int i = 0; i < usersJSONArray.length(); i++) {
                     JSONObject jsonObj = usersJSONArray.getJSONObject(i);
                     if (jsonObj.has("id_user"))
@@ -577,8 +581,21 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                         user1.setLong_PI(jsonObj.getDouble("long_PI"));
                     if (jsonObj.has("lat_PI"))
                         user1.setLat_PI(jsonObj.getDouble("lat_PI"));
-                    if (jsonObj.has("id_user_type"))
-                        user1.setId_user_type(jsonObj.getString("id_user_type"));
+                    if (jsonObj.has("id_user_type")) {
+                        String user_type = jsonObj.getString("id_user_type");
+                        User_Type user_type1 = new User_Type();
+
+                        try {
+                            JSONObject jsonObject1 = new JSONObject(user_type);
+                            if (jsonObject1.has("id_user_type"))
+                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
+                            if (jsonObject1.has("name_user_type"))
+                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        user1.setUser_type(user_type1);
+                    }
                     if (jsonObj.has("avatar"))
                         user1.setAvatar(jsonObj.getString("avatar"));
                     Log.d("User1", user1.toString());

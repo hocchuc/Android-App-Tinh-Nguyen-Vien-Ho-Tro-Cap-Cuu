@@ -20,32 +20,35 @@ public class User_Type   {
 
 	private List<User> users ;//= new ArrayList<>();
 
-	private void setId_user_type(Long value) {
-		this.id_user_type = value;
-	}
-
 	public Long getId_user_type() {
 		return id_user_type;
 	}
 
-	public void setName_user_type(String value) {
-		this.name_user_type = value;
+	public void setId_user_type(Long id_user_type) {
+		this.id_user_type = id_user_type;
 	}
 
 	public String getName_user_type() {
 		return name_user_type;
 	}
 
+	public void setName_user_type(String name_user_type) {
+		this.name_user_type = name_user_type;
+	}
+
 	public List<User> getUsers() {
 		return users;
 	}
 
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
 
 	@Override
 	public String toString() {
 		return "User_Type{" +
-				"id_user_type:" + id_user_type +
-				", name_user_type:" + name_user_type + '\'' +
+				"id_user_type=" + id_user_type +
+				", name_user_type='" + name_user_type + '\'' +
 				'}';
 	}
 }
