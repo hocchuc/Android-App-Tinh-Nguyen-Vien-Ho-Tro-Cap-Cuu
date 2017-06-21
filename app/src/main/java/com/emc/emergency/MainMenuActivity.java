@@ -6,10 +6,12 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -48,18 +50,21 @@ import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Route;
 
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
 
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -69,6 +74,8 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -114,9 +121,11 @@ public class MainMenuActivity extends AppCompatActivity
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
+    String idUser_UID;
     //-----------------------------------------------------------------------
-    private  MarkerOptions myMarkerOption;
+    private MarkerOptions myMarkerOption;
     public Marker myMarker;
+    LatLng myLocation;
     GoogleMap mMap;
     double viDo, kinhDo;
     String description, address;
@@ -156,9 +165,13 @@ public class MainMenuActivity extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-                LatLng latLng = new LatLng(latitude,longitude);
+                LatLng latLng = new LatLng(latitude, longitude);
+
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+                mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
+                mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
                 // thay đổi market dựa trên location của bản thân
-                myMarker.setPosition(latLng);
+//                myMarker.setPosition(latLng);
 
             }
 
@@ -229,6 +242,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addEvents() {
+//        Log.d("UID after put", idUser_UID);
         GPSTracker gps = new GPSTracker(MainMenuActivity.this);
         if (gps.canGetLocation()) {
             latitude = gps.getLatitude();
@@ -274,6 +288,9 @@ public class MainMenuActivity extends AppCompatActivity
         arrayAccident = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
+        idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -561,27 +578,37 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        googleMap.setOnMarkerClickListener(this);
+//
+//        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
-         myMarkerOption = new MarkerOptions()
-                .position(myLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .title("Bạn đang ở đây !!")
-                .snippet("You are here !!");
-
-        myMarker = mMap.addMarker(myMarkerOption);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+//        myMarkerOption = new MarkerOptions()
+//                .position(myLocation)
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+//                .title("Bạn đang ở đây !!")
+//                .snippet("You are here !!");
+//
+//        myMarker = mMap.addMarker(myMarkerOption);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//        }
+//        //tat/mo dau cham mau xanh
+//        mMap.setMyLocationEnabled(true);
+//        //tat/mo nut hien thi GPS
+//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        // tinh trang giao thong
+//        googleMap.setTrafficEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setPadding(0, 400, 0, 0);
+            // tinh trang giao thong
+            googleMap.setTrafficEnabled(true);
         }
-        //tat/mo dau cham mau xanh
-        mMap.setMyLocationEnabled(true);
-        //tat/mo nut hien thi GPS
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // tinh trang giao thong
-        googleMap.setTrafficEnabled(true);
     }
 
     private void sendRequest() {
@@ -684,7 +711,7 @@ public class MainMenuActivity extends AppCompatActivity
                             .snippet(arrAccidents.get(i).getAddress()))
                             .setIcon(icon);
                     // tắt chuyển camera tới các tai nạn vừa load
-                   // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
                 } catch (Exception e) {
                     e.printStackTrace();

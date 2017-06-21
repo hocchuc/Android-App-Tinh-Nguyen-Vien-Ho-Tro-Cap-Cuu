@@ -102,6 +102,11 @@ public class User implements Serializable {
         this.id_user = id_user;
     }
 
+    public User(Double lat_PI, Double long_PI) {
+        this.lat_PI = lat_PI;
+        this.long_PI = long_PI;
+    }
+
     public User() {
     }
 }
