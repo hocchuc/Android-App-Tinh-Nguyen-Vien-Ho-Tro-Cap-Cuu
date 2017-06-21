@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -48,6 +49,7 @@ import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Route;
 
+import com.emc.emergency.model.User;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -69,6 +71,8 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -114,8 +118,9 @@ public class MainMenuActivity extends AppCompatActivity
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
+    String idUser_UID;
     //-----------------------------------------------------------------------
-    private  MarkerOptions myMarkerOption;
+    private MarkerOptions myMarkerOption;
     public Marker myMarker;
     GoogleMap mMap;
     double viDo, kinhDo;
@@ -156,7 +161,11 @@ public class MainMenuActivity extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-                LatLng latLng = new LatLng(latitude,longitude);
+                LatLng latLng = new LatLng(latitude, longitude);
+
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+                mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
+                mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
                 // thay đổi market dựa trên location của bản thân
                 myMarker.setPosition(latLng);
 
@@ -229,6 +238,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addEvents() {
+//        Log.d("UID after put", idUser_UID);
         GPSTracker gps = new GPSTracker(MainMenuActivity.this);
         if (gps.canGetLocation()) {
             latitude = gps.getLatitude();
@@ -274,6 +284,9 @@ public class MainMenuActivity extends AppCompatActivity
         arrayAccident = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
+        idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -564,7 +577,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
-         myMarkerOption = new MarkerOptions()
+        myMarkerOption = new MarkerOptions()
                 .position(myLocation)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .title("Bạn đang ở đây !!")
@@ -684,7 +697,7 @@ public class MainMenuActivity extends AppCompatActivity
                             .snippet(arrAccidents.get(i).getAddress()))
                             .setIcon(icon);
                     // tắt chuyển camera tới các tai nạn vừa load
-                   // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
                 } catch (Exception e) {
                     e.printStackTrace();
