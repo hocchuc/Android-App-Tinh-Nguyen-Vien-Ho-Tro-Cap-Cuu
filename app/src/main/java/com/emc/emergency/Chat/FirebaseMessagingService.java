@@ -45,8 +45,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             // In this case the XMPP Server sends a payload data
              String message = remoteMessage.getData().get("message");
-             Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
-             Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
             location = remoteMessage.getData().get("address");
 
             Log.d(TAG, "Message received: " + message);
@@ -89,6 +89,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
     private void showAccidentNotification(String message) {
         Intent i = new Intent(this,ChatBoxActivity.class);
+        i.putExtra("type","helper");
+        i.putExtra("FirebaseKey","Kn96icCFz6zJOh_Xqqm");
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);

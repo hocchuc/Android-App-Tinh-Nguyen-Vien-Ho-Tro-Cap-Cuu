@@ -566,8 +566,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
                 JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
                 Log.d("jsonObj", jsonObject.toString());
-                User user1 = new User();
                 for (int i = 0; i < usersJSONArray.length(); i++) {
+                    User user1 = new User();
                     JSONObject jsonObj = usersJSONArray.getJSONObject(i);
                     if (jsonObj.has("id_user"))
                         user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));

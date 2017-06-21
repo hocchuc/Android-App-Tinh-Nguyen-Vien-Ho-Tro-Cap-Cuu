@@ -14,10 +14,12 @@ package com.emc.emergency.Chat; /**
  * limitations under the License.
  */
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -39,9 +41,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.R;
+import com.emc.emergency.RequestRescueActivity;
+import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.FriendlyMessage;
+import com.emc.emergency.utils.GPSTracker;
+import com.emc.emergency.utils.SystemUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -66,14 +73,32 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ChatBoxActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, fragment_map_page.onFragmentMapInteraction {
+
+    @Override
+    public void onFragmentMapInteraction(Uri uri) {
+
+    }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -99,11 +124,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
+    String id_user="ID_USER";
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
+    public static final MediaType mediaType = MediaType.parse("text/uri-list");
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
-
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -117,41 +145,28 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private ImageView mAddMessageImageView;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private GoogleApiClient mGoogleApiClient;
-
+    Double longitude,latitude;
+    Accident accident;
+    Accident accident2;
+    Response postResponse,putResponse;
+    private  String AccidentKey = "" ;
+    public static final String ACCIDENTS_CHILD = "accidents";
+    private String response;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
 
+        GPSTracker gps = new GPSTracker(ChatBoxActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
+        BuildFragment();
+        onEvents();
+
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mUsername = ANONYMOUS;
-/*
-
-        // Initialize Firebase Auth
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
-        }
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this */
-/* FragmentActivity *//*
-, this */
-/* OnConnectionFailedListener *//*
-)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
-*/
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
@@ -159,11 +174,16 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mLinearLayoutManager.setStackFromEnd(true);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        //// TODO: 21-Jun-17 Load dữ liệu chat cũ đổ vào recycleview chat
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
                 FriendlyMessage.class,
                 R.layout.item_message,
                 MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+                mFirebaseDatabaseReference.
+                        child(ACCIDENTS_CHILD).
+                        child(AccidentKey).
+                        child(MESSAGES_CHILD)) {
 
             @Override
             protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
@@ -309,17 +329,48 @@ public class ChatBoxActivity extends AppCompatActivity implements
             }
         });
 
+        // TODO: 21-Jun-17 them message mới vào firebase
         mSendButton = (Button) findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername,
                         mPhotoUrl, null);
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMessage);
+                mFirebaseDatabaseReference.
+                        child(ACCIDENTS_CHILD).
+                        child(AccidentKey).
+                        child(MESSAGES_CHILD).push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
                 mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
             }
         });
+    }
+
+    /**
+     *  Đổ Fragment Map vào acitivity
+     */
+    private void BuildFragment() {
+//        FragmentManager managerTop = getSupportFragmentManager();
+        fragment_map_page fragment_map_page = new fragment_map_page();
+        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout,fragment_map_page).commit();
+
+    }
+    private void onEvents() {
+        SendData();
+        TaoAccidentTrenFirebase();
+
+//        mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
+    }
+
+    /**
+     * Tạo accident mới trên firebase
+     */
+    private void TaoAccidentTrenFirebase() {
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident2);
+
+        Log.d("AccidentKey",AccidentKey);
     }
 
     private Action getMessageViewAction(FriendlyMessage friendlyMessage) {
@@ -464,14 +515,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                 public void onComplete(DatabaseError databaseError,
                                                        DatabaseReference databaseReference) {
                                     if (databaseError == null) {
-//                                        String key = databaseReference.getKey();
-//                                        StorageReference storageReference =
-//                                                FirebaseStorage.getInstance()
-//                                                        .getReference(mFirebaseUser.getUid())
-//                                                        .child(key)
-//                                                        .child(uri.getLastPathSegment());
-//
-//                                        putImageInStorage(storageReference, uri, key);
+                                        String key = databaseReference.getKey();
+                                        StorageReference storageReference =
+                                                FirebaseStorage.getInstance()
+                                                        .getReference()
+                                                        .child(key)
+                                                        .child(uri.getLastPathSegment());
+
+                                        putImageInStorage(storageReference, uri, key);
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
                                                 databaseError.toException());
@@ -536,4 +587,139 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
+    private void SendData() {
+        mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
+        final int id = mSharedPreferences.getInt("id_user", -1);
+
+        accident = new Accident();
+        accident.setDescription_AC("Tai nạn");
+
+        //TODO thêm locate sau này, sử dụng giờ hệ thống
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        String currentDateandTime = sdf.format(new Date());
+        accident.setDate_AC(currentDateandTime);
+
+        accident.setStatus_AC("Active");
+
+        accident.setLat_AC(latitude);
+        accident.setLong_AC(longitude);
+
+        // convert object to json
+        Gson gson = new Gson();
+        String json = gson.toJson(accident);
+
+        PostAccident example = new PostAccident();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                response = example.post(SystemUtils.getServerBaseUrl() + "accidents", json);
+                Log.d("response",response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        accident2 = new Accident();
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(response);
+
+
+            for (int i = 0; i < jsonObject.length(); i++) {
+                if (jsonObject == null) continue;
+                if (jsonObject.has("id_AC"))
+                    accident2.setId_AC(Long.parseLong(jsonObject.getString("id_AC")));
+                if (jsonObject.has("description_AC"))
+                    accident2.setDescription_AC(jsonObject.getString("description_AC"));
+                if (jsonObject.has("date_AC"))
+                    accident2.setDate_AC(jsonObject.getString("date_AC"));
+                if (jsonObject.has("long_AC"))
+                    accident2.setLong_AC(jsonObject.getDouble("long_AC"));
+                if (jsonObject.has("lat_AC"))
+                    accident2.setLat_AC( jsonObject.getDouble("lat_AC"));
+                if (jsonObject.has("status_AC"))
+                    accident2.setStatus_AC(jsonObject.getString("status_AC"));
+                if (jsonObject.has("adress"))
+                    accident2.setAddress(jsonObject.getString("adress"));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("accident2",accident2.toString());
+
+        /**
+         * tiếp tục gởi put lên  server để xác định user nào tạo tai nào
+         */
+        PutRelation putRel = new PutRelation();
+
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                String response2 = putRel.put(SystemUtils.getServerBaseUrl()+"accidents/"+accident2.getId_AC()+"/id_user",
+                        SystemUtils.getServerBaseUrl()+"users/"+id);
+                Log.d("response2",response2);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    /**
+     * Gửi accident lên server
+     */
+    public class PostAccident{
+
+        OkHttpClient client = new OkHttpClient();
+
+        String post(String url, String json) throws IOException {
+            RequestBody body = RequestBody.create(JSON, json);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            try {
+                postResponse = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return postResponse.body().string();
+
+        }
+    }
+
+    /**
+     * Gởi put lên server để tạo relation giữa user và accident
+     */
+    public class PutRelation{
+
+        OkHttpClient client = new OkHttpClient();
+
+        String put(String url, String txt) throws IOException {
+            RequestBody body = RequestBody.create(mediaType, txt);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .put(body)
+                    .addHeader("content-type", "text/uri-list")
+                    .addHeader("cache-control", "no-cache")
+                    .build();
+            try {
+                putResponse = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return putResponse.body().string();
+
+        }
+    }
 }

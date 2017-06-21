@@ -48,13 +48,15 @@
         </activity>
         <activity android:name=".Register.RegisterActivity" />
         <activity android:name=".MainMenuActivity" />
-        <activity android:name=".Chat.ChatBoxActivity" />
+        <activity android:name=".Chat.ChatBoxActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".AccidentActivity"
             android:label="@string/title_activity_accident" />
         <activity android:name=".Personal_Inf_Activity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ReportAccidentActivity" />
+        <activity android:name=".ReportAccidentActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".RequestRescueActivity"
             android:windowSoftInputMode="adjustPan" />
         <service android:name=".Chat.FirebaseInstanceIDService"

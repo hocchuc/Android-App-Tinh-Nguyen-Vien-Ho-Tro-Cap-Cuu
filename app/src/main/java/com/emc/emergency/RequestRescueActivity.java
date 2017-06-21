@@ -88,14 +88,14 @@ public class RequestRescueActivity extends AppCompatActivity
 
     }
     private void onEvents() {
-        SenData();
+        SendData();
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().setValue(accident2);
 //        mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
     }
     // TODO đổi tên hàm này
-    private void SenData() {
+    private void SendData() {
         sharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
         final int id = sharedPreferences.getInt("id_user", -1);
 

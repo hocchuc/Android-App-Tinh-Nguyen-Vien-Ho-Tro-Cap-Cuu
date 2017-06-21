@@ -9,7 +9,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
@@ -18,6 +23,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +34,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -596,6 +603,7 @@ public class MainMenuActivity extends AppCompatActivity
 //
 //        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
+
 //        myMarkerOption = new MarkerOptions()
 //                .position(myLocation)
 //                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
@@ -624,6 +632,7 @@ public class MainMenuActivity extends AppCompatActivity
             // tinh trang giao thong
             googleMap.setTrafficEnabled(true);
         }
+
     }
 
     private void sendRequest() {
@@ -712,7 +721,8 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
             arrAccidents.addAll(accidents);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_accident_marker);
+
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.mipmap.ic_accident_marker));
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
@@ -723,8 +733,9 @@ public class MainMenuActivity extends AppCompatActivity
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(arrAccidents.get(i).getDescription_AC())
-                            .snippet(arrAccidents.get(i).getAddress()))
-                            .setIcon(icon);
+                            .snippet(arrAccidents.get(i).getAddress())
+                            .icon(icon));
+
                     // tắt chuyển camera tới các tai nạn vừa load
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
@@ -889,4 +900,25 @@ public class MainMenuActivity extends AppCompatActivity
             return userList;
         }
     }
+
+    //Convert view into bitmap
+    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+
+        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        markerImageView.setImageResource(resId);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
+
 }
