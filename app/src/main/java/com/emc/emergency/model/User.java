@@ -107,6 +107,17 @@ public class User implements Serializable {
         this.long_PI = long_PI;
     }
 
+    public User(String user_name, String password, User_Type user_type, String avatar, String token, Double lat_PI, Double long_PI, long id_user) {
+        this.user_name = user_name;
+        this.password = password;
+        this.user_type = user_type;
+        this.avatar = avatar;
+        this.token = token;
+        this.lat_PI = lat_PI;
+        this.long_PI = long_PI;
+        this.id_user = id_user;
+    }
+
     public User() {
     }
 

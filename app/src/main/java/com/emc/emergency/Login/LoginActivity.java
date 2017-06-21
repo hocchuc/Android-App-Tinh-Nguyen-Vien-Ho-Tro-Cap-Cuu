@@ -249,7 +249,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                             user1.setAvatar(jsonObject.getString("avatar"));
                                         if (jsonObject.has("id_user_type")) {
                                             String user_type = jsonObject.getString("id_user_type");
-                                            Log.d("user_type", user_type);
+//                                            Log.d("user_type", user_type);
 
                                             try {
                                                 JSONObject jsonObject1 = new JSONObject(user_type);
@@ -258,11 +258,11 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                                 if (jsonObject1.has("id_user_type"))
                                                     user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
                                                 user1.setUser_type(user_type1);
-                                                Log.d("User_type", user_type1.toString());
+//                                                Log.d("User_type", user_type1.toString());
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            Log.d("User1", user1.toString());
+//                                            Log.d("User1", user1.toString());
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -276,6 +276,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     editor2.putString("long_PI", String.valueOf(user1.getLong_PI()));
                                     editor2.putLong("id_user_type", (user1.getUser_type().getId_user_type()));
                                     editor2.putString("name_user_type", String.valueOf(user1.getUser_type().getName_user_type()));
+                                    editor2.commit();
+
 
                                 } catch (IOException e) {
                                     e.printStackTrace();

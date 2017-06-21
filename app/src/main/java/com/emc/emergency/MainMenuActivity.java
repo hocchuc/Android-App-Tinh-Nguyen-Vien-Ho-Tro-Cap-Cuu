@@ -46,11 +46,13 @@ import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
 
+import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Route;
 
 import com.emc.emergency.model.User;
+import com.emc.emergency.model.User_Type;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -101,6 +103,7 @@ import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -127,7 +130,7 @@ public class MainMenuActivity extends AppCompatActivity
     public Marker myMarker;
     LatLng myLocation;
     GoogleMap mMap;
-    double viDo, kinhDo;
+    double viDo, kinhDo,viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
     ImageButton btnToGMap;
@@ -143,6 +146,7 @@ public class MainMenuActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
     private ArrayList<Accident> arrayAccident;
+    private ArrayList<User> arrayUser;
     //------------------------
     private LocationListener mLocationListener;
 
@@ -262,10 +266,14 @@ public class MainMenuActivity extends AppCompatActivity
 
         sharedPreferences = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         Long id_usertype = sharedPreferences.getLong("id_user_type", -1);
-        Log.d("id_usertype",id_usertype.toString());
+//        Log.d("IDusertype",id_usertype.toString());
+        if(id_usertype==2){
+            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+        }else{
+            new GetAllUsers(MainMenuActivity.this,arrayUser).execute();
+            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
-        new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
-
+        }
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,6 +300,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
+        arrayUser=new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
 
@@ -772,6 +781,112 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.e("LOI ", ex.toString());
             }
             return ds;
+        }
+    }
+    private class GetAllUsers extends AsyncTask<Void, Void, ArrayList<User>> {
+        Activity activity;
+        ArrayList<User> arrUser;
+
+        public GetAllUsers(Activity activity,ArrayList<User>arrUser) {
+            this.activity = activity;
+            this.arrUser=arrUser;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            arrUser.clear();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<User> users) {
+            super.onPostExecute(users);
+            arrUser.addAll(users);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_volunteer);
+
+            Log.d("UserSize", String.valueOf(arrUser.size()));
+            for (int i = 0; i < arrUser.size(); i++) {
+                viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
+                kinhDoUser= Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
+                LatLng loocation = new LatLng(viDoUser, kinhDoUser);
+                try {
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(arrUser.get(i).getUser_name())
+                            .snippet(String.valueOf(arrUser.get(i).getId_user())))
+                            .setIcon(icon);
+                    // tắt chuyển camera tới các tai nạn vừa load
+                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+
+        @Override
+        protected ArrayList<User> doInBackground(Void... params) {
+            ArrayList<User> userList = new ArrayList<>();
+            try {
+
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
+                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+                StringBuilder builder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                JSONObject jsonObject = new JSONObject(builder.toString());
+                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
+                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
+                Log.d("jsonObj", jsonObject.toString());
+                for (int i = 0; i < usersJSONArray.length(); i++) {
+                    User user1 = new User();
+                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+                    if (jsonObj.has("id_user"))
+                        user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));
+                    if (jsonObj.has("username"))
+                        user1.setUser_name(jsonObj.getString("username"));
+                    if (jsonObj.has("token"))
+                        user1.setToken(jsonObj.getString("token"));
+                    if (jsonObj.has("password"))
+                        user1.setPassword(jsonObj.getString("password"));
+                    if (jsonObj.has("long_PI"))
+                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
+                    if (jsonObj.has("lat_PI"))
+                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
+                    if (jsonObj.has("id_user_type")) {
+                        String user_type = jsonObj.getString("id_user_type");
+                        User_Type user_type1 = new User_Type();
+
+                        try {
+                            JSONObject jsonObject1 = new JSONObject(user_type);
+                            if (jsonObject1.has("id_user_type"))
+                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
+                            if (jsonObject1.has("name_user_type"))
+                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        user1.setUser_type(user_type1);
+                    }
+                    if (jsonObj.has("avatar"))
+                        user1.setAvatar(jsonObj.getString("avatar"));
+                    Log.d("User1", user1.toString());
+                    userList.add(user1);
+                    Log.d("DSUser1", userList.toString());
+                }
+            } catch (Exception ex) {
+                Log.e("LOI ", ex.toString());
+            }
+            return userList;
         }
     }
 }
