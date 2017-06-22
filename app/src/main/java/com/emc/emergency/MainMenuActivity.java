@@ -23,6 +23,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.StrictMode;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -56,6 +57,7 @@ import com.emc.emergency.Fragment.fragment_countdown;
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.Route;
 
 import com.emc.emergency.model.User;
@@ -114,12 +116,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
@@ -131,19 +138,22 @@ public class MainMenuActivity extends AppCompatActivity
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
+
     String idUser_UID;
+    Long id_usertype;
+    int id_user;
     //-----------------------------------------------------------------------
-    private MarkerOptions myMarkerOption;
-    public Marker myMarker;
-    LatLng myLocation;
+//    private MarkerOptions myMarkerOption;
+//    public Marker myMarker;
+//    LatLng myLocation;
     GoogleMap mMap;
-    double viDo, kinhDo,viDoUser, kinhDoUser;
+    double viDo, kinhDo, viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
     ImageButton btnToGMap;
     double latitude = 0;
     double longitude = 0;
-    SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
 
     //    private Button btnFindPath;
     // XU LY NUT VE DUONG
@@ -152,10 +162,13 @@ public class MainMenuActivity extends AppCompatActivity
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
+
     private ArrayList<Accident> arrayAccident;
     private ArrayList<User> arrayUser;
+
+    Personal_Infomation pi;
     //------------------------
-    private LocationListener mLocationListener;
+//    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,13 +284,10 @@ public class MainMenuActivity extends AppCompatActivity
             );
         }
 
-        sharedPreferences = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
-        Long id_usertype = sharedPreferences.getLong("id_user_type", -1);
-//        Log.d("IDusertype",id_usertype.toString());
-        if(id_usertype==2){
+        if (id_usertype == 2) {
             new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
-        }else{
-            new GetAllUsers(MainMenuActivity.this,arrayUser).execute();
+        } else {
+            new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
             new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
 
         }
@@ -307,19 +317,73 @@ public class MainMenuActivity extends AppCompatActivity
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
-        arrayUser=new ArrayList<>();
+        arrayUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
 
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
+        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
         idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
+        sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
+        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
+//        Log.d("IDusertype",id_usertype.toString());
+
+        sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
+        id_user = sharedPreferences2.getInt("id_user", -1);
+
+        GetPersonalInfo();
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
         mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void GetPersonalInfo() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user + "/personal_Infomation")
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+                JSONObject jsonObj = null;
+                try {
+                    jsonObj = new JSONObject(response.body().string());
+                    pi = new Personal_Infomation();
+                    if (jsonObj.has("work_location"))
+                        pi.setWork_location(jsonObj.getString("work_location"));
+                    if (jsonObj.has("birthday"))
+                        pi.setBirthday(jsonObj.getString("birthday"));
+                    if (jsonObj.has("phone_PI"))
+                        pi.setPhone_PI(jsonObj.getString("phone_PI"));
+                    if (jsonObj.has("sex__PI"))
+                        pi.setSex__PI(jsonObj.getBoolean("sex__PI"));
+                    if (jsonObj.has("email_PI"))
+                        pi.setEmail_PI(jsonObj.getString("email_PI"));
+                    if (jsonObj.has("address_PI"))
+                        pi.setAddress_PI(jsonObj.getString("address_PI"));
+                    if (jsonObj.has("personal_id"))
+                        pi.setPersonal_id(jsonObj.getString("personal_id"));
+                    if (jsonObj.has("name_PI"))
+                        pi.setName_PI(jsonObj.getString("name_PI"));
+                    if (jsonObj.has("id_PI")) {
+                        pi.setId_PI(jsonObj.getLong("id_PI"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void BuildFragment() {
@@ -343,8 +407,8 @@ public class MainMenuActivity extends AppCompatActivity
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
         final IProfile profile = new ProfileDrawerItem()
-                .withName("Trần Cao Tuấn")
-                .withEmail("caotuan@gmail.com")
+                .withName(pi.getName_PI())
+                .withEmail(pi.getEmail_PI())
                 .withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
 
         // Create the AccountHeader
@@ -794,13 +858,14 @@ public class MainMenuActivity extends AppCompatActivity
             return ds;
         }
     }
+
     private class GetAllUsers extends AsyncTask<Void, Void, ArrayList<User>> {
         Activity activity;
         ArrayList<User> arrUser;
 
-        public GetAllUsers(Activity activity,ArrayList<User>arrUser) {
+        public GetAllUsers(Activity activity, ArrayList<User> arrUser) {
             this.activity = activity;
-            this.arrUser=arrUser;
+            this.arrUser = arrUser;
 
         }
 
@@ -814,26 +879,29 @@ public class MainMenuActivity extends AppCompatActivity
         protected void onPostExecute(ArrayList<User> users) {
             super.onPostExecute(users);
             arrUser.addAll(users);
+
             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_volunteer);
 
-            Log.d("UserSize", String.valueOf(arrUser.size()));
+//            Log.d("UserSize", String.valueOf(arrUser.size()));
             for (int i = 0; i < arrUser.size(); i++) {
-                viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
-                kinhDoUser= Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
-                LatLng loocation = new LatLng(viDoUser, kinhDoUser);
-                try {
+                if (arrUser.get(i).getUser_type().getId_user_type() == 2) {
+                    viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
+                    kinhDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
+                    LatLng loocation = new LatLng(viDoUser, kinhDoUser);
+                    try {
 
-                    mMap.addMarker(new MarkerOptions()
-                            .position(loocation)
-                            .title(arrUser.get(i).getUser_name())
-                            .snippet(String.valueOf(arrUser.get(i).getId_user())))
-                            .setIcon(icon);
-                    // tắt chuyển camera tới các tai nạn vừa load
-                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                        mMap.addMarker(new MarkerOptions()
+                                .position(loocation)
+                                .title(arrUser.get(i).getUser_name())
+                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
+                                .setIcon(icon);
+                        // tắt chuyển camera tới các tai nạn vừa load
+                        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -857,7 +925,7 @@ public class MainMenuActivity extends AppCompatActivity
                 JSONObject jsonObject = new JSONObject(builder.toString());
                 JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
                 JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-                Log.d("jsonObj", jsonObject.toString());
+//                Log.d("jsonObj", jsonObject.toString());
                 for (int i = 0; i < usersJSONArray.length(); i++) {
                     User user1 = new User();
                     JSONObject jsonObj = usersJSONArray.getJSONObject(i);
@@ -876,7 +944,6 @@ public class MainMenuActivity extends AppCompatActivity
                     if (jsonObj.has("id_user_type")) {
                         String user_type = jsonObj.getString("id_user_type");
                         User_Type user_type1 = new User_Type();
-
                         try {
                             JSONObject jsonObject1 = new JSONObject(user_type);
                             if (jsonObject1.has("id_user_type"))
@@ -890,12 +957,12 @@ public class MainMenuActivity extends AppCompatActivity
                     }
                     if (jsonObj.has("avatar"))
                         user1.setAvatar(jsonObj.getString("avatar"));
-                    Log.d("User1", user1.toString());
+//                    Log.d("User1", user1.toString());
                     userList.add(user1);
-                    Log.d("DSUser1", userList.toString());
                 }
+                Log.d("DSUser1", userList.toString());
             } catch (Exception ex) {
-                Log.e("LOI ", ex.toString());
+//                Log.e("LOI ", ex.toString());
             }
             return userList;
         }
