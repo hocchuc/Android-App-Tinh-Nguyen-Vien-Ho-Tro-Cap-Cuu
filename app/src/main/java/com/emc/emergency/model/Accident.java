@@ -16,6 +16,7 @@ public class Accident {
 	private List<Chat> chat = new ArrayList<>();
 	private List<Image> image = new ArrayList<>();
     private String address;
+    private String firebaseKey;
 
     public Accident() {
     }
@@ -98,6 +99,14 @@ public class Accident {
 
     public void setImage(List<Image> image) {
         this.image = image;
+    }
+
+    public String getFirebaseKey() {
+        return firebaseKey;
+    }
+
+    public void setFirebaseKey(String firebaseKey) {
+        this.firebaseKey = firebaseKey;
     }
 
     public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, List<Chat> chat, List<Image> image, String address) {
