@@ -245,8 +245,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                             user1.setLong_PI(jsonObject.getDouble("long_PI"));
                                         if (jsonObject.has("lat_PI"))
                                             user1.setLat_PI(jsonObject.getDouble("lat_PI"));
-                                        if (jsonObject.has("avatar"))
-                                            user1.setAvatar(jsonObject.getString("avatar"));
                                         if (jsonObject.has("id_user_type")) {
                                             String user_type = jsonObject.getString("id_user_type");
 //                                            Log.d("user_type", user_type);

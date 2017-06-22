@@ -52,14 +52,6 @@
             android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:padding="5dp"
-        android:text="Birthday" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -91,14 +83,6 @@
             android:inputType="textPersonName" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:padding="5dp"
-        android:text="Gender" />
-
     <Spinner
         android:id="@+id/spRegisGender"
         android:layout_width="match_parent"
@@ -121,27 +105,27 @@
             android:hint="Mobile phone"
             android:inputType="phone" />
     </android.support.design.widget.TextInputLayout>
+    <Button
+        android:id="@+id/btnRegist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dip"
+        android:background="#00CCFF"
+        android:onClick="registerUser"
+        android:text="@string/btnRegister"
+        android:textColor="#fff" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+    <!-- Link to Login Screen -->
 
-        <Button
-            android:id="@+id/btnRegist"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:text="Register" />
-        <Button
-            android:id="@+id/btnRegistLogin"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:text="Login" />
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/btnRegistLogin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dip"
+        android:background="@null"
+        android:text="Login"
+        android:textColor="#228b22"
+        android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/progressBar1"

@@ -17,6 +17,7 @@ public class Personal_Infomation implements Serializable  {
 	private String address_PI;
 	private String email_PI;
 	private User id_user;
+	private String avatar;
 	private ArrayList<Medical_Info> medical_Info;
 
 	public Long getId_PI() {
@@ -99,6 +100,14 @@ public class Personal_Infomation implements Serializable  {
 		this.id_user = id_user;
 	}
 
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
 	public ArrayList<Medical_Info> getMedical_Info() {
 		return medical_Info;
 	}
@@ -110,7 +119,7 @@ public class Personal_Infomation implements Serializable  {
 	public Personal_Infomation() {
 	}
 
-	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, String birthday, String personal_id, String work_location, String phone_PI, String address_PI, String email_PI) {
+	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, String birthday, String personal_id, String work_location, String phone_PI, String address_PI, String email_PI, User id_user, String avatar) {
 		this.id_PI = id_PI;
 		this.name_PI = name_PI;
 		this.sex__PI = sex__PI;
@@ -120,6 +129,8 @@ public class Personal_Infomation implements Serializable  {
 		this.phone_PI = phone_PI;
 		this.address_PI = address_PI;
 		this.email_PI = email_PI;
+		this.id_user = id_user;
+		this.avatar = avatar;
 	}
 
 	@Override
@@ -129,11 +140,13 @@ public class Personal_Infomation implements Serializable  {
 				", name_PI='" + name_PI + '\'' +
 				", sex__PI=" + sex__PI +
 				", birthday='" + birthday + '\'' +
-				", personal_id=" + personal_id +
+				", personal_id='" + personal_id + '\'' +
 				", work_location='" + work_location + '\'' +
 				", phone_PI='" + phone_PI + '\'' +
 				", address_PI='" + address_PI + '\'' +
 				", email_PI='" + email_PI + '\'' +
+				", id_user=" + id_user +
+				", avatar='" + avatar + '\'' +
 				'}';
 	}
 }

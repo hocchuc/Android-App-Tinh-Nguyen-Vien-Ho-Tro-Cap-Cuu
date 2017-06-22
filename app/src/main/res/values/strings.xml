@@ -99,4 +99,6 @@
     <string name="cause_crash">Crash</string>
     <string name="birthday">Birthday</string>
     <string name="map">Bản Đồ</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="medical_information">Medical Information</string>
 </resources>

@@ -59,15 +59,13 @@
         android:layout_height="0dp"
         android:layout_weight="1">
          <fragment class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:id="@+id/map"
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintBottom_toBottomOf="parent"
              app:layout_constraintVertical_bias="1.0"
-             android:layout_marginRight="0sp"
              app:layout_constraintRight_toRightOf="parent"
-             android:layout_marginLeft="0dp"
              app:layout_constraintLeft_toLeftOf="parent" />
         <ImageButton
             android:id="@+id/btnDirectionToGmap"

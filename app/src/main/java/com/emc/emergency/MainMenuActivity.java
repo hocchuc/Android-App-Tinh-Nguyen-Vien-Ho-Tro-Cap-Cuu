@@ -1,6 +1,5 @@
 package com.emc.emergency;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -10,13 +9,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,10 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 
 import android.support.v7.app.AppCompatActivity;
@@ -54,7 +47,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
 
-import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_menu_page;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
@@ -68,14 +60,12 @@ import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
 
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -173,7 +163,7 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu2);
+        setContentView(R.layout.activity_main_menu);
         addControls();
         BuildDrawer(savedInstanceState);
         BuildFragment();
@@ -181,7 +171,7 @@ public class MainMenuActivity extends AppCompatActivity
         setLoadImageLogic();
     }
 
-    private void GPS() {
+    private void LocationChange() {
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -273,7 +263,7 @@ public class MainMenuActivity extends AppCompatActivity
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
         }
-        GPS();
+        LocationChange();
 
         // yeu cau quyen doi voi cac thiet chay android M tro len
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -312,8 +302,6 @@ public class MainMenuActivity extends AppCompatActivity
             }
         });
     }
-
-
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
@@ -332,6 +320,7 @@ public class MainMenuActivity extends AppCompatActivity
         id_user = sharedPreferences2.getInt("id_user", -1);
 
         GetPersonalInfo();
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
@@ -373,6 +362,8 @@ public class MainMenuActivity extends AppCompatActivity
                         pi.setPersonal_id(jsonObj.getString("personal_id"));
                     if (jsonObj.has("name_PI"))
                         pi.setName_PI(jsonObj.getString("name_PI"));
+                    if(jsonObj.has("avatar"))
+                        pi.setAvatar(jsonObj.getString("avatar"));
                     if (jsonObj.has("id_PI")) {
                         pi.setId_PI(jsonObj.getLong("id_PI"));
                     }
@@ -409,7 +400,7 @@ public class MainMenuActivity extends AppCompatActivity
         final IProfile profile = new ProfileDrawerItem()
                 .withName(pi.getName_PI())
                 .withEmail(pi.getEmail_PI())
-                .withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460");
+                .withIcon(pi.getAvatar());
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
@@ -955,8 +946,6 @@ public class MainMenuActivity extends AppCompatActivity
                         }
                         user1.setUser_type(user_type1);
                     }
-                    if (jsonObj.has("avatar"))
-                        user1.setAvatar(jsonObj.getString("avatar"));
 //                    Log.d("User1", user1.toString());
                     userList.add(user1);
                 }

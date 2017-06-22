@@ -19,7 +19,6 @@ public class User implements Serializable {
     private String password;
 
     private User_Type user_type;
-    private String avatar;
     private String token;
     private Double lat_PI;
     private Double long_PI;
@@ -47,14 +46,6 @@ public class User implements Serializable {
 
     public void setUser_type(User_Type user_type) {
         this.user_type = user_type;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
     }
 
     public String getToken() {
@@ -107,11 +98,10 @@ public class User implements Serializable {
         this.long_PI = long_PI;
     }
 
-    public User(String user_name, String password, User_Type user_type, String avatar, String token, Double lat_PI, Double long_PI, long id_user) {
+    public User(String user_name, String password, User_Type user_type, String token, Double lat_PI, Double long_PI, long id_user) {
         this.user_name = user_name;
         this.password = password;
         this.user_type = user_type;
-        this.avatar = avatar;
         this.token = token;
         this.lat_PI = lat_PI;
         this.long_PI = long_PI;
@@ -127,7 +117,6 @@ public class User implements Serializable {
                 "user_name='" + user_name + '\'' +
                 ", password='" + password + '\'' +
                 ", user_type=" + user_type +
-                ", avatar='" + avatar + '\'' +
                 ", token='" + token + '\'' +
                 ", lat_PI=" + lat_PI +
                 ", long_PI=" + long_PI +

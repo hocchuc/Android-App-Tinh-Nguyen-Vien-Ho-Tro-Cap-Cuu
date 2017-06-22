@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Accident implements Parcelable {
+public class Accident {
 	private Long id_AC;
 	private Long id_user;
 	private String description_AC;
@@ -19,32 +19,6 @@ public class Accident implements Parcelable {
 
     public Accident() {
     }
-
-    protected Accident(Parcel in ) {
-        this.address = address;
-        String[] data = new String[5];
-
-        in.readStringArray(data);
-
-        this.description_AC = data[0];
-        this.date_AC = data[1];
-        this.status_AC = data[2];
-        this.long_AC=Double.valueOf(data[3]);
-        this.lat_AC=Double.valueOf(data[4]);
-    }
-
-
-    public static final Creator<Accident> CREATOR = new Creator<Accident>() {
-        @Override
-        public Accident createFromParcel(Parcel in) {
-            return new Accident(in);
-        }
-
-        @Override
-        public Accident[] newArray(int size) {
-            return new Accident[size];
-        }
-    };
 
     public String getAddress() {
         return address;
@@ -163,22 +137,5 @@ public class Accident implements Parcelable {
         this.long_AC = long_AC;
         this.lat_AC = lat_AC;
         this.status_AC = status_AC;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-        dest.writeString(description_AC);
-        dest.writeString(date_AC);
-        dest.writeString(status_AC);
-        dest.writeDouble(long_AC);
-        dest.writeDouble(lat_AC);
-        dest.writeString(address);
-
     }
 }

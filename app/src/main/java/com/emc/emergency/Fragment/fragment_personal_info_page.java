@@ -110,9 +110,9 @@ public class fragment_personal_info_page extends Fragment {
     /** Biến để chọn và chụp hình  */
     private static final int REQUEST_CHOOSE_PHOTO = 123;
     private static final int RESQUEST_TAKE_PHOTO = 321;
-    //Image properties
-    private String mCurrentImagePath = null;
-    private Uri mCapturedImageURI = null;
+//    //Image properties
+//    private String mCurrentImagePath = null;
+//    private Uri mCapturedImageURI = null;
     private StorageReference imagesRef;
     /* biến dùng cho firebase */
     FirebaseStorage storage;
@@ -181,8 +181,9 @@ public class fragment_personal_info_page extends Fragment {
                 pi1.setBirthday(txtBirthdayPI.getText().toString());
                 pi1.setPhone_PI(txtPhonePI.getText().toString());
                 pi1.setWork_location(txtWKPI.getText().toString());
-                //// TODO: 21-Jun-17 cần kiểm tra lại logic
-                pi1.setSex__PI(radMale.isChecked());
+
+                if(radMale.isChecked()) pi1.setSex__PI(true);
+                else pi1.setSex__PI(false);
 
                 Gson gson = new Gson();
                 String json = gson.toJson(pi1);
@@ -206,7 +207,8 @@ public class fragment_personal_info_page extends Fragment {
                     try {
                         Response response = client.newCall(request).execute();
                         Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
-                        Log.d("reponsePI_PUT",response.body().string());
+                        getActivity().finish();
+//                        Log.d("reponsePI_PUT",response.body().string());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -324,12 +326,12 @@ public class fragment_personal_info_page extends Fragment {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                sendPatchAvatarToUser(downloadUrl);
+                sendPatchAvatarToPI(downloadUrl);
 
             }
         });
     }
-    public void sendPatchAvatarToUser(Uri link){
+    public void sendPatchAvatarToPI(Uri link){
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
@@ -339,10 +341,8 @@ public class fragment_personal_info_page extends Fragment {
         RequestBody body = RequestBody.create
                 (mediaType, strRequest);
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl()+"users/"+id)
+                .url(SystemUtils.getServerBaseUrl()+"personal_Infomations/"+idPI)
                 .patch(body)
-                .addHeader("content-type", "application/json")
-                .addHeader("cache-control", "no-cache")
                 .build();
 
         // TODO: 21-Jun-17 kiểm soát lỗi từ responge
@@ -409,7 +409,7 @@ public class fragment_personal_info_page extends Fragment {
                                 .error(R.drawable.material_drawer_circle_mask)
                                 .priority(Priority.HIGH);
                         Glide.with(getActivity()).load(uriAvatar).apply(options).into(imgV);
-                        Log.d("getDownloadUrlSuccess",uri.toString());
+//                        Log.d("getDownloadUrlSuccess",uri.toString());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -418,9 +418,6 @@ public class fragment_personal_info_page extends Fragment {
 
                     }
                 });
-
-
-
 
                 try {
                     if(pi.getSex__PI()==true){
@@ -440,7 +437,7 @@ public class fragment_personal_info_page extends Fragment {
             sharedPreferences = getActivity().getSharedPreferences(id_user, MODE_PRIVATE);
             id = sharedPreferences.getInt("id_user", -1);
 
-            Log.d("ID_USER after put:", String.valueOf(id));
+//            Log.d("ID_USER after put:", String.valueOf(id));
             try {
                 URL url = new URL(SystemUtils.getServerBaseUrl()+"users/"+id+"/personal_Infomation");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
@@ -453,7 +450,7 @@ public class fragment_personal_info_page extends Fragment {
                     line = bufferedReader.readLine();
                 }
                 JSONObject jsonObj = new JSONObject(builder.toString());
-                Log.d("JsonPI: ", jsonObj.toString());
+//                Log.d("JsonPI: ", jsonObj.toString());
                 pi=new Personal_Infomation();
 
                 if(jsonObj.has("work_location"))
@@ -475,17 +472,17 @@ public class fragment_personal_info_page extends Fragment {
                 if(jsonObj.has("id_PI")){
                     pi.setId_PI(jsonObj.getLong("id_PI"));
                     idPI=jsonObj.getLong("id_PI");
-                    Log.d("idPI",idPI.toString());
+//                    Log.d("idPI",idPI.toString());
 
                     /* viết id_pi vào preferent */
                     preferences1 = getActivity().getSharedPreferences(id_pi, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences1.edit();
                     editor.putLong("id_PI",idPI);
                     editor.apply();
-                    Log.d("editorPI",editor.toString());
+//                    Log.d("editorPI",editor.toString());
 
                 }
-                Log.d("PI", pi.toString());
+//                Log.d("PI", pi.toString());
             } catch (Exception ex) {
                 Log.e("LOI ", ex.toString());
             }

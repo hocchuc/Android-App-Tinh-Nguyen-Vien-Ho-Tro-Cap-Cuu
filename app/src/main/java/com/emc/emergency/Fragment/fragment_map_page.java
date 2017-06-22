@@ -595,8 +595,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                         }
                         user1.setUser_type(user_type1);
                     }
-                    if (jsonObj.has("avatar"))
-                        user1.setAvatar(jsonObj.getString("avatar"));
                     Log.d("User1", user1.toString());
                     userList.add(user1);
                 }
