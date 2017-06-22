@@ -34,6 +34,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private Double Latitude =null;
     private Double Longtitude = null;
     private String location="";
+    private String FirebaseKey="";
+    final private String TYPE_HELPER = "helper";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -44,11 +46,11 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             // In this case the XMPP Server sends a payload data
-             String message = remoteMessage.getData().get("message");
+            String message = remoteMessage.getData().get("message");
             Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
             Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
             location = remoteMessage.getData().get("address");
-
+            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
             Log.d(TAG, "Message received: " + message);
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
             {
@@ -87,11 +89,17 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         manager.notify(0,builder.build());
 
     }
+
+    /**
+     * Hiện thị noti tai nạn
+     * @param message tin nhắn sẽ hiển thị trên tiêu đề
+     */
     private void showAccidentNotification(String message) {
         Intent i = new Intent(this,ChatBoxActivity.class);
-        i.putExtra("type","helper");
-        i.putExtra("FirebaseKey","Kn96icCFz6zJOh_Xqqm");
+        i.putExtra("type",TYPE_HELPER);
+        i.putExtra("FirebaseKey",FirebaseKey);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by kietnhi on 11/13/2016.
@@ -82,6 +83,8 @@ public class GPSTracker extends Service implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
+                Toast.makeText(getBaseContext(),"Vui lòng bật GPS",Toast.LENGTH_SHORT).show();
+                showSettingsAlert();
             } else {
                 this.canGetLocation = true;
                 // First get location from Network Provider
