@@ -872,7 +872,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     .build();
             try {
                 putResponse = client.newCall(request).execute();
-    4
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
