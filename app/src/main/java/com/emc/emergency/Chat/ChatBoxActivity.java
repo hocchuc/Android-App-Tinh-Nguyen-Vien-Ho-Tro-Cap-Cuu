@@ -121,7 +121,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 100;
     public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
@@ -137,7 +137,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     public static final MediaType mediaType = MediaType.parse("text/uri-list");
     private String mUsername;
     private String mPhotoUrl;
-    private SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences,mSharedPreferences2;
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -269,8 +269,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername,
+                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(),
+                        mUsername,
                         mPhotoUrl, null);
+                Log.d("messageImage",friendlyMessage.toString());
                 mFirebaseDatabaseReference.
                         child(ACCIDENTS_CHILD).
                         child(AccidentKey).
@@ -311,13 +313,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 if (friendlyMessage != null) {
                     friendlyMessage.setId(snapshot.getKey());
                 }
+                Log.d("parseSnapshot",friendlyMessage.toString());
+
                 return friendlyMessage;
+
             }
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage,
                                               int position) {
+                Log.d("populateViewHolder",friendlyMessage.toString());
+
                 //todo tạo logic để bật tắt mProgressBar
                  mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if (friendlyMessage.getText() != null) {
@@ -380,7 +387,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 FirebaseUserActions.getInstance().end(getMessageViewAction(friendlyMessage));
             }
         };
-        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
 
 
         //todo [bookmark] Khi chat insert thêm vào recycleview
@@ -398,6 +404,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 }
             }
         });
+        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+
 
     }
 
@@ -415,6 +424,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
         }
 
+        mSharedPreferences2 = getSharedPreferences(SystemUtils.PI, Context.MODE_PRIVATE);
+        mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI,ANONYMOUS);
+        mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI,"");
+        Log.d("mUsername",mUsername);
+
+        Log.d("mPhotoUrl",mPhotoUrl);
+
+
 
     }
 
@@ -424,7 +441,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private void prepareControl() {
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mUsername = ANONYMOUS;
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
@@ -437,11 +453,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-
-
 
 
 
@@ -473,7 +484,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
         // Bỏ accident mới vào key vừa tạo trên firebase
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
         // cập nhập firebasekey cho accident vừa tạo
-        //sendPatchAccidentKeyToServer(AccidentKey);
         Log.d("AccidentKey",AccidentKey);
     }
 
@@ -671,9 +681,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
      * @param storageReference đường dẫn đến nơi muốn lưu
      * @param uri
      * @param key
-     */
+     */@SuppressWarnings("VisibleForTests")
     private void putImageInStorage(StorageReference storageReference,
                                    Uri uri, final String key) {
+
         // gủi file lên store và lấy về kết quả
         storageReference.putFile(uri)
                 .addOnCompleteListener(ChatBoxActivity.this,
@@ -688,11 +699,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                             mPhotoUrl,
                                             task.getResult().getDownloadUrl().toString());
                             // thử bỏ key
+                            Log.d("messageImage",friendlyMessage.toString());
                             mFirebaseDatabaseReference
                                     .child(ACCIDENTS_CHILD)
                                     .child(AccidentKey)
                                     .child(MESSAGES_CHILD)
                                     .setValue(friendlyMessage);
+                            Log.d("putImageInStorage",friendlyMessage.toString());
+
                         } else {
                             Log.w(TAG, "Image upload task was not successful.",
                                     task.getException());
@@ -721,10 +735,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
      */
     private void createAccidentOnServer() {
         mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
-        final int id = mSharedPreferences.getInt("id_user", -1);
-
+        final int id = mSharedPreferences.getInt(SystemUtils.ID_USER, -1);
         accident = new Accident();
         accident.setDescription_AC("Tai nạn");
+
 
         //TODO thêm locate sau này, sử dụng giờ hệ thống
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
@@ -736,9 +750,12 @@ public class ChatBoxActivity extends AppCompatActivity implements
         accident.setLat_AC(latitude);
 
         accident.setLong_AC(longitude);
+        Log.d("createAccidentOnServer",accident.toString());
 
         createAccidentOnFirebase();
         // convert object to json
+        Log.d("afterOnFirebase",accident.toString());
+
         Gson gson = new Gson();
         String json = gson.toJson(accident);
 
@@ -802,6 +819,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 String response2 = putRel.put(SystemUtils.getServerBaseUrl()+"accidents/"+accident2.getId_AC()+"/id_user",
                         SystemUtils.getServerBaseUrl()+"users/"+id);
                 Log.d("response2",response2);
+                Log.d("PutUrl",SystemUtils.getServerBaseUrl()+"users/"+id);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -818,12 +837,16 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
         String post(String url, String json) throws IOException {
             RequestBody body = RequestBody.create(JSON, json);
+            Log.d("postURl",url);
+
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
                     .build();
             try {
                 postResponse = client.newCall(request).execute();
+                Log.d("postResponse",postResponse.toString());
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -849,6 +872,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     .build();
             try {
                 putResponse = client.newCall(request).execute();
+    4
             } catch (IOException e) {
                 e.printStackTrace();
             }

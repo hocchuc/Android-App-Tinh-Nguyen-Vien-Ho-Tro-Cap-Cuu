@@ -344,7 +344,7 @@ public class fragment_personal_info_page extends Fragment {
                 .url(SystemUtils.getServerBaseUrl()+"personal_Infomations/"+idPI)
                 .patch(body)
                 .build();
-
+        Log.d("PatchURL",SystemUtils.getServerBaseUrl()+"personal_Infomations/"+idPI);
         // TODO: 21-Jun-17 kiểm soát lỗi từ responge
         try {
             Response response = client.newCall(request).execute();

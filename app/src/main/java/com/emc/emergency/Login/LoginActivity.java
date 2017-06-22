@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             }
 
         } else {
-            preferences = getSharedPreferences(userState, MODE_PRIVATE);
+            preferences = getSharedPreferences(SystemUtils.userState, MODE_PRIVATE);
             username = preferences.getString("Username", "");
             password = preferences.getString("Password", "");
         }

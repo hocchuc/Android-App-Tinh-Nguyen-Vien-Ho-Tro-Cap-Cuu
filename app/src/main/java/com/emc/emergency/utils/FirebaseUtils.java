@@ -17,8 +17,9 @@ public class FirebaseUtils {
 
     private static final String KEY_SHARED_PREF = "ANDROID_WEB_CHAT";
     private static final int KEY_MODE_PRIVATE = 0;
-    private static final String KEY_SESSION_ID = "sessionId",
-            FLAG_MESSAGE = "message";
+    private static final String KEY_SESSION_ID = "sessionId",  FLAG_MESSAGE = "message";
+
+
 
     public FirebaseUtils(Context context) {
         this.context = context;

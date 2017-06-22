@@ -309,6 +309,7 @@ public class MainMenuActivity extends AppCompatActivity
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
 
+        // UID để tìm key đổ vào locationlistener
         sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
         idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
@@ -329,6 +330,9 @@ public class MainMenuActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
     }
 
+    /**
+     * Lấy user đang đăng nhập về
+     */
     private void GetPersonalInfo() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -370,7 +374,13 @@ public class MainMenuActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = preferences1.edit();
+                editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
+                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
+                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                editor1.commit();
             } catch (IOException e) {
                 e.printStackTrace();
             }

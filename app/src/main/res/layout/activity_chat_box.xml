@@ -24,8 +24,7 @@
         ads:layout_constraintBottom_toTopOf="@+id/linearLayout"
         ads:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
-        ads:layout_constraintVertical_bias="0.823"
-        ads:layout_constraintHorizontal_bias="0.812" />
+        ads:layout_constraintVertical_bias="0.951" />
 
     <LinearLayout
         android:orientation="horizontal"
