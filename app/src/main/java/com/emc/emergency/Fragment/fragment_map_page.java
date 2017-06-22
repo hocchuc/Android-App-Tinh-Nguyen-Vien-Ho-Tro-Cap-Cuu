@@ -584,7 +584,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     if (jsonObj.has("id_user_type")) {
                         String user_type = jsonObj.getString("id_user_type");
                         User_Type user_type1 = new User_Type();
-
                         try {
                             JSONObject jsonObject1 = new JSONObject(user_type);
                             if (jsonObject1.has("id_user_type"))
