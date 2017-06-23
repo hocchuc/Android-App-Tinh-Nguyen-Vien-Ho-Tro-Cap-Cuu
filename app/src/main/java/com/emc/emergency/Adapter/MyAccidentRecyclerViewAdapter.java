@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +44,7 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_list_accident, parent, false);
+                .inflate(R.layout.layout_list_accidents, parent, false);
         return new ViewHolder(view);
     }
 
@@ -57,7 +57,7 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
 //        holder.txtLat_Ac.setText((mValues.get(position).getLat_AC().toString()));
         holder.txtDate.setText(mValues.get(position).getDate_AC());
         holder.txtAdress.setText(mValues.get(position).getAddress());
-        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+        holder.imgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, mValues.get(position).getDescription_AC(), Toast.LENGTH_SHORT).show();
@@ -80,7 +80,7 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         Glide.with(context)
                 .load("https://maps.googleapis.com/maps/api/staticmap?zoom=15&size=640x250&maptype=roadmap&markers=color:red%7Clabel:C%7C" + mValues.get(position).getLat_AC() + "," + mValues.get(position).getLong_AC())
                 .apply(options)
-                .into(holder.imageButton);
+                .into(holder.imgV);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,19 +108,19 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
 //        public final TextView txtLong_Ac;
 //        public final TextView txtLat_Ac;
         public final TextView txtDate;
-        public final ImageButton imageButton;
+        public final ImageView imgV;
         public final FloatingActionButton floatingActionButton;
         public final TextView txtAdress;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            txtDes = (TextView) view.findViewById(R.id.txtDes_Ac);
+            txtDes = (TextView) view.findViewById(R.id.txtDes_AC);
             txtStatus = (TextView) view.findViewById(R.id.txtStatus);
 //            txtLong_Ac = (TextView) view.findViewById(R.id.txtLong_Ac);
 //            txtLat_Ac = (TextView) view.findViewById(R.id.txtLat_Ac);
-            txtDate = (TextView) view.findViewById(R.id.txtDate_Ac);
-            imageButton = (ImageButton) view.findViewById(R.id.imageButton);
+            txtDate = (TextView) view.findViewById(R.id.txtDate_AC);
+            imgV = (ImageView) view.findViewById(R.id.imgVAC);
             floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
             txtAdress = (TextView) view.findViewById(R.id.txtAddess_Ac);
         }

@@ -50,7 +50,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LoginActivity extends AppCompatActivity implements IRequestListener, fragment_personal_info_page.OnListFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity implements IRequestListener {
     ActionProcessButton btnLogin;
     Button btnSignUp;
     EditText txtUsername;
@@ -327,11 +327,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
     @Override
     public void onError(String message) {
-
-    }
-
-    @Override
-    public void onListFragmentInteraction(Personal_Infomation mItem) {
 
     }
 }

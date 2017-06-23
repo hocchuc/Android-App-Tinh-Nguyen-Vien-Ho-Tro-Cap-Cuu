@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Sign in"
+        android:text="SUBMIT"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         custom:pb_colorComplete="@color/green_complete"
