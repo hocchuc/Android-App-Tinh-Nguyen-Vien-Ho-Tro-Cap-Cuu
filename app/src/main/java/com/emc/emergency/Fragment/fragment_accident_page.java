@@ -26,7 +26,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -45,7 +48,8 @@ public class fragment_accident_page extends Fragment {
     ArrayList<Accident> accidentList;
     RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
-    String id_user="ID_USER";
+    String id_user = "ID_USER";
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -84,9 +88,9 @@ public class fragment_accident_page extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(),accidentList, mListener));
+        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(), accidentList, mListener));
 
-            //Log.d("listtruocasyn", accidentList.toString());
+        //Log.d("listtruocasyn", accidentList.toString());
 
         return view;
     }
@@ -152,7 +156,7 @@ public class fragment_accident_page extends Fragment {
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL(SystemUtils.getServerBaseUrl()+"accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -177,10 +181,23 @@ public class fragment_accident_page extends Fragment {
                         accident.setId_AC(Long.parseLong(jsonObject.getString("id_AC")));
                     if (jsonObject.has("description_AC"))
                         accident.setDescription_AC(jsonObject.getString("description_AC"));
-                    if (jsonObject.has("date_AC"))
+                    if (jsonObject.has("date_AC")) {
                         accident.setDate_AC(jsonObject.getString("date_AC"));
+                        String dateStart = accident.getDate_AC();
+//                        Log.d("dateStart", dateStart);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000+0000'");
+                        try {
+                            Date date = format.parse(dateStart);
+//                            Log.d("date", date.toString());
+                            accident.setDate_AC(date.toString());
+                        } catch (ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
                     if (jsonObject.has("long_AC"))
-                        accident.setLong_AC( jsonObject.getDouble("long_AC"));
+                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))
                         accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
