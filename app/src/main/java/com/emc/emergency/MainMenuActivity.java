@@ -787,7 +787,7 @@ public class MainMenuActivity extends AppCompatActivity
 //        arrAccidents.clear();
             arrAccidents.addAll(accidents);
 
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.mipmap.ic_accident_marker));
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.placeholder);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
@@ -967,24 +967,24 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-    //Convert view into bitmap
-    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
-
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        markerImageView.setImageResource(resId);
-        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-        customMarkerView.buildDrawingCache();
-        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        Drawable drawable = customMarkerView.getBackground();
-        if (drawable != null)
-            drawable.draw(canvas);
-        customMarkerView.draw(canvas);
-        return returnedBitmap;
-    }
+//    //Convert view into bitmap
+//    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+//
+//        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+//        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+//        markerImageView.setImageResource(resId);
+//        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+//        customMarkerView.buildDrawingCache();
+//        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+//                Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(returnedBitmap);
+//        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+//        Drawable drawable = customMarkerView.getBackground();
+//        if (drawable != null)
+//            drawable.draw(canvas);
+//        customMarkerView.draw(canvas);
+//        return returnedBitmap;
+//    }
 
 }

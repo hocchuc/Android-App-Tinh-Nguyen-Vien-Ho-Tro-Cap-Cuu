@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -60,15 +61,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RegisterActivity extends AppCompatActivity {
     Button btnRegister, btnLogin;
     EditText txtRegitersUsername,txtRegisterEmai,txtRegisterPassword,txtRegisterDay,txtRegisterYear,txtRegisterPhone;
-    Spinner spRegisterMonth,spRegisterGender;
+    Spinner spRegisterMonth;
+    RadioButton radMale,radFalse;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     double lat = 0;
     double lng = 0;
     String[] month;
-    String [] gender;
+//    String [] gender;
     String selected = "";
-    String selected1="";
+//    String selected1="";
 
 
     FlashMessage flashMessage;
@@ -76,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_taotaikhoan);
+        setContentView(R.layout.activity_register);
 
 //        Firebase.setAndroidContext(this);
 
@@ -96,10 +98,13 @@ public class RegisterActivity extends AppCompatActivity {
         txtRegisterYear= (EditText) findViewById(R.id.txtRegisYear);
         txtRegisterPhone= (EditText) findViewById(R.id.txtRegisPhoneNumer);
         spRegisterMonth= (Spinner) findViewById(R.id.spRegisMonth);
+        radFalse= (RadioButton) findViewById(R.id.radMaleRegist);
+        radMale= (RadioButton) findViewById(R.id.radMaleRegist);
+
         month = new String[] {"1", "2", "3","4","5","6","7","8","9","10","11","12"};
 
-        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
-        gender=new String[]{"Male","Female"};
+//        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
+//        gender=new String[]{"Male","Female"};
         btnRegister = (Button) findViewById(R.id.btnRegist);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -112,23 +117,23 @@ public class RegisterActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spRegisterMonth.setAdapter(adapter);
 
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, gender);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spRegisterGender.setAdapter(adapter1);
-
-        spRegisterGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                gender[0]="Male";
-                selected1=gender[position];
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+//        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
+//                android.R.layout.simple_spinner_item, gender);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spRegisterGender.setAdapter(adapter1);
+//
+//        spRegisterGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                gender[0]="Male";
+//                selected1=gender[position];
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         spRegisterMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -242,9 +247,8 @@ public class RegisterActivity extends AppCompatActivity {
                                                 pi.setPhone_PI(txtRegisterPhone.getText().toString());
                                                 String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
                                                 pi.setBirthday(date);
-                                                if(selected1.equals("Male")){
-                                                    pi.setSex__PI(true);
-                                                }else {pi.setSex__PI(false);}
+                                                if(radMale.isChecked()) pi.setSex__PI(true);
+                                                else pi.setSex__PI(false);
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
 

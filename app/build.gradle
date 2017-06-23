@@ -115,7 +115,6 @@ dependencies {
 
     compile 'de.hdodenhof:circleimageview:2.1.0'
 
-    compile 'com.github.florent37:materialtextfield:1.0.7'
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
