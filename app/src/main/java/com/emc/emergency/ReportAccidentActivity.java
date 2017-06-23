@@ -3,32 +3,27 @@ package com.emc.emergency;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
-import android.support.v4.util.TimeUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.GridView;
 import android.widget.Toast;
 
-import com.emc.emergency.MainMenuActivity;
-import com.emc.emergency.R;
+import com.dd.processbutton.iml.ActionProcessButton;
+import com.emc.emergency.Adapter.CustomGrid;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
-import com.emc.emergency.utils.Utils;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -39,8 +34,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ReportAccidentActivity extends AppCompatActivity {
-    EditText edtDes;
-    Button btnCamera,btnSubmit;
+    ActionProcessButton btnCamera,btnSubmit;
     Accident accident;
     String id_user="ID_USER";
     public static final MediaType JSON
@@ -53,6 +47,21 @@ public class ReportAccidentActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Double longitude,latitude;
     private String response;
+
+    GridView grid;
+    String [] DSTainan={"Gãy chân","Gãy tay","Bị bỏng","Chó cắn","Đụng xe","Gãy cổ","Gãy vai","Té cầu thang","Té xe"};
+    int [] DSHinhTainan={
+            R.drawable.accident1,
+            R.drawable.accident2,
+            R.drawable.accident3,
+            R.drawable.accident4,
+            R.drawable.accident5,
+            R.drawable.accident6,
+            R.drawable.accident7,
+            R.drawable.accident8,
+            R.drawable.accident9,
+    };
+    int vt=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,17 @@ public class ReportAccidentActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
         final int id = sharedPreferences.getInt("id_user", -1);
 
+        final CustomGrid adapter = new CustomGrid(ReportAccidentActivity.this, DSTainan, DSHinhTainan);
+        grid.setAdapter(adapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                vt=position;
+                adapter.setSelectedPosition(position);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         /**
          *  Gửi accident lên server
          */
@@ -83,13 +103,8 @@ public class ReportAccidentActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 accident = new Accident();
-                if (!edtDes.getText().toString().equals(""))
-                    accident.setDescription_AC(edtDes.getText().toString());
-                else {
-                    Toast.makeText(ReportAccidentActivity.this
-                            , "Vui lòng nhập thông tin", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                accident.setDescription_AC(DSTainan[vt]);
+
                 //TODO thêm locate sau này, sử dụng giờ hệ thống
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
                 String currentDateandTime = sdf.format(new Date());
@@ -165,16 +180,15 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                 }
-
+                btnSubmit.setProgress(1);
             }
         });
     }
 
     private void onControls() {
-        edtDes = (EditText) findViewById(R.id.edtDes);
-        btnSubmit = (Button) findViewById(R.id.btnSubmit);
+        grid=(GridView)findViewById(R.id.grid1);
+        btnSubmit = (ActionProcessButton) findViewById(R.id.btnSubmit);
     }
 
     /**

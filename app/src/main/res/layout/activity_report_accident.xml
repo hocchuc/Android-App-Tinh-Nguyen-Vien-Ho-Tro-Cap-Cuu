@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:float="http://schemas.android.com/tools"
     tools:context="com.emc.emergency.ReportAccidentActivity">
 
-    <Space
+    <!--<Space-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1" />-->
+
+    <GridView
+        android:id="@+id/grid1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-<com.wrapp.floatlabelededittext.FloatLabeledEditText
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <EditText
-        android:hint="@string/description"
-        android:id="@+id/edtDes"
+        android:layout_height="wrap_content"
+        android:columnWidth="90dp"
+        android:stretchMode="columnWidth"
+        android:layout_gravity="center"
+        android:numColumns="3"/>
+    <com.dd.processbutton.iml.ActionProcessButton
+        android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
-        android:layout_height="200sp"
-        android:ems="10"
-        android:inputType="textMultiLine" />
-</com.wrapp.floatlabelededittext.FloatLabeledEditText>
-
-    <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="100sp"
-            android:text="@string/submit" />
-
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Sign in"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        custom:pb_colorComplete="@color/green_complete"
+        custom:pb_colorError="@color/red_error"
+        custom:pb_colorNormal="@color/blue_normal"
+        custom:pb_colorPressed="@color/blue_pressed"
+        custom:pb_colorProgress="@color/purple_progress"
+        custom:pb_textComplete="Success"
+        custom:pb_textError="Error"
+        custom:pb_textProgress="Done" />
 </LinearLayout>
