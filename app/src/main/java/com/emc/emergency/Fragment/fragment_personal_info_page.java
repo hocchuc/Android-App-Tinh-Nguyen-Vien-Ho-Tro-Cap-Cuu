@@ -408,7 +408,11 @@ public class fragment_personal_info_page extends Fragment {
                                 .placeholder(R.drawable.profile3)
                                 .error(R.drawable.material_drawer_circle_mask)
                                 .priority(Priority.HIGH);
-                        Glide.with(getActivity()).load(uriAvatar).apply(options).into(imgV);
+                        try {
+                            Glide.with(getActivity()).load(uriAvatar).apply(options).into(imgV);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 //                        Log.d("getDownloadUrlSuccess",uri.toString());
                     }
                 }).addOnFailureListener(new OnFailureListener() {

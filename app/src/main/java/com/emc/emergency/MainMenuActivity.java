@@ -787,7 +787,7 @@ public class MainMenuActivity extends AppCompatActivity
 //        arrAccidents.clear();
             arrAccidents.addAll(accidents);
 
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.placeholder);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.pin);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));

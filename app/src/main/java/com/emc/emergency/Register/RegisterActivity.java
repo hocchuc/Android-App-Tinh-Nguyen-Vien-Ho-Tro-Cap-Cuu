@@ -101,7 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
         radFalse= (RadioButton) findViewById(R.id.radMaleRegist);
         radMale= (RadioButton) findViewById(R.id.radMaleRegist);
 
-        month = new String[] {"1", "2", "3","4","5","6","7","8","9","10","11","12"};
+        month = new String[] {"Jan", "Feb", "Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
 //        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
 //        gender=new String[]{"Male","Female"};
@@ -138,7 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
         spRegisterMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                month[0]="1";
+                month[0]="Jan";
                 selected=month[position];
             }
 
