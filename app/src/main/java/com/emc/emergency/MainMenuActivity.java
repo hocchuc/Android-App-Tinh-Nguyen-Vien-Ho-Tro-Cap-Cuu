@@ -175,7 +175,7 @@ public class MainMenuActivity extends AppCompatActivity
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-// Define a listener that responds to location updates
+        // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 latitude = location.getLatitude();
@@ -202,13 +202,6 @@ public class MainMenuActivity extends AppCompatActivity
 
 // Register the listener with the Location Manager to receive location updates
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
@@ -315,7 +308,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
-//        Log.d("IDusertype",id_usertype.toString());
+        //Log.d("IDusertype",id_usertype.toString());
 
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
@@ -686,6 +679,7 @@ public class MainMenuActivity extends AppCompatActivity
 //        mMap.getUiSettings().setMyLocationButtonEnabled(true);
 //        // tinh trang giao thong
 //        googleMap.setTrafficEnabled(true);
+
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this,
@@ -714,11 +708,6 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         LatLng position = marker.getPosition();
-//        Toast.makeText(
-//                MainMenuActivity.this,
-//                "Lat " + position.latitude + " "
-//                        + "Long " + position.longitude,
-//                Toast.LENGTH_LONG).show();
         viDo = Double.parseDouble(String.valueOf(position.latitude));
         kinhDo = Double.parseDouble(String.valueOf(position.longitude));
         return false;
@@ -768,7 +757,7 @@ public class MainMenuActivity extends AppCompatActivity
     private class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
         Activity activity;
         ArrayList<Accident> arrAccidents;
-//    AccidentAdapter accidentsAdapter;
+        //    AccidentAdapter accidentsAdapter;
 
         public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
             this.activity = activity;
@@ -881,7 +870,7 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPostExecute(users);
             arrUser.addAll(users);
 
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_volunteer);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_account_circle_black_24dp));
 
 //            Log.d("UserSize", String.valueOf(arrUser.size()));
             for (int i = 0; i < arrUser.size(); i++) {
@@ -967,24 +956,24 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-//    //Convert view into bitmap
-//    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
-//
-//        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
-//        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-//        markerImageView.setImageResource(resId);
-//        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-//        customMarkerView.buildDrawingCache();
-//        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-//                Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(returnedBitmap);
-//        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-//        Drawable drawable = customMarkerView.getBackground();
-//        if (drawable != null)
-//            drawable.draw(canvas);
-//        customMarkerView.draw(canvas);
-//        return returnedBitmap;
-//    }
+    //Convert view into bitmap, them vien ngoai.
+    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+
+        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        markerImageView.setImageResource(resId);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
 
 }

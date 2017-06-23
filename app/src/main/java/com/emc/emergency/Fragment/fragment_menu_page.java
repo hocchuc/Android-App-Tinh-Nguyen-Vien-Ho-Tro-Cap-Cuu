@@ -120,6 +120,7 @@ public class fragment_menu_page extends Fragment {
             public void onStateChange(boolean active) {
                 if(swipeButton.isActive()) {
                    swipeButton.setVisibility(View.INVISIBLE);
+                    swipeButton.toggleState();
                     fragment_countdown fragmentCountdown = new fragment_countdown();
                     FragmentManager fragmentManager = getFragmentManager();
                     android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
