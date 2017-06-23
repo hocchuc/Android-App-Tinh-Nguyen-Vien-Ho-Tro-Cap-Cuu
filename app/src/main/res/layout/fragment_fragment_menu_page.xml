@@ -102,7 +102,7 @@
         android:layout_width="330dp"
         android:layout_height="150dp"
         android:visibility="invisible"
-        app:inner_text="SWIPE TO SOS"
+        app:inner_text="SWIPE TO SEND SOS"
         app:inner_text_color="@android:color/holo_red_light"
         app:inner_text_size="18sp"
         app:inner_text_top_padding="18dp"

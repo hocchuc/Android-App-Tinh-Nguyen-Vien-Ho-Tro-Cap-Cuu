@@ -16,10 +16,9 @@
             android:id="@+id/imgVAC"
             android:layout_width="150dp"
             android:layout_height="128dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="12dp"
-            card_view:srcCompat="@mipmap/ic_launcher_round" />
+            card_view:srcCompat="@mipmap/ic_launcher_round"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:id="@+id/txtAddess_Ac"
@@ -58,11 +57,11 @@
             android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/txtAddess_Ac"
             android:clickable="true"
             card_view:fabSize="mini"
-            card_view:srcCompat="@drawable/ic_menu_send" />
+            card_view:srcCompat="@drawable/ic_menu_send"
+            android:layout_below="@+id/txtDate_AC"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:id="@+id/txtDes_AC"
