@@ -31,10 +31,10 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
         fragment_personal_info_page fragment_personal_info_page = new fragment_personal_info_page();
         getSupportFragmentManager().beginTransaction().add(R.id.content1, fragment_personal_info_page).commit();
 
-        xylyNavigation();
+        xulyNavigation();
     }
 
-    private void xylyNavigation() {
+    private void xulyNavigation() {
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

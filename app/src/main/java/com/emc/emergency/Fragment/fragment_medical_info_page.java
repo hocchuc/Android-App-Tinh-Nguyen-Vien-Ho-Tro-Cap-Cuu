@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -82,12 +85,20 @@ public class fragment_medical_info_page extends Fragment {
         arrMI = new ArrayList<>();
         new GetMedicalInfo(this.getActivity(), arrMI).execute();
 
-        Context context = view.getContext();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview2);
+//        Context context = view.getContext();
+//        recyclerView = (RecyclerView) view.findViewById(R.id.recycleview2);
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+//        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI, mListener));
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI, mListener));
+        //set adapter to your ViewPager
+        FragmentManager fragmentManager = getFragmentManager();
 
+        viewPager.setAdapter(new TabPagerAdapter(getFragmentManager()));
+
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
         return view;
     }
 
@@ -143,7 +154,7 @@ public class fragment_medical_info_page extends Fragment {
             super.onPostExecute(medical_infos);
 //        arrAccidents.clear();
             arrMI.addAll(medical_infos);
-            recyclerView.getAdapter().notifyDataSetChanged();
+//            recyclerView.getAdapter().notifyDataSetChanged();
 
         }
 

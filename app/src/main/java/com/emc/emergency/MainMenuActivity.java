@@ -400,10 +400,15 @@ public class MainMenuActivity extends AppCompatActivity
 
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
-        final IProfile profile = new ProfileDrawerItem()
-                .withName(pi.getName_PI())
-                .withEmail(pi.getEmail_PI())
-                .withIcon(pi.getAvatar());
+        IProfile profile = new ProfileDrawerItem();
+
+        if(pi.getAvatar()!=null) {
+              profile = new ProfileDrawerItem()
+                    .withName(pi.getName_PI())
+                    .withEmail(pi.getEmail_PI())
+                    .withIcon(pi.getAvatar());
+        }
+
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()

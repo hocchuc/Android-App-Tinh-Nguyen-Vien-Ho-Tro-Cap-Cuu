@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -30,6 +31,9 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -106,6 +110,7 @@ public class fragment_personal_info_page extends Fragment {
     public  ImageView imgV;
     public  RadioButton radMale;
     public  RadioButton radFeMale;
+    public ImageView mImageSex;
     public  FloatingActionButton btnEdit;
     /** Biến để chọn và chụp hình  */
     private static final int REQUEST_CHOOSE_PHOTO = 123;
@@ -160,7 +165,7 @@ public class fragment_personal_info_page extends Fragment {
         radMale= (RadioButton) view.findViewById(R.id.radMale);
         imgV = (ImageView) view.findViewById(R.id.imageItemHinh);
         btnEdit= (FloatingActionButton) view.findViewById(R.id.btnEditPI);
-
+        mImageSex = (ImageView) view.findViewById(R.id.imageSex);
         new GetPersonalInfo(this.getActivity(), mItem).execute();
 
         imgV.setOnClickListener(new View.OnClickListener() {
@@ -173,46 +178,65 @@ public class fragment_personal_info_page extends Fragment {
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Personal_Infomation pi1=new Personal_Infomation();
-                pi1.setName_PI(txtNamePI.getText().toString());
-                pi1.setEmail_PI(txtEmailPI.getText().toString());
-                pi1.setPersonal_id(txtPID.getText().toString());
-                pi1.setAddress_PI(txtAddressPI.getText().toString());
-                pi1.setBirthday(txtBirthdayPI.getText().toString());
-                pi1.setPhone_PI(txtPhonePI.getText().toString());
-                pi1.setWork_location(txtWKPI.getText().toString());
+                if(!txtNamePI.isEnabled()) {
+                    txtEmailPI.setEnabled(true);
+                    txtBirthdayPI.setEnabled(true);
+                    txtPID.setEnabled(true);
+                    txtAddressPI.setEnabled(true);
+                    txtWKPI.setEnabled(true);
+                    txtPhonePI.setEnabled(true);
+                    txtNamePI.setEnabled(true);
+                    imgV.setEnabled(true);
+                    btnEdit.setImageResource(R.drawable.ic_save);
+                    radFeMale.setVisibility(View.VISIBLE);
+                    radMale.setVisibility(View.VISIBLE);
 
-                if(radMale.isChecked()) pi1.setSex__PI(true);
-                else pi1.setSex__PI(false);
+                }
+                else {
+                    Personal_Infomation pi1 = new Personal_Infomation();
+                    pi1.setName_PI(txtNamePI.getText().toString());
+                    pi1.setEmail_PI(txtEmailPI.getText().toString());
+                    pi1.setPersonal_id(txtPID.getText().toString());
+                    pi1.setAddress_PI(txtAddressPI.getText().toString());
+                    pi1.setBirthday(txtBirthdayPI.getText().toString());
+                    pi1.setPhone_PI(txtPhonePI.getText().toString());
+                    pi1.setWork_location(txtWKPI.getText().toString());
 
-                Gson gson = new Gson();
-                String json = gson.toJson(pi1);
-
-                OkHttpClient client = new OkHttpClient();
-
-                MediaType mediaType = MediaType.parse("application/json");
-                RequestBody body = RequestBody.create(mediaType, json);
-                Request request = new Request.Builder()
-                        .url(SystemUtils.getServerBaseUrl()+"personal_Infomations/"+idPI)
-                        .put(body)
-                        .addHeader("content-type", "application/json")
-                        .build();
-
-
-                int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                if (SDK_INT > 8) {
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                            .permitAll().build();
-                    StrictMode.setThreadPolicy(policy);
-                    try {
-                        Response response = client.newCall(request).execute();
-                        Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
-                        getActivity().finish();
-//                        Log.d("reponsePI_PUT",response.body().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (radMale.isChecked())
+                    {
+                        pi1.setSex__PI(true);
                     }
+                    else pi1.setSex__PI(false);
 
+                    Gson gson = new Gson();
+                    String json = gson.toJson(pi1);
+
+                    OkHttpClient client = new OkHttpClient();
+
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, json);
+                    Request request = new Request.Builder()
+                            .url(SystemUtils.getServerBaseUrl() + "personal_Infomations/" + idPI)
+                            .put(body)
+                            .addHeader("content-type", "application/json")
+                            .build();
+
+
+                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                    if (SDK_INT > 8) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                .permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        try {
+                            Response response = client.newCall(request).execute();
+                            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
+                            getActivity().finish();
+//                        Log.d("reponsePI_PUT",response.body().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                 }
 
             }
@@ -258,30 +282,30 @@ public class fragment_personal_info_page extends Fragment {
      * Hiện dialog để chụp hình
      */
     private void xuLyCustomDialog() {
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.imageview_customdialog_sv);
-        dialog.setTitle("Please choose using camera or gallery to load new image");
-        Button btnCamera = (Button) dialog.findViewById(R.id.btnCamera);
-        Button btnGallery = (Button) dialog.findViewById(R.id.btnGallery);
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, RESQUEST_TAKE_PHOTO);
-                dialog.cancel();
-            }
-        });
-        btnGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, REQUEST_CHOOSE_PHOTO);
-                dialog.cancel();
-            }
-        });
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.show();
+    // MaterialDialog
+         new MaterialDialog.Builder(getContext())
+                .title(R.string.SelectImage)
+                .items(R.array.SelectImage)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        switch (which) {
+                            case 0: {
+                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(intent, RESQUEST_TAKE_PHOTO);
+                                dialog.cancel();
+                            }
+                            case 1: {
+                                Intent intent = new Intent(Intent.ACTION_PICK);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, REQUEST_CHOOSE_PHOTO);
+                                dialog.cancel();
+                            }
+                        }
+                        }
+
+                })
+                .show();
 
     }
 
@@ -386,9 +410,9 @@ public class fragment_personal_info_page extends Fragment {
             super.onPostExecute(pi);
 
             try {
+
                 mItem = pi;
                 imagesRef = storageRef.child("images/"+id+".jpg");
-
                 txtNamePI.setText(pi.getName_PI().toString());
                 txtEmailPI.setText(pi.getEmail_PI().toString());
                 txtPhonePI.setText((pi.getPhone_PI().toString()));
@@ -424,10 +448,15 @@ public class fragment_personal_info_page extends Fragment {
                 });
 
                 try {
-                    if(pi.getSex__PI()==true){
+                    if(pi.getSex__PI()){
                         radMale.toggle();
+                        mImageSex.setImageResource(R.drawable.man);
+
                     }
-                    else radFeMale.toggle();
+                    else {
+                        radFeMale.toggle();
+                        mImageSex.setImageResource(R.drawable.girl);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
