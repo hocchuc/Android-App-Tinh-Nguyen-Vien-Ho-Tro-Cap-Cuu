@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     Button btnSignUp;
     EditText txtUsername;
     EditText txtPassword;
+    Personal_Infomation pi;
     SharedPreferences preferences, preferences1,preferences2;
     String userState = "StoreUserState";
     String id_user = "ID_USER";
@@ -205,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                             SharedPreferences.Editor editor1 = preferences1.edit();
                             editor1.putInt("id_user", id);
                             editor1.commit();
-
+                            //GetPersonalInfo();
                             btnLogin.setProgress(0);
                             btnLogin.setText("Done");
 
@@ -328,5 +329,62 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     @Override
     public void onError(String message) {
 
+    }
+    /**
+     * Lấy user đang đăng nhập về
+     */
+    private void GetPersonalInfo() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user + "/personal_Infomation")
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                okhttp3.Response response = client.newCall(request).execute();
+                JSONObject jsonObj = null;
+                try {
+                    jsonObj = new JSONObject(response.body().string());
+                    pi = new Personal_Infomation();
+                    if (jsonObj.has("work_location"))
+                        pi.setWork_location(jsonObj.getString("work_location"));
+                    if (jsonObj.has("birthday"))
+                        pi.setBirthday(jsonObj.getString("birthday"));
+                    if (jsonObj.has("phone_PI"))
+                        pi.setPhone_PI(jsonObj.getString("phone_PI"));
+                    if (jsonObj.has("sex__PI"))
+                        pi.setSex__PI(jsonObj.getBoolean("sex__PI"));
+                    if (jsonObj.has("email_PI"))
+                        pi.setEmail_PI(jsonObj.getString("email_PI"));
+                    if (jsonObj.has("address_PI"))
+                        pi.setAddress_PI(jsonObj.getString("address_PI"));
+                    if (jsonObj.has("personal_id"))
+                        pi.setPersonal_id(jsonObj.getString("personal_id"));
+                    if (jsonObj.has("name_PI"))
+                        pi.setName_PI(jsonObj.getString("name_PI"));
+                    if(jsonObj.has("avatar"))
+                        pi.setAvatar(jsonObj.getString("avatar"));
+                    if (jsonObj.has("id_PI")) {
+                        pi.setId_PI(jsonObj.getLong("id_PI"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                // luu thong tin vua load duoc vao SharedPreferences
+                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = preferences1.edit();
+                editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
+                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
+                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                editor1.commit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

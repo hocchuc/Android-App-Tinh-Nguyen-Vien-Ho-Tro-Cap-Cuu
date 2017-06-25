@@ -34,4 +34,7 @@
         <item>#56342e</item>
         <item>#8c9f58</item>
     </string-array>
+    <string-array name="SelectImage">
+        <item>Camera</item>
+        <item>Image</item></string-array>
 </resources>

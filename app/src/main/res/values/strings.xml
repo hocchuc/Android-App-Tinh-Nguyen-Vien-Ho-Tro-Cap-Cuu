@@ -87,7 +87,7 @@
     <string name="bao_tai_nan">REPORT ACCIDENT</string>
     <string name="tap_to_cancle">Tap to cancle</string>
     <string name="male">Male</string>
-    <string name="female">FeMale</string>
+    <string name="female">Female</string>
     <string name="edit">Edit</string>
     <string name="submit">submit</string>
     <string name="camera">Camera</string>
@@ -101,4 +101,8 @@
     <string name="map">Bản Đồ</string>
     <string name="personal_information">Personal Information</string>
     <string name="medical_information">Medical Information</string>
+    <string name="Name">Name</string>
+    <string name="type">type</string>
+    <string name="seach">Seach</string>
+    <string name="SelectImage">Choose Camera or Image Library</string>
 </resources>

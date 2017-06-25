@@ -38,8 +38,12 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
                 android:layout_weight="3"
-                android:drawableStart="@mipmap/ic_report_accident"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                android:drawableTop="@drawable/ic_contact_phone_black_24dp"
                 android:text="@string/bao_tai_nan" />
 
             <android.support.v4.widget.Space
@@ -53,7 +57,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:drawableStart="@mipmap/ic_personal_info"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                android:drawableTop="@mipmap/ic_account_box"
                 android:lines="2"
                 android:text="@string/thong_tin_ca_nhan"
                 android:textColor="@android:color/black" />
@@ -73,10 +81,12 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
                 android:layout_weight="3"
-                android:drawableStart="@mipmap/ic_request_accident"
-                android:padding="10dp"
+                android:drawableTop="@drawable/ic_gps_fixed_black_24dp"
                 android:text="@string/yeu_cau_cap_cuu"
                 android:textColor="@android:color/black" />
 
@@ -89,10 +99,14 @@
 
                 android:id="@+id/button_accident"
                 style="@style/Widget.AppCompat.Button.Borderless"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:drawableStart="@mipmap/ic_accident_list"
+                android:drawableTop="@drawable/ic_accident_near_me_black_24dp"
                 android:scaleType="fitCenter"
                 android:text="@string/danh_sach_tai_nan_gan_day" />
         </LinearLayout>

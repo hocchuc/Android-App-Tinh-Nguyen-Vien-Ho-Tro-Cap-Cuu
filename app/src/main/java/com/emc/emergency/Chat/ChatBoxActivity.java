@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.emc.emergency.Fragment.fragment_map_page;
@@ -51,6 +52,14 @@ import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
 import com.emc.emergency.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.github.florent37.camerafragment.CameraFragment;
+import com.github.florent37.camerafragment.CameraFragmentApi;
+import com.github.florent37.camerafragment.PreviewActivity;
+import com.github.florent37.camerafragment.configuration.Configuration;
+import com.github.florent37.camerafragment.listeners.CameraFragmentResultAdapter;
+import com.github.florent37.camerafragment.listeners.CameraFragmentResultListener;
+import com.github.florent37.camerafragment.listeners.CameraFragmentStateAdapter;
+import com.github.florent37.camerafragment.widgets.RecordButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -79,6 +88,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -95,6 +105,8 @@ import okhttp3.Response;
 
 public class ChatBoxActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, fragment_map_page.onFragmentMapInteraction {
+
+    private static final String FRAGMENT_TAG = "fragment_tag" ;
 
     @Override
     public void onFragmentMapInteraction(Uri uri) {
@@ -133,7 +145,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     String id_user="ID_USER";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-
+    private RecordButton recordButton;
     public static final MediaType mediaType = MediaType.parse("text/uri-list");
     private String mUsername;
     private String mPhotoUrl;
@@ -283,6 +295,28 @@ public class ChatBoxActivity extends AppCompatActivity implements
         });
 
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+        recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final CameraFragmentApi cameraFragment = getCameraFragment();
+                if (cameraFragment != null) {
+                    cameraFragment.takePhotoOrCaptureVideo(new CameraFragmentResultAdapter() {
+                     @Override
+                     public void onVideoRecorded(String filePath) {
+                      //todo gui file len firebase
+                     Toast.makeText(getBaseContext(), "onVideoRecorded " + filePath, Toast.LENGTH_SHORT).show();
+                      }
+                     @Override
+                    public void onPhotoTaken(byte[] bytes, String filePath) {
+                        Toast.makeText(getBaseContext(), "onPhotoTaken " + filePath, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                            "/storage/self/primary",
+                            "photo0");
+                }
+            }
+        });
 
     }
 
@@ -454,6 +488,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
 
+        recordButton = (RecordButton) findViewById(R.id.record_button);
 
 
     }
@@ -462,11 +497,45 @@ public class ChatBoxActivity extends AppCompatActivity implements
      *  Đổ Fragment Map vào acitivity
      */
     private void buildFragment() {
-        //FragmentManager managerTop = getSupportFragmentManager();
         fragment_map_page fragment_map_page = new fragment_map_page();
         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout,fragment_map_page).commit();
 
-    }
+
+        final Configuration.Builder builder = new Configuration.Builder();
+        builder
+                .setCamera(Configuration.CAMERA_FACE_REAR)
+                .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
+                .setMediaQuality(Configuration.MEDIA_QUALITY_LOW);
+
+        CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameCamera, cameraFragment, FRAGMENT_TAG)
+                .commit();
+        cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
+            @Override
+            public void onRecordStateVideoReadyForRecord() {
+                super.onRecordStateVideoReadyForRecord();
+            }
+
+            @Override
+            public void onRecordStateVideoInProgress() {
+                super.onRecordStateVideoInProgress();
+            }
+
+            @Override
+            public void onStartVideoRecord(File outputFile) {
+                super.onStartVideoRecord(outputFile);
+            }
+
+            @Override
+            public void onStopVideoRecord() {
+                super.onStopVideoRecord();
+            }
+        });
+
+
+        }
     private void onEvents() {
 
 
@@ -902,5 +971,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private CameraFragmentApi getCameraFragment() {
+        return (CameraFragmentApi) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
     }
 }
