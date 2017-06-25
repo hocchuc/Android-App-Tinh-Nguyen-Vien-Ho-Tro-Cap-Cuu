@@ -95,13 +95,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
      * @param message tin nhắn sẽ hiển thị trên tiêu đề
      */
     private void showAccidentNotification(String message) {
-        Intent i = new Intent(this,ChatBoxActivity.class);
-        i.putExtra("type",TYPE_HELPER);
-        i.putExtra("FirebaseKey",FirebaseKey);
+        Intent i = new Intent(this, ChatBoxActivity.class);
+        i.putExtra("type", TYPE_HELPER);
+        i.putExtra("FirebaseKey", FirebaseKey);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         Intent mapIntent = new Intent(Intent.ACTION_VIEW);
@@ -113,35 +113,42 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         String encodedQuery = Uri.encode(query);
         String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
         Uri uri = Uri.parse(uriString);
-
+        // intent thong thuong navigation
         mapIntent.setData(geoUri);
         PendingIntent mapPendingIntent =
                 PendingIntent.getActivity(this, 0, mapIntent, 0);
-        // Create a WearableExtender to add functionality for wearables
-        NotificationCompat.WearableExtender wearableExtender =
-                new NotificationCompat.WearableExtender()
-                        .setHintHideIcon(true);
+        // intent turn by turn
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Latitude + "," + Longtitude + "&avoid=tf");
+        Intent navmapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        PendingIntent navmapPendingIntent =
+                PendingIntent.getActivity(this, 0, navmapIntent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setAutoCancel(false)
-                .setContentTitle("Tai nạn "+location)
-                .setContentText(message)
-                .setSound(alarmSound)
-                .setContentIntent(pendingIntent)
-                .addAction(R.drawable.ic_map,
-                getString(R.string.map), mapPendingIntent)
-                .extend(wearableExtender);
+            // Create a WearableExtender to add functionality for wearables
+            NotificationCompat.WearableExtender wearableExtender =
+                    new NotificationCompat.WearableExtender()
+                            .setHintHideIcon(true);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder.setSmallIcon(R.drawable.ic_accident_2);
-        } else {
-            builder.setSmallIcon(R.mipmap.ic_accident_noti);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setAutoCancel(false)
+                    .setContentTitle("Tai nạn " + location)
+                    .setContentText(message)
+                    .setSound(alarmSound)
+                    .setContentIntent(pendingIntent)
+                    .addAction(R.drawable.ic_map,
+                            getString(R.string.map), navmapPendingIntent)
+                    .extend(wearableExtender);
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setSmallIcon(R.drawable.ic_accident_2);
+            } else {
+                builder.setSmallIcon(R.mipmap.ic_accident_noti);
+            }
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+            notificationManager.notify(notificationId, builder.build());
+
         }
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        notificationManager.notify(notificationId,builder.build());
-
-    }
 
     public void showInboxStyleNotification(String message) {
         Intent i = new Intent(this,ChatBoxActivity.class);

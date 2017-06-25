@@ -22,9 +22,7 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
-
         navigation = (BottomNavigationView) findViewById(R.id.navigation1);
-
         fragment_personal_info_page fragment_personal_info_page = new fragment_personal_info_page();
         getSupportFragmentManager().beginTransaction().add(R.id.content1, fragment_personal_info_page).commit();
 
