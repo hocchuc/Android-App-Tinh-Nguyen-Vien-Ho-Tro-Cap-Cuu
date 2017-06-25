@@ -166,7 +166,10 @@ public class MainMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         addControls();
+
         BuildDrawer(savedInstanceState);
+        setLoadImageLogic();
+
         BuildFragment();
         addEvents();
     }
@@ -395,8 +398,6 @@ public class MainMenuActivity extends AppCompatActivity
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            setLoadImageLogic();
-
         }
     }
 
@@ -902,8 +903,9 @@ public class MainMenuActivity extends AppCompatActivity
         protected void onPostExecute(ArrayList<User> users) {
             super.onPostExecute(users);
             arrUser.addAll(users);
-
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_account_circle_black_24dp));
+            View markerView = LayoutInflater.from(getBaseContext()).inflate(R.layout.view_custom_marker, null);
+            ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(image));
 
 //            Log.d("UserSize", String.valueOf(arrUser.size()));
             for (int i = 0; i < arrUser.size(); i++) {
@@ -990,11 +992,11 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     //Convert view into bitmap, them vien ngoai.
-    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+    private Bitmap getMarkerBitmapFromView(View view) {
 
         View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
         ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        markerImageView.setImageResource(resId);
+        markerImageView.setImageResource(R.drawable.ic_account_circle_black_24dp);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
         customMarkerView.buildDrawingCache();
