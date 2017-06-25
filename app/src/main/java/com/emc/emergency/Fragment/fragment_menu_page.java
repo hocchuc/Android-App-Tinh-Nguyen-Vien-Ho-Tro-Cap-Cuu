@@ -1,11 +1,15 @@
 package com.emc.emergency.Fragment;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -22,11 +26,14 @@ import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.Personal_Inf_Activity;
 import com.emc.emergency.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link fragment_menu_page.OnFragmentInteractionListener} interface
+ * {@link } interface
  * to handle interaction events.
  * Use the {@link fragment_menu_page#newInstance} factory method to
  * create an instance of this fragment.
@@ -36,6 +43,7 @@ public class fragment_menu_page extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int REQUEST_CAMERA_PERMISSIONS = 123 ;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -82,6 +90,19 @@ public class fragment_menu_page extends Fragment {
         }
 
     }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v =  inflater.inflate(R.layout.fragment_fragment_menu_page, container, false);
+        btnPersonalInfomation = (Button) v.findViewById(R.id.btnPI);
+        btnReport = (Button) v.findViewById(R.id.btnReportAccident);
+        btnRequest = (Button) v.findViewById(R.id.btnRequestRescue);
+        btnAccident = (Button) v.findViewById(R.id.button_accident);
+        swipeButton = (SwipeButton) v.findViewById(R.id.btnSwipe2Confirm);
+
+        return v;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -97,6 +118,23 @@ public class fragment_menu_page extends Fragment {
         btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT > 17) {
+                    final String[] permissions = {
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE};
+
+                    final List<String> permissionsToRequest = new ArrayList<>();
+                    for (String permission : permissions) {
+                        if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                            permissionsToRequest.add(permission);
+                        }
+                    }
+                    if (!permissionsToRequest.isEmpty()) {
+                        ActivityCompat.requestPermissions(getActivity(), permissionsToRequest.toArray(new String[permissionsToRequest.size()]), REQUEST_CAMERA_PERMISSIONS);
+                    }
+                }
                swipeButton.setVisibility(View.VISIBLE);
             }
         });
@@ -121,6 +159,7 @@ public class fragment_menu_page extends Fragment {
                 if(swipeButton.isActive()) {
                    swipeButton.setVisibility(View.INVISIBLE);
                     swipeButton.toggleState();
+
                     fragment_countdown fragmentCountdown = new fragment_countdown();
                     FragmentManager fragmentManager = getFragmentManager();
                     android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -133,19 +172,7 @@ public class fragment_menu_page extends Fragment {
 
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_fragment_menu_page, container, false);
-        btnPersonalInfomation = (Button) v.findViewById(R.id.btnPI);
-        btnReport = (Button) v.findViewById(R.id.btnReportAccident);
-        btnRequest = (Button) v.findViewById(R.id.btnRequestRescue);
-        btnAccident = (Button) v.findViewById(R.id.button_accident);
-        swipeButton = (SwipeButton) v.findViewById(R.id.btnSwipe2Confirm);
 
-        return v;
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

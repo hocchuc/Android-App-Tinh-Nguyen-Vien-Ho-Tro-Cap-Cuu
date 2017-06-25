@@ -48,6 +48,7 @@ import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
 
 import com.emc.emergency.Fragment.fragment_menu_page;
+import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.Route;
@@ -143,7 +144,7 @@ public class MainMenuActivity extends AppCompatActivity
     ImageButton btnToGMap;
     double latitude = 0;
     double longitude = 0;
-    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
+    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2,sharedPreferences3;
 
     //    private Button btnFindPath;
     // XU LY NUT VE DUONG
@@ -168,9 +169,11 @@ public class MainMenuActivity extends AppCompatActivity
         BuildDrawer(savedInstanceState);
         BuildFragment();
         addEvents();
-        setLoadImageLogic();
     }
 
+    /**
+     * Khi location thay doi
+     */
     private void LocationChange() {
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -208,15 +211,16 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     /**
-     * Load hinh cho drawler
+     * Load hinh cho drawer
      */
     private void setLoadImageLogic() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+
                 RequestOptions options = new RequestOptions()
                         .centerCrop()
-                        .placeholder(R.drawable.marker)
+                        .placeholder(R.drawable.profile3)
                         .error(R.drawable.material_drawer_circle_mask)
                         .priority(Priority.HIGH);
                 Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
@@ -256,6 +260,7 @@ public class MainMenuActivity extends AppCompatActivity
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
         }
+
         LocationChange();
 
         // yeu cau quyen doi voi cac thiet chay android M tro len
@@ -313,7 +318,19 @@ public class MainMenuActivity extends AppCompatActivity
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
 
-        GetPersonalInfo();
+
+        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+        if(sharedPreferences3.contains(SystemUtils.PI)) {
+            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
+            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
+            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
+            Log.d("EmailPI",pi.getEmail_PI());
+        }
+        else {
+            GetPersonalInfo();
+
+        }
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -367,6 +384,7 @@ public class MainMenuActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                // luu thong tin vua load duoc vao SharedPreferences
                 SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = preferences1.edit();
                 editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
@@ -377,6 +395,8 @@ public class MainMenuActivity extends AppCompatActivity
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            setLoadImageLogic();
+
         }
     }
 
@@ -399,7 +419,6 @@ public class MainMenuActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
-        // NOTE you have to define the loader logic too. See the CustomApplication for more details
         IProfile profile = new ProfileDrawerItem();
 
         if(pi.getAvatar()!=null) {
@@ -460,7 +479,11 @@ public class MainMenuActivity extends AppCompatActivity
                                 .withName(R.string.drawer_item_contact)
                                 .withIcon(GoogleMaterial.Icon.gmd_format_color_fill)
                                 .withTag("Bullhorn")
-                                .withIdentifier(7)
+                                .withIdentifier(7),
+                        new SecondaryDrawerItem()
+                                .withName("Log Out")
+                                .withIcon(R.drawable.ic_power_settings_new_black_36dp)
+                                .withIdentifier(8)
                 )
                 // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -471,16 +494,20 @@ public class MainMenuActivity extends AppCompatActivity
                             if (drawerItem.getIdentifier() == 1) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
+                                intent = new Intent(MainMenuActivity.this, AccidentActivity.class);
                                 startActivity(intent);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
+                                intent = new Intent(MainMenuActivity.this, Personal_Infomation.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 7) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
+                            }
+                            else if (drawerItem.getIdentifier() == 8) {
+                                intent.putExtra(SystemUtils.TYPE,SystemUtils.TYPE_LOGOUT);
+                                intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                             }
 
                         }
@@ -563,7 +590,8 @@ public class MainMenuActivity extends AppCompatActivity
         outState = result.saveInstanceState(outState);
         //add the values which need to be saved from the accountHeader to the bundle
         outState = headerResult.saveInstanceState(outState);
-
+        //add the values which need to be saved from the crossFader to the bundle
+        //outState = crossFader.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
 
     }

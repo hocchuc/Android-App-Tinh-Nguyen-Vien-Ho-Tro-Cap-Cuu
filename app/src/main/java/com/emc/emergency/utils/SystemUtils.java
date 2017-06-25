@@ -20,6 +20,8 @@ public class SystemUtils {
     public static final String TAG_SELF = "self", TAG_NEW = "new",
             TAG_GO_MESSAGE = "message_go", TAG_EXIT = "exit", TAG_FIREBASE_MESSAGE = "fir   ebase_message",
             TAG_NEW_ACCIDENT = "new_accident", TAG_LOAD_MESSAGE="message_load", TAG_GO_MAP = "map_go", TAG_LOAD_MAP= "load_map";
+    public static final String TYPE = "TYPE";
+    public static final String TYPE_LOGOUT ="LOGOUT";
 
     //for firebase
     final private String TYPE_HELPER = "helper";
