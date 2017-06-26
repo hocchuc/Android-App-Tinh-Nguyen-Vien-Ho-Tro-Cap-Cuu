@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 
@@ -43,6 +44,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
@@ -72,12 +74,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -145,6 +151,11 @@ public class MainMenuActivity extends AppCompatActivity
     double latitude = 0;
     double longitude = 0;
     SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2,sharedPreferences3;
+    /* biến dùng cho firebase */
+    FirebaseStorage storage;
+    StorageReference storageRef ;
+    Uri uriAvatar = null;
+    private StorageReference imagesRef;
 
     //    private Button btnFindPath;
     // XU LY NUT VE DUONG
@@ -165,12 +176,18 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
         addControls();
 
         BuildDrawer(savedInstanceState);
+
         setLoadImageLogic();
 
         BuildFragment();
+
         addEvents();
     }
 
@@ -429,7 +446,6 @@ public class MainMenuActivity extends AppCompatActivity
                     .withIcon(pi.getAvatar());
         }
 
-
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -496,7 +512,6 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
                                 intent = new Intent(MainMenuActivity.this, AccidentActivity.class);
-                                startActivity(intent);
                             } else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(MainMenuActivity.this, Personal_Infomation.class);
                             } else if (drawerItem.getIdentifier() == 4) {
@@ -510,6 +525,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent.putExtra(SystemUtils.TYPE,SystemUtils.TYPE_LOGOUT);
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                             }
+                            if(intent!=null) startActivity(intent);
 
                         }
                         return false;
@@ -592,7 +608,6 @@ public class MainMenuActivity extends AppCompatActivity
         //add the values which need to be saved from the accountHeader to the bundle
         outState = headerResult.saveInstanceState(outState);
         //add the values which need to be saved from the crossFader to the bundle
-        //outState = crossFader.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
 
     }
@@ -904,7 +919,7 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPostExecute(users);
             arrUser.addAll(users);
             View markerView = LayoutInflater.from(getBaseContext()).inflate(R.layout.view_custom_marker, null);
-            ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
+            final ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(image));
 
 //            Log.d("UserSize", String.valueOf(arrUser.size()));
@@ -922,7 +937,33 @@ public class MainMenuActivity extends AppCompatActivity
                                 .setIcon(icon);
                         // tắt chuyển camera tới các tai nạn vừa load
                         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                        imagesRef = storageRef.child("images/"+arrUser.get(i).getId_user()+".jpg");
 
+                        imagesRef.getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        uriAvatar = uri;
+                                        Log.d("uriAvatar",uri.toString());
+                                        RequestOptions options = new RequestOptions()
+                                                .centerCrop()
+                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                                                .placeholder(R.drawable.profile3)
+                                                .error(R.drawable.material_drawer_circle_mask)
+                                                .priority(Priority.HIGH);
+                                        try {
+                                            Glide.with(getBaseContext()).load(uriAvatar).apply(options).into(image);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                e.printStackTrace();
+
+                            }
+                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
@@ -992,9 +1033,9 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     //Convert view into bitmap, them vien ngoai.
-    private Bitmap getMarkerBitmapFromView(View view) {
+    private Bitmap getMarkerBitmapFromView(ImageView view) {
 
-        View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+        View customMarkerView = view;
         ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
         markerImageView.setImageResource(R.drawable.ic_account_circle_black_24dp);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);

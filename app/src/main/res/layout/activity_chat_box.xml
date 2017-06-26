@@ -9,24 +9,27 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/accent"
     tools:context=".Chat.ChatBoxActivity">
 
 
     <android.support.v7.widget.RecyclerView
+        android:background="@color/md_white_1000"
         android:id="@+id/messageRecyclerView"
-        android:layout_width="291dp"
+        android:layout_width="match_parent"
         android:layout_height="240dp"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="0dp"
         ads:layout_constraintBottom_toTopOf="@+id/linearLayout"
         ads:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="2dp"
         ads:layout_constraintVertical_bias="0.951" />
 
     <LinearLayout
+        android:background="@color/md_white_1000"
         android:orientation="horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -82,7 +85,7 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintLeft_creator="1" />
     <LinearLayout
-        android:layout_width="317dp"
+        android:layout_width="match_parent"
         android:layout_height="230dp"
         android:orientation="horizontal"
         ads:layout_constraintBottom_toBottomOf="parent"
@@ -99,35 +102,36 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="0dp"
             android:layout_marginRight="0dp"
-
             android:layout_weight="2">
 
         </FrameLayout>
         <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_marginStart="20sp"
             android:layout_height="match_parent">
         <FrameLayout
             android:id="@+id/frameCamera"
             android:layout_width="90dp"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_marginStart="0sp"
+            android:layout_marginEnd="8sp"
             ads:layout_constraintBottom_toBottomOf="parent"
             ads:layout_constraintLeft_toLeftOf="parent"
              />
-
         <com.github.florent37.camerafragment.widgets.RecordButton
             android:id="@+id/record_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8sp"
             ads:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="0dp"
             ads:layout_constraintRight_toRightOf="parent"
-            ads:layout_constraintHorizontal_bias="0.52"
+            ads:layout_constraintHorizontal_bias="0.492"
             ads:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="0dp" />
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>

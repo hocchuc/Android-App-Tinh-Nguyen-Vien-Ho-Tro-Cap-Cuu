@@ -242,7 +242,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
         mMessageEditText.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(
-                        mSharedPreferences.getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH,
+                        mSharedPreferences.getInt(
+                                CodelabPreferences.FRIENDLY_MSG_LENGTH,
                                 DEFAULT_MSG_LENGTH_LIMIT))});
 
         //todo [bookmark] Khi thay đổi text trong messageEditText
@@ -304,8 +305,54 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     cameraFragment.takePhotoOrCaptureVideo(new CameraFragmentResultAdapter() {
                      @Override
                      public void onVideoRecorded(String filePath) {
-                      //todo gui file len firebase
+                     final Uri uri = Uri.fromFile(new File(filePath));
+                                 //todo gui file len firebase
                      Toast.makeText(getBaseContext(), "onVideoRecorded " + filePath, Toast.LENGTH_SHORT).show();
+                         FriendlyMessage tempMessage =
+                                 new FriendlyMessage(
+                                         null,
+                                         mUsername,
+                                         mPhotoUrl,
+                                         LOADING_IMAGE_URL);
+
+                         // tạo mới một key trong message
+                         mFirebaseDatabaseReference
+                                 .child(ACCIDENTS_CHILD)
+                                 .child(AccidentKey)
+                                 .child(MESSAGES_CHILD)
+                                 .push()
+                                 .setValue(tempMessage,
+                                         new DatabaseReference.CompletionListener() {
+                                             @Override
+                                             public void onComplete(DatabaseError databaseError,
+                                                                    DatabaseReference databaseReference) {
+                                                 // nêu database không có lỗi
+                                                 if (databaseError == null) {
+                                                     // getkey mới
+                                                     String key = databaseReference.getKey();
+
+                               /*         StorageReference storageReference =
+                                                FirebaseStorage.getInstance()
+                                                        .getReference()
+                                                        .child(IMAGE_STORE)
+                                                        .child(key)
+                                                        .child(uri.getLastPathSegment());*/
+                                                     StorageReference storageReference =
+                                                             FirebaseStorage.getInstance()
+                                                                     .getReference()
+                                                                     .child(IMAGE_STORE)
+                                                                     .child(key)
+                                                                     .child(uri.getLastPathSegment());
+                                                     putImageInStorage(storageReference, uri, key);
+                                                 } else {
+                                                     Log.w(TAG, "Unable to write message to database.",
+                                                             databaseError.toException());
+                                                 }
+                                             }
+                                         });
+
+
+
                       }
                      @Override
                     public void onPhotoTaken(byte[] bytes, String filePath) {
@@ -516,6 +563,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             @Override
             public void onRecordStateVideoReadyForRecord() {
                 super.onRecordStateVideoReadyForRecord();
+                recordButton.setActivated(true);
             }
 
             @Override
@@ -762,6 +810,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         // nếu up thành công
                         if (task.isSuccessful()) {
+                            mMessageEditText.setText(task.getResult().getDownloadUrl().toString());
+
                             //tạo message mới
                             FriendlyMessage friendlyMessage =
                                     new FriendlyMessage(null, mUsername,
