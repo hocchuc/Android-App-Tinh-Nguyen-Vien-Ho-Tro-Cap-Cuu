@@ -17,7 +17,8 @@
     <GridView
         android:id="@+id/grid1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
         android:columnWidth="90dp"
         android:stretchMode="columnWidth"
         android:layout_gravity="center"
@@ -25,7 +26,8 @@
     <com.dd.processbutton.iml.ActionProcessButton
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
         android:layout_marginBottom="16dp"
         android:text="SUBMIT"
         android:textColor="@android:color/white"
