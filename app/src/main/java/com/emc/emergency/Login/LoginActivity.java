@@ -95,11 +95,11 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
-        GPSTracker gps = new GPSTracker(LoginActivity.this);
-        if (gps.canGetLocation()) {
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
-        }
+//        GPSTracker gps = new GPSTracker(LoginActivity.this);
+//        if (gps.canGetLocation()) {
+//            latitude = gps.getLatitude();
+//            longitude = gps.getLongitude();
+//        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -130,6 +130,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String Type_User = "victim";
     private static final String TAG = "MainActivity";
     public static final String IMAGE_STORE = "images";
+    public static final String VIDEO_STORE = "videos";
+
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
@@ -340,7 +342,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                                      StorageReference storageReference =
                                                              FirebaseStorage.getInstance()
                                                                      .getReference()
-                                                                     .child(IMAGE_STORE)
+                                                                     .child(VIDEO_STORE)
                                                                      .child(key)
                                                                      .child(uri.getLastPathSegment());
                                                      putImageInStorage(storageReference, uri, key);
@@ -559,6 +561,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameCamera, cameraFragment, FRAGMENT_TAG)
                 .commit();
+
         cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
             @Override
             public void onRecordStateVideoReadyForRecord() {
@@ -964,7 +967,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     .build();
             try {
                 postResponse = client.newCall(request).execute();
-                Log.d("postResponse",postResponse.toString());
+                //Log.d("postResponse",postResponse.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
