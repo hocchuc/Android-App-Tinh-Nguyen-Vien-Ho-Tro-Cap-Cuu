@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.emc.emergency">
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -25,7 +26,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/CustomTheme">
+        android:theme="@style/CustomTheme"
+        android:name=".utils.BaseApplication">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -40,40 +42,48 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="friendlychat.firebase.google.com"
-                    android:scheme="http"
                     android:pathPrefix="/message"
-                    />
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity android:name=".Register.RegisterActivity" />
         <activity android:name=".MainMenuActivity" />
-        <activity android:name=".Chat.ChatBoxActivity"
+        <activity
+            android:name=".Chat.ChatBoxActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".AccidentActivity"
             android:label="@string/title_activity_accident" />
-        <activity android:name=".Personal_Inf_Activity"
+        <activity
+            android:name=".Personal_Inf_Activity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ReportAccidentActivity"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".RequestRescueActivity"
+        <activity
+            android:name=".ReportAccidentActivity"
             android:windowSoftInputMode="adjustPan" />
-        <service android:name=".Chat.FirebaseInstanceIDService"
+        <activity
+            android:name=".RequestRescueActivity"
+            android:windowSoftInputMode="adjustPan" />
+
+        <service
+            android:name=".Chat.FirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".Chat.FirebaseMessagingService"
+        <service
+            android:name=".Chat.FirebaseMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -89,6 +99,5 @@
             android:resource="@color/colorAccent" />
         AndroidManifest.xml
     </application>
-
 
 </manifest>

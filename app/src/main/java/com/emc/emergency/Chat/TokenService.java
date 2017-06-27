@@ -48,7 +48,7 @@ public class TokenService {
     private Context context;
     private IRequestListener listener;
     String json;
-    private final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
 
 
     public TokenService(Context context, IRequestListener listener) {
@@ -58,6 +58,7 @@ public class TokenService {
 
     public void registerTokenInDB(final String token, final String id_user) throws IOException {
         Response response = null;
+        client = new OkHttpClient();
 
             RequestBody formBody = new FormBody.Builder()
                     .add("token", token)
@@ -72,11 +73,11 @@ public class TokenService {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
         try {
-             response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
             System.out.println(response.body().string());
 
@@ -86,7 +87,7 @@ public class TokenService {
 
     public class PutToken {
 
-        OkHttpClient client = new OkHttpClient();
+//        OkHttpClient client = new OkHttpClient();
 
         String put(String url, String txt) throws IOException {
             RequestBody body = RequestBody.create(mediaType, txt);

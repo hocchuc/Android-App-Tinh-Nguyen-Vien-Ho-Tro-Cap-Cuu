@@ -43,7 +43,7 @@
                 android:layout_weight="3"
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
-                android:drawableTop="@drawable/ic_contact_phone_black_24dp"
+                android:drawableTop="@mipmap/ic_report_accident"
                 android:text="@string/bao_tai_nan" />
 
             <android.support.v4.widget.Space
@@ -86,7 +86,7 @@
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
                 android:layout_weight="3"
-                android:drawableTop="@drawable/ic_gps_fixed_black_24dp"
+                android:drawableTop="@mipmap/ic_request_accident"
                 android:text="@string/yeu_cau_cap_cuu"
                 android:textColor="@android:color/black" />
 
@@ -106,7 +106,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:drawableTop="@drawable/ic_accident_near_me_black_24dp"
+                android:drawableTop="@mipmap/ic_accident_list"
                 android:scaleType="fitCenter"
                 android:text="@string/danh_sach_tai_nan_gan_day" />
         </LinearLayout>
