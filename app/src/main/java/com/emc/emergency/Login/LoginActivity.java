@@ -95,18 +95,12 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
-//        GPSTracker gps = new GPSTracker(LoginActivity.this);
-//        if (gps.canGetLocation()) {
-//            latitude = gps.getLatitude();
-//            longitude = gps.getLongitude();
-//        }
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String username = txtUsername.getText().toString();
                 String password = txtPassword.getText().toString();
-
                 User user = new User(username, password);
                 user.setLat_PI(latitude);
                 user.setLong_PI(longitude);
@@ -114,6 +108,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 xulyDangNhap(user);
             }
         });
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -226,7 +221,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                 StrictMode.setThreadPolicy(policy);
                                 try {
                                     okhttp3.Response response1 = client.newCall(request).execute();
-                                    // Log.d("DSUSer",response1.body().string());
                                     User user1 = new User();
                                     User_Type user_type1 = new User_Type();
 
@@ -290,6 +284,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                             // If sign in fails, display a message to the user. If sign in succeeds
                                             // the auth state listener will be notified and logic to handle the
                                             // signed in user can be handled in the listener.
+                                            //todo logic ở đây có vấn đề, vẫn đăng nhập khi lỗi
                                             if (!task.isSuccessful()) {
                                                 // there was an error
                                                 if (txtPassword.length() < 6) {
@@ -300,8 +295,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                             }
                                         }
                                     });
-
-//                                                Log.d("editor1",editor1.toString());
                             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                             startActivity(intent);
                             finish();

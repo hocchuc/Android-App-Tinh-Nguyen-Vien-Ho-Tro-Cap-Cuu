@@ -18,13 +18,10 @@ public class AccidentActivity extends AppCompatActivity implements fragment_acci
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accident);
-
-//        mTextMessage = (TextView) findViewById(R.id.message);
         BuildFragment();
     }
 
     private void BuildFragment() {
-//        FragmentManager managerTop = getSupportFragmentManager();
         fragment_accident_page fragment_accident = new fragment_accident_page();
         getSupportFragmentManager().beginTransaction().add(R.id.content,fragment_accident).commit();
 

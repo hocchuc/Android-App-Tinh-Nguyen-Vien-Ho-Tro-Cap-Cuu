@@ -886,8 +886,8 @@ public class MainMenuActivity extends AppCompatActivity
                         accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
-                    if (jsonObject.has("adress"))
-                        accident.setAddress(jsonObject.getString("adress"));
+                    if (jsonObject.has("address"))
+                        accident.setAddress(jsonObject.getString("address"));
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
                     // Log.d("DS", ds.toString());

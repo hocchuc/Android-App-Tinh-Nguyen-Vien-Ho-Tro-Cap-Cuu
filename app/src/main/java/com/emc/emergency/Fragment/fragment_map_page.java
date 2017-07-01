@@ -353,8 +353,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                         accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("status_AC"))
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
-                    if (jsonObject.has("adress"))
-                        accident.setAddress(jsonObject.getString("adress"));
+                    if (jsonObject.has("address"))
+                        accident.setAddress(jsonObject.getString("address"));
                     ds.add(accident);
                 }
                 Log.d("ds", ds.toString());

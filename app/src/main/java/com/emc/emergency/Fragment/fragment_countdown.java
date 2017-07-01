@@ -89,7 +89,7 @@ public class fragment_countdown extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         btnCancle.setMode(ActionProcessButton.Mode.PROGRESS);
-        myCountDownTimer = new MyCountDownTimer(6000, 1000);
+            myCountDownTimer = new MyCountDownTimer(6000, 1000);
         myCountDownTimer.start();
 
 
