@@ -93,7 +93,7 @@ public class fragment_medical_info_page extends Fragment {
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
         //set adapter to your ViewPager
-        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentManager fragmentManager = getFragmentManager();
 
         viewPager.setAdapter(new TabPagerAdapter(getFragmentManager()));
 

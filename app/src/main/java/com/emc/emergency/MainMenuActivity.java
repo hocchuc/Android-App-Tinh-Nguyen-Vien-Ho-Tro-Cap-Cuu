@@ -127,7 +127,7 @@ import okhttp3.Response;
 
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
-        , OnMapReadyCallback, DirectionFinderListener, GoogleMap.OnMarkerClickListener
+        , OnMapReadyCallback, DirectionFinderListener
         , fragment_countdown.OnFragmentInteractionListener, IRequestListener {
 
 
@@ -144,16 +144,16 @@ public class MainMenuActivity extends AppCompatActivity
 //    public Marker myMarker;
 //    LatLng myLocation;
     GoogleMap mMap;
-    double viDo, kinhDo, viDoUser, kinhDoUser;
+    double viDo, kinhDo,viDoAC,kinhDoAC,viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
-    ImageButton btnToGMap;
+    ImageButton btnToGMap,imgbtnRefresh;
     double latitude = 0;
     double longitude = 0;
-    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2,sharedPreferences3;
+    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
     /* biến dùng cho firebase */
     FirebaseStorage storage;
-    StorageReference storageRef ;
+    StorageReference storageRef;
     Uri uriAvatar = null;
     private StorageReference imagesRef;
 
@@ -293,7 +293,6 @@ public class MainMenuActivity extends AppCompatActivity
         LocationChange();
 
 
-
         if (id_usertype == 2) {
             new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
         } else {
@@ -321,13 +320,22 @@ public class MainMenuActivity extends AppCompatActivity
                 }
             }
         });
+        imgbtnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(MainMenuActivity.this,MainMenuActivity.class);
+                startActivity(i);
+            }
+        });
     }
+
     private void addControls() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
         arrayUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
+        imgbtnRefresh= (ImageButton) findViewById(R.id.imgBtnRefresh);
 
         // UID để tìm key đổ vào locationlistener
         sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
@@ -342,14 +350,13 @@ public class MainMenuActivity extends AppCompatActivity
 
 
         sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-        if(sharedPreferences3.contains(SystemUtils.PI)) {
+        if (sharedPreferences3.contains(SystemUtils.PI)) {
             //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
             pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
             pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
             pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-            Log.d("EmailPI",pi.getEmail_PI());
-        }
-        else {
+            Log.d("EmailPI", pi.getEmail_PI());
+        } else {
             GetPersonalInfo();
 
         }
@@ -398,7 +405,7 @@ public class MainMenuActivity extends AppCompatActivity
                         pi.setPersonal_id(jsonObj.getString("personal_id"));
                     if (jsonObj.has("name_PI"))
                         pi.setName_PI(jsonObj.getString("name_PI"));
-                    if(jsonObj.has("avatar"))
+                    if (jsonObj.has("avatar"))
                         pi.setAvatar(jsonObj.getString("avatar"));
                     if (jsonObj.has("id_PI")) {
                         pi.setId_PI(jsonObj.getLong("id_PI"));
@@ -441,8 +448,8 @@ public class MainMenuActivity extends AppCompatActivity
         // Create a few sample profile
         IProfile profile = new ProfileDrawerItem();
 
-        if(pi.getAvatar()!=null) {
-              profile = new ProfileDrawerItem()
+        if (pi.getAvatar() != null) {
+            profile = new ProfileDrawerItem()
                     .withName(pi.getName_PI())
                     .withEmail(pi.getEmail_PI())
                     .withIcon(pi.getAvatar());
@@ -522,12 +529,11 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 7) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                            }
-                            else if (drawerItem.getIdentifier() == 8) {
-                                intent.putExtra(SystemUtils.TYPE,SystemUtils.TYPE_LOGOUT);
+                            } else if (drawerItem.getIdentifier() == 8) {
+                                intent.putExtra(SystemUtils.TYPE, SystemUtils.TYPE_LOGOUT);
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                             }
-                            if(intent!=null) startActivity(intent);
+                            if (intent != null) startActivity(intent);
 
                         }
                         return false;
@@ -756,13 +762,16 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        LatLng position = marker.getPosition();
-        viDo = Double.parseDouble(String.valueOf(position.latitude));
-        kinhDo = Double.parseDouble(String.valueOf(position.longitude));
-        return false;
-    }
+//    @Override
+//    public boolean onMarkerClick(Marker marker) {
+//        LatLng position = marker.getPosition();
+//        if(marker.equals(mMap)){
+//            viDo = Double.parseDouble(String.valueOf(position.latitude));
+//            kinhDo = Double.parseDouble(String.valueOf(position.longitude));
+//        }
+//        Toast.makeText(getApplicationContext(), (int) viDo,Toast.LENGTH_LONG);
+//        return false;
+//    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -830,9 +839,9 @@ public class MainMenuActivity extends AppCompatActivity
             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.pin);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
-                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-                LatLng loocation = new LatLng(viDo, kinhDo);
+                viDoAC = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+                kinhDoAC = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
+                LatLng loocation = new LatLng(viDoAC, kinhDoAC);
                 try {
 
                     mMap.addMarker(new MarkerOptions()
@@ -840,7 +849,15 @@ public class MainMenuActivity extends AppCompatActivity
                             .title(arrAccidents.get(i).getDescription_AC())
                             .snippet(arrAccidents.get(i).getAddress())
                             .icon(icon));
-
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            LatLng position = marker.getPosition();
+                            viDo = Double.parseDouble(String.valueOf(position.latitude));
+                            kinhDo = Double.parseDouble(String.valueOf(position.longitude));
+                            return false;
+                        }
+                    });
                     // tắt chuyển camera tới các tai nạn vừa load
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
@@ -939,14 +956,14 @@ public class MainMenuActivity extends AppCompatActivity
                                 .setIcon(icon);
                         // tắt chuyển camera tới các tai nạn vừa load
                         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
-                        imagesRef = storageRef.child("images/"+arrUser.get(i).getId_user()+".jpg");
+                        imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
 
                         imagesRef.getDownloadUrl()
                                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         uriAvatar = uri;
-                                        Log.d("uriAvatar",uri.toString());
+                                        Log.d("uriAvatar", uri.toString());
                                         RequestOptions options = new RequestOptions()
                                                 .centerCrop()
                                                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)

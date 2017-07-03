@@ -1,5 +1,6 @@
 package com.emc.emergency.Register;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -44,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -59,18 +62,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity {
-    Button btnRegister, btnLogin;
-    EditText txtRegitersUsername,txtRegisterEmai,txtRegisterPassword,txtRegisterDay,txtRegisterYear,txtRegisterPhone;
-    Spinner spRegisterMonth;
-    RadioButton radMale,radFalse;
+    Button btnRegister, btnLogin, btnDate;
+    EditText txtRegitersUsername, txtRegisterEmai, txtRegisterPassword, txtIn_Date, txtRegisterPhone;
+    RadioButton radMale, radFalse;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     double lat = 0;
     double lng = 0;
-    String[] month;
-//    String [] gender;
-    String selected = "";
-//    String selected1="";
+    private int mYear, mMonth, mDay;
+    String date;
 
 
     FlashMessage flashMessage;
@@ -92,19 +92,34 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void addControls() {
         txtRegitersUsername = (EditText) findViewById(R.id.txtRegisName);
-        txtRegisterEmai= (EditText) findViewById(R.id.txtRegisEmail);
+        txtRegisterEmai = (EditText) findViewById(R.id.txtRegisEmail);
         txtRegisterPassword = (EditText) findViewById(R.id.txtRegisPassword);
-        txtRegisterDay= (EditText) findViewById(R.id.txtRegisDay);
-        txtRegisterYear= (EditText) findViewById(R.id.txtRegisYear);
-        txtRegisterPhone= (EditText) findViewById(R.id.txtRegisPhoneNumer);
-        spRegisterMonth= (Spinner) findViewById(R.id.spRegisMonth);
-        radFalse= (RadioButton) findViewById(R.id.radMaleRegist);
-        radMale= (RadioButton) findViewById(R.id.radMaleRegist);
+        txtIn_Date = (EditText) findViewById(R.id.txtIn_date);
+        txtRegisterPhone = (EditText) findViewById(R.id.txtRegisPhoneNumer);
+        radFalse = (RadioButton) findViewById(R.id.radMaleRegist);
+        radMale = (RadioButton) findViewById(R.id.radMaleRegist);
+        btnDate = (Button) findViewById(R.id.btnDate);
 
-        month = new String[] {"01", "02", "03","04","05","06","06","07","08","09","10","11","12"};
+        btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Get Current Date
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(RegisterActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                        txtIn_Date.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+                        date=year+"-"+(month+1)+"-"+dayOfMonth;
+                        txtIn_Date.setText(date);
+                    }
+                }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+            }
+        });
 
-//        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
-//        gender=new String[]{"Male","Female"};
         btnRegister = (Button) findViewById(R.id.btnRegist);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -112,41 +127,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, month);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spRegisterMonth.setAdapter(adapter);
-
-//        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
-//                android.R.layout.simple_spinner_item, gender);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spRegisterGender.setAdapter(adapter1);
-//
-//        spRegisterGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                gender[0]="Male";
-//                selected1=gender[position];
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-
-        spRegisterMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                month[0]="01";
-                selected=month[position];
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,7 +216,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                 SharedPreferences preferences = getSharedPreferences("UID", MODE_PRIVATE);
                                                 SharedPreferences.Editor editor1 = preferences.edit();
-                                                editor1.putString("iduser_uid",userId);
+                                                editor1.putString("iduser_uid", userId);
                                                 editor1.commit();
 
                                                 // pushing user to 'users' node using the userId
@@ -245,9 +225,8 @@ public class RegisterActivity extends AppCompatActivity {
                                                 pi.setEmail_PI(email);
                                                 pi.setName_PI(txtRegitersUsername.getText().toString());
                                                 pi.setPhone_PI(txtRegisterPhone.getText().toString());
-                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
                                                 pi.setBirthday(date);
-                                                if(radMale.isChecked()) pi.setSex__PI(true);
+                                                if (radMale.isChecked()) pi.setSex__PI(true);
                                                 else pi.setSex__PI(false);
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
@@ -289,7 +268,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                         //Lien ket moi quan he
                                                         OkHttpClient client1 = new OkHttpClient();
 
-                                                        String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user+"\n";
+                                                        String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user + "\n";
 
                                                         MediaType mediaType1 = MediaType.parse("text/uri-list");
                                                         RequestBody body1 = RequestBody.create(mediaType1, link_id_user);
@@ -307,9 +286,9 @@ public class RegisterActivity extends AppCompatActivity {
                                                 }
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                                intent.putExtra("action","registed");
-                                                intent.putExtra("username",email);
-                                                intent.putExtra("password",pass);
+                                                intent.putExtra("action", "registed");
+                                                intent.putExtra("username", email);
+                                                intent.putExtra("password", pass);
                                                 startActivity(intent);
 
                                                 finish();

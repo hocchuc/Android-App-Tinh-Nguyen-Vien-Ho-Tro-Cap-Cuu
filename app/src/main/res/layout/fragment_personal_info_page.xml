@@ -109,7 +109,9 @@
             android:paddingBottom="10sp"
             android:paddingEnd="10sp"
             android:paddingStart="30sp"
-            android:paddingTop="30sp">
+            android:paddingTop="30sp"
+            android:paddingRight="10sp"
+            android:paddingLeft="30sp">
 
             <ImageView
                 android:layout_marginBottom="15sp"

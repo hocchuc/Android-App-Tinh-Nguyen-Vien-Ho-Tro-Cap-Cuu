@@ -1,6 +1,7 @@
 package com.emc.emergency;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -182,6 +183,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     }
                 }
                 btnSubmit.setProgress(1);
+                finish();
             }
         });
     }

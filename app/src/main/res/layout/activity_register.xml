@@ -9,12 +9,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="10dp">
+        android:padding="5dp">
 
         <ImageView
             android:id="@+id/imageItemHinh"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
@@ -70,31 +70,20 @@
             android:padding="5dp"
             android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/spRegisMonth"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:padding="5dp"/>
-
             <EditText
-                android:id="@+id/txtRegisDay"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:id="@+id/txtIn_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Day"
                 android:inputType="textPersonName" />
 
-            <EditText
-                android:id="@+id/txtRegisYear"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <Button
+                android:id="@+id/btnDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="Year"
-                android:inputType="textPersonName" />
-
+                android:background="@drawable/calendar" />
         </LinearLayout>
 
     </RelativeLayout>

@@ -54,6 +54,14 @@
             android:layout_height="wrap_content"
             android:text="0 min"
             android:id="@+id/tvDuration" />
+
+        <ImageButton
+            android:id="@+id/imgBtnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/refresh"
+
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
     </LinearLayout>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -62,7 +62,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     private TokenService tokenService;
     double latitude = 0;
     double longitude = 0;
-    //    private Utils utils;
     String token;
     int id = 0;
     FlashMessage flashMessage;
@@ -95,11 +94,11 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
-//        GPSTracker gps = new GPSTracker(LoginActivity.this);
-//        if (gps.canGetLocation()) {
-//            latitude = gps.getLatitude();
-//            longitude = gps.getLongitude();
-//        }
+        GPSTracker gps = new GPSTracker(LoginActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
