@@ -89,7 +89,7 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:10.2.1'
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
     compile 'com.firebaseui:firebase-ui-storage:0.6.0'
-    compile 'de.greenrobot:eventbus:2.2.+'
+    compile 'de.greenrobot:eventbus:2.2.0'
     compile 'com.firebase:firebase-client-android:2.3.1'
     compile 'com.afollestad.material-dialogs:core:0.9.4.5'
     compile 'com.afollestad.material-dialogs:commons:0.9.4.5'

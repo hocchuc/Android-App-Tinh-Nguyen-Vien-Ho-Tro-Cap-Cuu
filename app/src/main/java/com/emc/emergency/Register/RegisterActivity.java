@@ -120,6 +120,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+//        spRegisterGender= (Spinner) findViewById(R.id.spRegisGender);
+//        gender=new String[]{"Male","Female"};
         btnRegister = (Button) findViewById(R.id.btnRegist);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -216,7 +218,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                                 SharedPreferences preferences = getSharedPreferences("UID", MODE_PRIVATE);
                                                 SharedPreferences.Editor editor1 = preferences.edit();
-                                                editor1.putString("iduser_uid", userId);
+                                                editor1.putString("iduser_uid",userId);
                                                 editor1.commit();
 
                                                 // pushing user to 'users' node using the userId
@@ -225,8 +227,9 @@ public class RegisterActivity extends AppCompatActivity {
                                                 pi.setEmail_PI(email);
                                                 pi.setName_PI(txtRegitersUsername.getText().toString());
                                                 pi.setPhone_PI(txtRegisterPhone.getText().toString());
+                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
                                                 pi.setBirthday(date);
-                                                if (radMale.isChecked()) pi.setSex__PI(true);
+                                                if(radMale.isChecked()) pi.setSex__PI(true);
                                                 else pi.setSex__PI(false);
                                                 Gson gson = new Gson();
                                                 String json = gson.toJson(pi);
@@ -268,7 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                         //Lien ket moi quan he
                                                         OkHttpClient client1 = new OkHttpClient();
 
-                                                        String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user + "\n";
+                                                        String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user+"\n";
 
                                                         MediaType mediaType1 = MediaType.parse("text/uri-list");
                                                         RequestBody body1 = RequestBody.create(mediaType1, link_id_user);
@@ -286,9 +289,9 @@ public class RegisterActivity extends AppCompatActivity {
                                                 }
 
                                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                                intent.putExtra("action", "registed");
-                                                intent.putExtra("username", email);
-                                                intent.putExtra("password", pass);
+                                                intent.putExtra("action","registed");
+                                                intent.putExtra("username",email);
+                                                intent.putExtra("password",pass);
                                                 startActivity(intent);
 
                                                 finish();

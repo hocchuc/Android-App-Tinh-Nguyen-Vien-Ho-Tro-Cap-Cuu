@@ -62,6 +62,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     private TokenService tokenService;
     double latitude = 0;
     double longitude = 0;
+    //    private Utils utils;
     String token;
     int id = 0;
     FlashMessage flashMessage;

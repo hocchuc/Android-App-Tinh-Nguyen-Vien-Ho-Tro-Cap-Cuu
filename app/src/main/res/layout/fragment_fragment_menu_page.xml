@@ -66,7 +66,6 @@
                 android:text="@string/thong_tin_ca_nhan"
                 android:textColor="@android:color/black" />
 
-
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
