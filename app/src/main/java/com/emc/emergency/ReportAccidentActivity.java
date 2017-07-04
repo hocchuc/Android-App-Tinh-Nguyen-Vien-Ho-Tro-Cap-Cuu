@@ -129,7 +129,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     StrictMode.setThreadPolicy(policy);
                     try {
                          response = example.post(SystemUtils.getServerBaseUrl() + "accidents", json);
-                        Log.d("response",response);
+//                        Log.d("response",response);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -162,7 +162,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Log.d("accident2",accident2.toString());
+//                Log.d("accident2",accident2.toString());
 
                 /**
                  * tiếp tục gởi put lên  server để xác định user nào tạo tai nào
@@ -177,7 +177,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     try {
                         String response2 = putRel.put(SystemUtils.getServerBaseUrl()+"accidents/"+accident2.getId_AC()+"/id_user",
                                 SystemUtils.getServerBaseUrl()+"users/"+id);
-                        Log.d("response2",response2);
+//                        Log.d("response2",response2);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -98,7 +98,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Intent i = new Intent(this, ChatBoxActivity.class);
         i.putExtra("type", TYPE_HELPER);
         i.putExtra("FirebaseKey", FirebaseKey);
-        Log.d("FirebaseKey",FirebaseKey);
+//        Log.d("FirebaseKey",FirebaseKey);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 

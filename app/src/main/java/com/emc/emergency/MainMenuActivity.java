@@ -80,8 +80,11 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
@@ -144,10 +147,10 @@ public class MainMenuActivity extends AppCompatActivity
 //    public Marker myMarker;
 //    LatLng myLocation;
     GoogleMap mMap;
-    double viDo, kinhDo,viDoAC,kinhDoAC,viDoUser, kinhDoUser;
+    double viDo, kinhDo, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
-    ImageButton btnToGMap,imgbtnRefresh;
+    ImageButton btnToGMap, imgbtnRefresh;
     double latitude = 0;
     double longitude = 0;
     SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
@@ -203,14 +206,26 @@ public class MainMenuActivity extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-                LatLng latLng = new LatLng(latitude, longitude);
+//                LatLng latLng = new LatLng(latitude, longitude);
 
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
-                mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
-                mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
+                 final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+                mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            idUser_UID = childSnapshot.getKey();
+                        }
+                        mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
+                        mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 // thay đổi market dựa trên location của bản thân
 //                myMarker.setPosition(latLng);
-
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -323,7 +338,7 @@ public class MainMenuActivity extends AppCompatActivity
         imgbtnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(MainMenuActivity.this,MainMenuActivity.class);
+                Intent i = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                 startActivity(i);
             }
         });
@@ -335,11 +350,11 @@ public class MainMenuActivity extends AppCompatActivity
         arrayUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
-        imgbtnRefresh= (ImageButton) findViewById(R.id.imgBtnRefresh);
+        imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
 
-        // UID để tìm key đổ vào locationlistener
-        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
-        idUser_UID = sharedPreferences.getString("iduser_uid", "");
+//        // UID để tìm key đổ vào locationlistener
+//        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
+//        idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);

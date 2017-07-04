@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
+//        auth = FirebaseAuth.getInstance();
 
         addControls();
         addEvents();
@@ -162,15 +162,15 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void xulyDangNhap(final User user) {
-        if (TextUtils.isEmpty(user.getUser_name())) {
-            Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (TextUtils.isEmpty(user.getPassword())) {
-            Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if (TextUtils.isEmpty(user.getUser_name())) {
+//            Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        if (TextUtils.isEmpty(user.getPassword())) {
+//            Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         progressBar.setVisibility(View.VISIBLE);
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -282,24 +282,24 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     e.printStackTrace();
                                 }
                             }
-                            //authenticate user
-                            auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
-                                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<AuthResult> task) {
-                                            // If sign in fails, display a message to the user. If sign in succeeds
-                                            // the auth state listener will be notified and logic to handle the
-                                            // signed in user can be handled in the listener.
-                                            if (!task.isSuccessful()) {
-                                                // there was an error
-                                                if (txtPassword.length() < 6) {
-                                                    txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
-                                                } else {
-                                                    Toast.makeText(LoginActivity.this, "auth bị lỗi", Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        }
-                                    });
+//                            //authenticate user
+//                            auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
+//                                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                                            // If sign in fails, display a message to the user. If sign in succeeds
+//                                            // the auth state listener will be notified and logic to handle the
+//                                            // signed in user can be handled in the listener.
+//                                            if (!task.isSuccessful()) {
+//                                                // there was an error
+//                                                if (txtPassword.length() < 6) {
+//                                                    txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
+//                                                } else {
+//                                                    Toast.makeText(LoginActivity.this, "auth bị lỗi", Toast.LENGTH_LONG).show();
+//                                                }
+//                                            }
+//                                        }
+//                                    });
 
 //                                                Log.d("editor1",editor1.toString());
                             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
