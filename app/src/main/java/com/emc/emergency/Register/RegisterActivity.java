@@ -227,7 +227,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                 pi.setEmail_PI(email);
                                                 pi.setName_PI(txtRegitersUsername.getText().toString());
                                                 pi.setPhone_PI(txtRegisterPhone.getText().toString());
-                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
+//                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
                                                 pi.setBirthday(date);
                                                 if(radMale.isChecked()) pi.setSex__PI(true);
                                                 else pi.setSex__PI(false);
