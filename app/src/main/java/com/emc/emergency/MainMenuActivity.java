@@ -363,7 +363,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     /**
-     * Lấy user đang đăng nhập về
+     * Lấy thông tin cá nhân user đang đăng nhập về
      */
     private void GetPersonalInfo() {
         OkHttpClient client = new OkHttpClient();
@@ -738,7 +738,7 @@ public class MainMenuActivity extends AppCompatActivity
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.setPadding(0, 400, 0, 0);
+            //mMap.setPadding(0, 400, 0, 0);
             // tinh trang giao thong
             googleMap.setTrafficEnabled(true);
         }

@@ -77,7 +77,10 @@ public class TokenService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        if(response!=null) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+        }
 
             System.out.println(response.body().string());
 
