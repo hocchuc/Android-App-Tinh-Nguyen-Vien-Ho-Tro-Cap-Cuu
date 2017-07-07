@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -47,12 +48,14 @@ public class ReportAccidentActivity extends AppCompatActivity {
 
     Response postResponse, putResponse;
 
-    SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferences,sharedPreferences1;
+    String namePI;
     Double longitude, latitude;
     private String response;
     DatabaseReference mDatabase1;
     public static final String ACCIDENTS_CHILD = "accidents";
     Accident accident2;
+    EditText txtRP_NamePI,txtRB_Details;
 
     GridView grid;
     int id;
@@ -68,7 +71,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
             R.drawable.accident8,
             R.drawable.accident9,
     };
-    int vt = 0;
+    int vt = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +96,8 @@ public class ReportAccidentActivity extends AppCompatActivity {
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                vt = position;
                 adapter.setSelectedPosition(position);
+                vt = position;
                 adapter.notifyDataSetChanged();
             }
         });
@@ -119,8 +122,9 @@ public class ReportAccidentActivity extends AppCompatActivity {
 
     private void sendData() {
         accident = new Accident();
-        accident.setDescription_AC(DSTainan[vt]);
-
+        if(vt<0){
+            accident.setDescription_AC(txtRB_Details.getText().toString());
+        }else accident.setDescription_AC(DSTainan[vt]+" - "+txtRB_Details.getText().toString());
         //TODO thêm locate sau này, sử dụng giờ hệ thống
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         String currentDateandTime = sdf.format(new Date());
@@ -198,8 +202,15 @@ public class ReportAccidentActivity extends AppCompatActivity {
     }
 
     private void onControls() {
+        txtRP_NamePI= (EditText) findViewById(R.id.txtRB_NamePI);
+        txtRB_Details= (EditText) findViewById(R.id.txtRB_Details);
         grid = (GridView) findViewById(R.id.grid1);
         btnSubmit = (ActionProcessButton) findViewById(R.id.btnSubmit);
+
+        sharedPreferences1 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+        namePI=sharedPreferences1.getString(SystemUtils.NAME_PI,"");
+        txtRP_NamePI.setText(namePI);
+        txtRP_NamePI.setEnabled(false);
 
         sharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
         id = sharedPreferences.getInt("id_user", -1);

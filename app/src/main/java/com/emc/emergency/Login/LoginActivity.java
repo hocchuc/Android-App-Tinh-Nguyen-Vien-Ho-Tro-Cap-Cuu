@@ -1,10 +1,14 @@
 package com.emc.emergency.Login;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -69,7 +75,9 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     FlashMessage flashMessage;
 
     private ProgressBar progressBar;
-    private FirebaseAuth auth;
+//    private FirebaseAuth auth;
+
+    private static final int REQUEST_CAMERA_PERMISSIONS = 123 ;
 
 
     @Override
@@ -321,6 +329,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 //                                    });
 
 //                                                Log.d("editor1",editor1.toString());
+                            RequestPermissions();
                             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                             startActivity(intent);
                             finish();
@@ -338,6 +347,29 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
             }
         });
+    }
+
+    /**
+     * xin quyền camera
+     */
+    private void RequestPermissions() {
+        if (Build.VERSION.SDK_INT > 17) {
+            final String[] permissions = {
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE};
+
+            final List<String> permissionsToRequest = new ArrayList<>();
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(LoginActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    permissionsToRequest.add(permission);
+                }
+            }
+            if (!permissionsToRequest.isEmpty()) {
+                ActivityCompat.requestPermissions(LoginActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), REQUEST_CAMERA_PERMISSIONS);
+            }
+        }
     }
 
     @Override
@@ -399,7 +431,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
                 editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
                 editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
-                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
                 editor1.commit();
             } catch (IOException e) {
                 e.printStackTrace();

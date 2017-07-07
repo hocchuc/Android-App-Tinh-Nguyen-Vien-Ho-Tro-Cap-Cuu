@@ -106,4 +106,5 @@
     <string name="seach">Seach</string>
     <string name="SelectImage">Choose Camera or Image Library</string>
     <string name="enter_password">Enter Password</string>
+    <string name="details">Details</string>
 </resources>

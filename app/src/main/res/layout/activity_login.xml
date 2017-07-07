@@ -25,7 +25,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:enabled="false"
-            android:hint="@string/enter_your_email_id"
             android:textStyle="bold">
             <EditText
                 android:id="@+id/loginEmail"
@@ -42,7 +41,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:enabled="false"
-            android:hint="@string/enter_password"
             android:textStyle="bold">
 
             <EditText
