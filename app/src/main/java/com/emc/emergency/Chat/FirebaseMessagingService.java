@@ -55,10 +55,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
             {
                 showAccidentNotification(message);
-                return;
-            }
 
-            showBasicNotification(message);
+            }
 
         }
 

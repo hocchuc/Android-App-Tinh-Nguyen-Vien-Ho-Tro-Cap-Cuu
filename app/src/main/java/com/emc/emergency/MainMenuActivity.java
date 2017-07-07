@@ -46,6 +46,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.emc.emergency.Chat.FirebaseInstanceIDService;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
 
@@ -85,6 +86,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
@@ -354,25 +356,20 @@ public class MainMenuActivity extends AppCompatActivity
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
 
-//        // UID để tìm key đổ vào locationlistener
-//        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
-//        idUser_UID = sharedPreferences.getString("iduser_uid", "");
-
+        // Lấy user_type của user đang đăng nhập
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
-        //Log.d("IDusertype",id_usertype.toString());
 
+        // Lấy id của user đang đăng nhập
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
 
 
         sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
         if (sharedPreferences3.contains(SystemUtils.PI)) {
-            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
             pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
             pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
             pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-//            Log.d("EmailPI", pi.getEmail_PI());
         } else {
             GetPersonalInfo();
 
@@ -434,11 +431,16 @@ public class MainMenuActivity extends AppCompatActivity
                 SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = preferences1.edit();
 
-                editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
-                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-                editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
-                editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-                editor1.commit();
+
+                    editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
+                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                    if(!pi.getAvatar().equals("")||pi.getAvatar()!=null) {
+                        editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
+
+                    } else editor1.putString(SystemUtils.AVATAR_PI,"http://via.placeholder.com/50x50");
+                    editor1.commit();
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -465,12 +467,13 @@ public class MainMenuActivity extends AppCompatActivity
 
         // Create a few sample profile
         IProfile profile = new ProfileDrawerItem();
-
-        if (pi.getAvatar() != null) {
-            profile = new ProfileDrawerItem()
-                    .withName(pi.getName_PI())
-                    .withEmail(pi.getEmail_PI())
-                    .withIcon(pi.getAvatar());
+        if(null != pi) {
+            if (pi.getAvatar() != null) {
+                profile = new ProfileDrawerItem()
+                        .withName(pi.getName_PI())
+                        .withEmail(pi.getEmail_PI())
+                        .withIcon(pi.getAvatar());
+            }
         }
 
         // Create the AccountHeader
@@ -548,6 +551,7 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 7) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 8) {
+                                // nút log out
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -637,6 +641,25 @@ public class MainMenuActivity extends AppCompatActivity
         editor2.putLong("id_user_type",3);
         editor2.putString("name_user_type","");
         editor2.commit();
+
+        SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = preferences1.edit();
+
+        editor1.putString(SystemUtils.NAME_PI, "");
+        editor1.putString(SystemUtils.EMAIL_PI,"");
+        editor1.putString(SystemUtils.AVATAR_PI, "");
+        editor1.putString(SystemUtils.EMAIL_PI, "");
+        editor1.commit();
+
+        SharedPreferences sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
+        SharedPreferences.Editor editor3 = sharedPreferences1.edit();
+        editor3.putLong("id_user_type", 0);
+
+        SharedPreferences sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
+        SharedPreferences.Editor editor4 = sharedPreferences2.edit();
+        editor4.putLong("id_user", 0);
+
+
     }
 
     /**
@@ -660,10 +683,9 @@ public class MainMenuActivity extends AppCompatActivity
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Response response = client.newCall(request).execute();
-            if(response.isSuccessful()) Log.d("removeTokenResponge","SUCCESS");
-
-
-
+            if (response.isSuccessful()) Log.d("removeTokenResponge", "SUCCESS");
+            //Resets Instance ID and revokes all tokens.
+            FirebaseInstanceId.getInstance().deleteInstanceId();
         }
     }
 
@@ -863,10 +885,6 @@ public class MainMenuActivity extends AppCompatActivity
 
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     public Action getIndexApiAction() {
         return Actions.newView("MainMenu", "http://[ENTER-YOUR-URL-HERE]");
     }
@@ -874,17 +892,11 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         FirebaseUserActions.getInstance().start(getIndexApiAction());
     }
 
     @Override
     public void onStop() {
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         FirebaseUserActions.getInstance().end(getIndexApiAction());
         super.onStop();
     }
@@ -980,9 +992,7 @@ public class MainMenuActivity extends AppCompatActivity
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("address"))
                         accident.setAddress(jsonObject.getString("address"));
-                    // Log.d("Accident", accident.toString());
                     ds.add(accident);
-                    // Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
             } catch (Exception ex) {
@@ -1031,7 +1041,8 @@ public class MainMenuActivity extends AppCompatActivity
                                 .setIcon(icon);
                         // tắt chuyển camera tới các tai nạn vừa load
                         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
-                        imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
+                        // đổ avatar của user vào market
+                        /* imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
 
                         imagesRef.getDownloadUrl()
                                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -1057,7 +1068,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 e.printStackTrace();
 
                             }
-                        });
+                        });*/
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();

@@ -1,31 +1,17 @@
 package com.emc.emergency.Chat;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
+
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 
-import com.emc.emergency.ReportAccidentActivity;
 import com.emc.emergency.model.User;
 import com.emc.emergency.utils.SystemUtils;
-import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -60,28 +46,29 @@ public class TokenService {
         Response response = null;
         client = new OkHttpClient();
 
-            RequestBody formBody = new FormBody.Builder()
-                    .add("token", token)
-                    .add("id_user", id_user)
-                    .build();
-            Request request = new Request.Builder()
-                    .url(SystemUtils.getServerBaseUrl()+"refreshToken")
-                    .post(formBody)
-                    .build();
+        OkHttpClient client = new OkHttpClient();
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        try {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"token\":\""+token+"\"}");
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
+                .patch(body)
+                .addHeader("content-type", "application/json;charset=utf-8")
+                .build();
+
+        Log.d("removeToken",SystemUtils.getServerBaseUrl()+"users/"+id_user);
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
             response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(response!=null) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if(response.isSuccessful()) Log.d("removeTokenResponge","SUCCESS");
+
+
 
         }
-
+            Log.d("TokenServices","onRefresh");
             System.out.println(response.body().string());
 
 
