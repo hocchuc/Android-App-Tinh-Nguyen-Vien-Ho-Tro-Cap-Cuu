@@ -366,18 +366,17 @@ public class MainMenuActivity extends AppCompatActivity
         id_user = sharedPreferences2.getInt("id_user", -1);
 
 
-//        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-//        if (sharedPreferences3.contains(SystemUtils.PI)) {
-//            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-//            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
-//            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
-//            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-////            Log.d("EmailPI", pi.getEmail_PI());
-//        } else {
-//            GetPersonalInfo();
-//
-//        }
-        GetPersonalInfo();
+        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+        if (sharedPreferences3.contains(SystemUtils.PI)) {
+            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
+            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
+            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
+//            Log.d("EmailPI", pi.getEmail_PI());
+        } else {
+            GetPersonalInfo();
+
+        }
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
