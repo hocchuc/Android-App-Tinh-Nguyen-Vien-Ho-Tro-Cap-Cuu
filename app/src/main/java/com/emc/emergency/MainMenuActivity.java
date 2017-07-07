@@ -370,7 +370,7 @@ public class MainMenuActivity extends AppCompatActivity
             pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
             pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
             pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-            Log.d("EmailPI", pi.getEmail_PI());
+//            Log.d("EmailPI", pi.getEmail_PI());
         } else {
             GetPersonalInfo();
 
@@ -431,6 +431,7 @@ public class MainMenuActivity extends AppCompatActivity
                 // luu thong tin vua load duoc vao SharedPreferences
                 SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = preferences1.edit();
+
                 editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
                 editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
                 editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());

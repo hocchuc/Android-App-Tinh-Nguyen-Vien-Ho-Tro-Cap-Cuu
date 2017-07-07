@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 user.setLat_PI(latitude);
                 user.setLong_PI(longitude);
                 btnLogin.setProgress(1);
-                xulyDangNhap(user);
+                sendUser(user);
             }
         });
         btnSignUp.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         progressBar.setVisibility(View.GONE);
     }
 
-    private void xulyDangNhap(final User user) {
+    private void sendUser(final User user) {
 //        if (TextUtils.isEmpty(user.getUser_name())) {
 //            Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
 //            return;

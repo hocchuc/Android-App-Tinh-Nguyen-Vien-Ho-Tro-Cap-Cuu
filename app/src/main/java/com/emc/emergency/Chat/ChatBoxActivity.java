@@ -196,7 +196,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             createAccidentOnServer();
 
             //Tạo mới accident trên firebase
-          //  createAccidentOnFirebase();
+          createAccidentOnFirebase();
         }
 
 
@@ -587,11 +587,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
 
         }
-    private void onEvents() {
-
-
-        //mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
-    }
+//    private void onEvents() {
+//
+//
+//        //mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
+//    }
 
     /**
      * Tạo accident mới trên firebase
