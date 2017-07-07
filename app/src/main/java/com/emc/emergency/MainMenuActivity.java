@@ -124,8 +124,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainMenuActivity extends AppCompatActivity
@@ -215,8 +217,8 @@ public class MainMenuActivity extends AppCompatActivity
                         for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                             idUser_UID = childSnapshot.getKey();
                         }
-                        mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
-                        mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
+//                        mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
+ //                       mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
                     }
 
                     @Override
@@ -546,8 +548,9 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 7) {
                                 intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
                             } else if (drawerItem.getIdentifier() == 8) {
-                                intent.putExtra(SystemUtils.TYPE, SystemUtils.TYPE_LOGOUT);
+                                Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                                intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
                             }
                             if (intent != null) startActivity(intent);
 
@@ -606,6 +609,62 @@ public class MainMenuActivity extends AppCompatActivity
                 return crossfadeDrawerLayout.isCrossfaded();
             }
         });
+    }
+
+    private void Logout() {
+        removeSharedPreferences();
+
+        try {
+            removeTokenFromServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Xóa SharedPreferences và set isLogined = false
+     *
+     */
+    private void removeSharedPreferences() {
+        SharedPreferences preferences2 = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = preferences2.edit();
+        editor2.putBoolean("isLogined",false);
+        editor2.putString("username", "");
+        editor2.putString("password","");
+        editor2.putString("token", "");
+        editor2.putString("lat_PI", "");
+        editor2.putString("long_PI", "");
+        editor2.putLong("id_user_type",3);
+        editor2.putString("name_user_type","");
+        editor2.commit();
+    }
+
+    /**
+     * Xóa token của device trên server Spring
+     */
+    private void removeTokenFromServer() throws IOException{
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"token\":\"\"\n}");
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
+                .patch(body)
+                .addHeader("content-type", "application/json;charset=utf-8")
+                .build();
+
+        Log.d("removeToken",SystemUtils.getServerBaseUrl()+"users/"+id_user);
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Response response = client.newCall(request).execute();
+            if(response.isSuccessful()) Log.d("removeTokenResponge","SUCCESS");
+
+
+
+        }
     }
 
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {

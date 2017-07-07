@@ -175,7 +175,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
 
-        //load Intent về để xử lý
+        //load Intent về để xử lý, lúc này quyết định type của user
         prepareAccidentRoom();
 
 
@@ -200,7 +200,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         }
 
 
-        //Khởi tạo các cài đặt của firebase
+        //Khởi tạo các thành phần của firebase
         initFirebase();
 
         //Đổ tin nhăn vào recycleview
@@ -284,6 +284,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
                 FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl, null);
@@ -318,6 +319,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                          LOADING_IMAGE_URL);
 
                          // tạo mới một key trong message
+                         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
                          mFirebaseDatabaseReference
                                  .child(ACCIDENTS_CHILD)
                                  .child(AccidentKey)
@@ -379,6 +382,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     }
 
     private void LoadMessage() {
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         //todo [bookmark] Load dữ liệu chat cũ đổ vào recycleview chat
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
@@ -395,9 +399,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
                 if (friendlyMessage != null) {
                     friendlyMessage.setId(snapshot.getKey());
-                }
-                Log.d("parseSnapshot",friendlyMessage.toString());
+                    Log.d("parseSnapshot",friendlyMessage.toString());
 
+                }
                 return friendlyMessage;
 
             }
@@ -429,9 +433,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                             public void onComplete(@NonNull Task<Uri> task) {
                                                 if (task.isSuccessful()) {
                                                     String downloadUrl = task.getResult().toString();
-                                                    Glide.with(viewHolder.messageImageView.getContext())
-                                                            .load(downloadUrl)
-                                                            .into(viewHolder.messageImageView);
+//                                                    if(downloadUrl!=null)
+//                                                    Glide.with(viewHolder.messageImageView.getContext())
+//                                                            .load(downloadUrl)
+//                                                            .into(viewHolder.messageImageView);
                                                 } else {
                                                     Log.w(TAG, "Getting download url was not successful.",
                                                             task.getException());
@@ -456,9 +461,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                             getDrawable(ChatBoxActivity.this,
                                                     R.drawable.ic_people_black_48dp));
                 } else {
-                    Glide.with(ChatBoxActivity.this)
-                            .load(friendlyMessage.getPhotoUrl())
-                            .into(viewHolder.messengerImageView);
+//                    Glide.with(ChatBoxActivity.this)
+//                            .load(friendlyMessage.getPhotoUrl())
+//                            .into(viewHolder.messengerImageView);
                 }
 
                 if (friendlyMessage.getText() != null) {
@@ -499,6 +504,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
      */
     private void prepareAccidentRoom() {
         Intent intent = getIntent();
+        //nếu intent gửi tới có kiểu user là type_helper
         if(intent.getStringExtra("type").equals(TYPE_HELPER)){
             Type_User = TYPE_HELPER;
             Log.d("Type_User",Type_User);
@@ -661,7 +667,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.invite_menu:
-                sendInvitation();
+                //sendInvitation();
                 return true;
             case R.id.crash_menu:
                 FirebaseCrash.logcat(Log.ERROR, TAG, "crash caused");
@@ -684,13 +690,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
         throw new NullPointerException("Fake null pointer exception");
     }
 
-    private void sendInvitation() {
-       /* Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setCallToActionText(getString(R.string.invitation_cta))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);*/
-    }
 
     // Fetch the config to determine the allowed length of messages.
     public void fetchConfig() {
@@ -732,11 +731,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Log.d(TAG, "Uri: " + uri.toString());
                     // new một message
                     FriendlyMessage tempMessage =
-                            new FriendlyMessage(
-                                    null,
-                                    mUsername,
-                                    mPhotoUrl,
-                            LOADING_IMAGE_URL);
+                            new FriendlyMessage( null, mUsername, mPhotoUrl, LOADING_IMAGE_URL);
+                    mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
                     // tạo mới một key trong message
                     mFirebaseDatabaseReference
@@ -773,28 +769,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                     }
                                 }
                             });
+                    }
                 }
             }
-        } else if (requestCode == REQUEST_INVITE) {
-            if (resultCode == RESULT_OK) {
-                // Use Firebase Measurement to log that invitation was sent.
-                Bundle payload = new Bundle();
-                payload.putString(FirebaseAnalytics.Param.VALUE, "inv_sent");
-
-                // Check how many invitations were sent and log.
-              //  String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-               //Log.d(TAG, "Invitations sent: " + ids.length);
-            } else {
-                // Use Firebase Measurement to log that invitation was not sent
-                Bundle payload = new Bundle();
-                payload.putString(FirebaseAnalytics.Param.VALUE, "inv_not_sent");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, payload);
-
-                // Sending failed or it was canceled, show failure message to the user
-                Log.d(TAG, "Failed to send invitation.");
-            }
         }
-    }
 
     /**
      * Lưu image vào store
@@ -813,6 +791,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         // nếu up thành công
                         if (task.isSuccessful()) {
+                            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
                             mMessageEditText.setText(task.getResult().getDownloadUrl().toString());
 
                             //tạo message mới
@@ -867,7 +847,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         String currentDateandTime = sdf.format(new Date());
         accident.setDate_AC(currentDateandTime);
 
-        accident.setStatus_AC("Active");
+        accident.setStatus_AC("Pending");
 
         accident.setLat_AC(latitude);
 

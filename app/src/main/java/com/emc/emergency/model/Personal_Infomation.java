@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Model cho quản lý thông tin cá nhân
+ *
+ */
 public class Personal_Infomation implements Serializable  {
 	private Long id_PI;
 	private String name_PI;

@@ -118,6 +118,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         mapIntent.setData(geoUri);
         PendingIntent mapPendingIntent =
                 PendingIntent.getActivity(this, 0, mapIntent, 0);
+
         // intent turn by turn
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + Latitude + "," + Longtitude + "&avoid=tf");
         Intent navmapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -125,19 +126,22 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         PendingIntent navmapPendingIntent =
                 PendingIntent.getActivity(this, 0, navmapIntent, 0);
 
-            // Create a WearableExtender to add functionality for wearables
-            NotificationCompat.WearableExtender wearableExtender =
-                    new NotificationCompat.WearableExtender()
-                            .setHintHideIcon(true);
+        // Create a WearableExtender to add functionality for wearables
+        NotificationCompat.WearableExtender wearableExtender =
+                new NotificationCompat.WearableExtender()
+                        .setHintHideIcon(true);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setAutoCancel(false)
                     .setContentTitle("Tai nạn " + location)
                     .setContentText(message)
                     .setSound(alarmSound)
                     .setContentIntent(pendingIntent)
+                    .addAction(R.mipmap.ic_accident_list,"Vào trang hành động", pendingIntent)
                     .addAction(R.drawable.ic_map,
                             getString(R.string.map), navmapPendingIntent)
+                    .addAction(R.drawable.ic_gps_fixed_black_24dp
+                            ,"Dẫn đường",mapPendingIntent)
                     .extend(wearableExtender);
 
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

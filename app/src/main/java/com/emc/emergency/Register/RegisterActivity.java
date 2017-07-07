@@ -214,7 +214,7 @@ public class RegisterActivity extends AppCompatActivity {
                             createPIOnServer();
 
                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                            intent.putExtra("action", "registed");
+                            intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_REGISTED);
                             intent.putExtra("username", email);
                             intent.putExtra("password", pass);
                             startActivity(intent);

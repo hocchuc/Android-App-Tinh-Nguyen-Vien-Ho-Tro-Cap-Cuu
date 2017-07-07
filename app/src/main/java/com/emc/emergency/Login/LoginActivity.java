@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     EditText txtUsername;
     EditText txtPassword;
     Personal_Infomation pi;
+
     SharedPreferences preferences, preferences1,preferences2;
     String userState = "StoreUserState";
     String id_user = "ID_USER";
@@ -100,6 +101,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
         }
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,7 +133,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("Username", txtUsername.getText().toString());
         editor.putString("Password", txtPassword.getText().toString());
-        //editor.commit();
         editor.apply();
 
     }
@@ -141,15 +142,32 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
         super.onResume();
         String username = "";
         String password = "";
+        Boolean isLogined = false;
         Intent intent = getIntent();
-        if (intent.hasExtra("action")) {
-            if (intent.getStringExtra("action").equals("registed")) {
+        if (intent.hasExtra(SystemUtils.ACTION)) {
+            if (intent.getStringExtra(SystemUtils.ACTION).equals(SystemUtils.TYPE_REGISTED)) {
                 username = intent.getStringExtra("username");
                 password = intent.getStringExtra("password");
+                Log.d(SystemUtils.ACTION,SystemUtils.TYPE_REGISTED);
+
+            }
+            if (intent.getStringExtra(SystemUtils.ACTION).equals(SystemUtils.TYPE_LOGOUT)){
+                username = intent.getStringExtra("");
+                password = intent.getStringExtra("");
+                Log.d(SystemUtils.ACTION,SystemUtils.TYPE_LOGOUT);
+
             }
 
-        } else {
-            preferences = getSharedPreferences(SystemUtils.userState, MODE_PRIVATE);
+        }
+        else {
+            preferences = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
+            isLogined = preferences.getBoolean(SystemUtils.IS_LOGINED, false);
+            if(isLogined)
+            {   Log.d(SystemUtils.IS_LOGINED,"true");
+                Intent MainMenuIntent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                startActivity(MainMenuIntent);
+            }
+
             username = preferences.getString("Username", "");
             password = preferences.getString("Password", "");
         }
@@ -268,6 +286,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     }
                                     preferences2 = getSharedPreferences("User", MODE_PRIVATE);
                                     SharedPreferences.Editor editor2 = preferences2.edit();
+                                    editor2.putBoolean(SystemUtils.IS_LOGINED,true);
                                     editor2.putString("username", user1.getUser_name());
                                     editor2.putString("password", user1.getPassword());
                                     editor2.putString("token", user1.getToken());

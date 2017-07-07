@@ -72,4 +72,15 @@ public class FriendlyMessage {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    @Override
+    public String toString() {
+        return "FriendlyMessage{" +
+                "id='" + id + '\'' +
+                ", text='" + text + '\'' +
+                ", name='" + name + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
 }

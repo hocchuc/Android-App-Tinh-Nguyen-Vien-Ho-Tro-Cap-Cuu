@@ -22,14 +22,15 @@ public class SystemUtils {
             TAG_NEW_ACCIDENT = "new_accident", TAG_LOAD_MESSAGE="message_load", TAG_GO_MAP = "map_go", TAG_LOAD_MAP= "load_map";
     public static final String TYPE = "TYPE";
     public static final String TYPE_LOGOUT ="LOGOUT";
+    public static final String TYPE_REGISTED ="REGISTED";
+    public static final String ACTION = "ACTION";
+
 
     //for firebase
     final private String TYPE_HELPER = "helper";
 
-
-
-
-    // for sharedPreferent
+    // for sharedPreferent bbảng User
+    public static final String USER = "User";
     public static final String EMAIL_PI = "EMAIL_PI";
     public static final String ID_PI = "ID_PI";
     public static final  String ID_USER = "id_user";
@@ -37,6 +38,7 @@ public class SystemUtils {
     public static final String userState = "StoreUserState";
     public static final  String NAME_PI = "NAME_PI";
     public static final  String PI = "PERSONAL_INFO";
+    public static final String IS_LOGINED ="isLogined";
 
 
 

@@ -147,8 +147,8 @@ public class fragment_accident_page extends Fragment {
         protected void onPostExecute(ArrayList<Accident> accidents) {
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
-            arrAccidents.addAll(accidents);
-            recyclerView.getAdapter().notifyDataSetChanged();
+            displayAccidentList(accidents);
+
 
         }
 
@@ -214,5 +214,9 @@ public class fragment_accident_page extends Fragment {
             }
             return ds;
         }
+    }
+    public void displayAccidentList(ArrayList<Accident> accidents) {
+        accidentList.addAll(accidents);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 }
