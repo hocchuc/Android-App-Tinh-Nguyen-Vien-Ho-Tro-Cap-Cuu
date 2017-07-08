@@ -125,7 +125,8 @@ public class ReportAccidentActivity extends AppCompatActivity {
         if(vt<0){
             accident.setDescription_AC(txtRB_Details.getText().toString());
         }else accident.setDescription_AC(DSTainan[vt]+" - "+txtRB_Details.getText().toString());
-        //TODO thêm locate sau này, sử dụng giờ hệ thống
+
+          //TODO thêm locate sau này, sử dụng giờ hệ thống
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         String currentDateandTime = sdf.format(new Date());
         accident.setDate_AC(currentDateandTime);
@@ -183,7 +184,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
         Log.d("accident2", accident2.toString());
 
         /**
-         * tiếp tục gởi put lên  server để xác định user nào tạo tai nào
+         * tiếp tục gởi put lên  server để xác định user nào tạo tai nạn
          */
         PutRelation putRel = new PutRelation();
 
