@@ -29,6 +29,7 @@ import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.User;
 
 import com.emc.emergency.utils.SystemUtils;
+import com.emc.emergency.utils.Utility;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -66,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText txtRegitersUsername, txtRegisterEmai, txtRegisterPassword, txtIn_Date, txtRegisterPhone;
     RadioButton radMale, radFalse;
     private ProgressBar progressBar;
-//    private FirebaseAuth auth;
+    //    private FirebaseAuth auth;
     double lat = 0;
     double lng = 0;
     private int mYear, mMonth, mDay;
@@ -117,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 //                        txtIn_Date.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
                         date = year + "-" + (month + 1) + "-" + dayOfMonth;
-                        txtIn_Date.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+                        txtIn_Date.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
                     }
                 }, mYear, mMonth, mDay);
                 datePickerDialog.show();
@@ -147,60 +148,65 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void createUserOnServer() {
+        progressBar.setVisibility(View.VISIBLE);
+
         final String email = txtRegisterEmai.getText().toString();
         final String pass = txtRegisterPassword.getText().toString();
-
+        final String dateRegis = txtIn_Date.getText().toString();
+        final String MobilePhone = txtRegisterPhone.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
-        }
-
-        if (TextUtils.isEmpty(pass)) {
+        } else if (TextUtils.isEmpty(pass)) {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
-        }
-
-        if (pass.length() < 6) {
+        } else if (TextUtils.isEmpty(dateRegis)) {
+            Toast.makeText(getApplicationContext(), "Enter date!", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (TextUtils.isEmpty(MobilePhone)) {
+            Toast.makeText(getApplicationContext(), "Enter mobile phone number!", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (pass.length() < 6) {
             Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
             return;
-        }
+        }else if (Utility.validate(txtRegisterEmai.getText().toString())==false) {
+            Toast.makeText(this, "Sai cú pháp - Example@gmail.com", Toast.LENGTH_SHORT).show();
+            return;
+        }  else {
+            final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            // set your desired log level
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            // add your other interceptors …
+            // add logging as last interceptor
+            //JacksonConverter converter = JacksonConverter(new ObjectMapper());
 
-        progressBar.setVisibility(View.VISIBLE);
+            httpClient.addInterceptor(logging);  // <-- this is the important line!
+            Retrofit.Builder builder = new Retrofit.Builder()
+                    .baseUrl(SystemUtils.getServerBaseUrl())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient.build());
 
-        final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // set your desired log level
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        // add your other interceptors …
-        // add logging as last interceptor
-        //JacksonConverter converter = JacksonConverter(new ObjectMapper());
+            Retrofit retrofit = builder.build();
 
-        httpClient.addInterceptor(logging);  // <-- this is the important line!
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(SystemUtils.getServerBaseUrl())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient.build());
+            RegisterClient client = retrofit.create(RegisterClient.class);
+            final Call<FlashMessage> call = client.registerAccount(new User(email, pass));
 
-        Retrofit retrofit = builder.build();
-
-        RegisterClient client = retrofit.create(RegisterClient.class);
-        final Call<FlashMessage> call = client.registerAccount(new User(email, pass));
-
-        call.enqueue(new Callback<FlashMessage>() {
-            @Override
-            public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        flashMessage = response.body();
+            call.enqueue(new Callback<FlashMessage>() {
+                @Override
+                public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body() != null) {
+                            flashMessage = response.body();
 //                        Log.d("bodyRegis", flashMessage.toString());
 
-                    }
-                    try {
-                        if (flashMessage.getStatus().equals("SUCCESS")) {
+                        }
+                        try {
+                            if (flashMessage.getStatus().equals("SUCCESS")) {
 
-                            id_user = Long.parseLong(flashMessage.getMessage());
-                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+                                id_user = Long.parseLong(flashMessage.getMessage());
+                                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
 //                            String userId = auth.getCurrentUser().getUid();
 
 //                            SharedPreferences preferences = getSharedPreferences("UID", MODE_PRIVATE);
@@ -208,102 +214,104 @@ public class RegisterActivity extends AppCompatActivity {
 //                            editor1.putString("iduser_uid", userId);
 //                            editor1.commit();
 
-                            // pushing user to 'users' node using the userId
-                            mDatabase.push().setValue(new User(email, pass, lat, lng, id_user));
+                                // pushing user to 'users' node using the userId
+                                mDatabase.push().setValue(new User(email, pass, lat, lng, id_user));
 
-                            createPIOnServer();
+                                createPIOnServer();
 
-                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                            intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_REGISTED);
-                            intent.putExtra("username", email);
-                            intent.putExtra("password", pass);
-                            startActivity(intent);
+                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_REGISTED);
+                                intent.putExtra("username", email);
+                                intent.putExtra("password", pass);
+                                startActivity(intent);
 
-                            finish();
-                        } else {
-                            Toast.makeText(getApplication(), "Email đã tồn tại!!!", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            private void createPIOnServer() {
-                pi.setEmail_PI(email);
-                pi.setName_PI(txtRegitersUsername.getText().toString());
-                pi.setPhone_PI(txtRegisterPhone.getText().toString());
-//                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
-                pi.setBirthday(date);
-                if (radMale.isChecked()) pi.setSex__PI(true);
-                else pi.setSex__PI(false);
-                Gson gson = new Gson();
-                String json = gson.toJson(pi);
-//                            Log.d("Json",json);
-
-                //tao va gui PI len server
-                OkHttpClient client = new OkHttpClient();
-                MediaType mediaType = MediaType.parse("application/json");
-                RequestBody body = RequestBody.create(mediaType, json);
-                Request request = new Request.Builder()
-                        .url(SystemUtils.getServerBaseUrl() + "personal_Infomations")
-                        .post(body)
-                        .addHeader("content-type", "application/json")
-                        .build();
-                //-------------------------------------------------------------------
-                int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                if (SDK_INT > 8) {
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                            .permitAll().build();
-                    StrictMode.setThreadPolicy(policy);
-                    try {
-                        okhttp3.Response response2 = client.newCall(request).execute();
-
-                        String jsonPI = response2.body().string();
-
-                        JSONObject jsonObject = null;
-                        try {
-                            jsonObject = new JSONObject(jsonPI);
-                            for (int i = 0; i < jsonObject.length(); i++) {
-                                if (jsonObject == null) continue;
-                                if (jsonObject.has("id_PI"))
-                                    pi.setId_PI(jsonObject.getLong("id_PI"));
+                                finish();
+                            } else {
+                                Toast.makeText(getApplication(), "Email đã tồn tại!!!", Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-//                                                        Log.d("ID_PI",pi.toString());
-                        putRelationUserPI();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
 
-            private void putRelationUserPI() throws IOException {
-                //Lien ket moi quan he
-                OkHttpClient client1 = new OkHttpClient();
-                Log.d("id_userPutRel",id_user.toString());
+                private void createPIOnServer() {
+                    pi.setEmail_PI(email);
+                    pi.setName_PI(txtRegitersUsername.getText().toString());
+                    pi.setPhone_PI(txtRegisterPhone.getText().toString());
+//                                                String date=txtRegisterYear.getText().toString()+"-"+selected+"-"+txtRegisterDay.getText().toString();
+                    pi.setBirthday(date);
+                    if (radMale.isChecked()) pi.setSex__PI(true);
+                    else pi.setSex__PI(false);
+                    Gson gson = new Gson();
+                    String json = gson.toJson(pi);
+//                            Log.d("Json",json);
 
-                String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user;
+                    //tao va gui PI len server
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, json);
+                    Request request = new Request.Builder()
+                            .url(SystemUtils.getServerBaseUrl() + "personal_Infomations")
+                            .post(body)
+                            .addHeader("content-type", "application/json")
+                            .build();
+                    //-------------------------------------------------------------------
+                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                    if (SDK_INT > 8) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                .permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+                        try {
+                            okhttp3.Response response2 = client.newCall(request).execute();
 
-                MediaType mediaType = MediaType.parse("text/uri-list");
-                RequestBody body = RequestBody.create(mediaType, link_id_user);
-                Request request = new Request.Builder()
-                        .url(SystemUtils.getServerBaseUrl()+"personal_Infomations/"+pi.getId_PI()+"/id_user")
-                        .put(body)
-                        .addHeader("content-type", "text/uri-list")
-                        .build();
+                            String jsonPI = response2.body().string();
 
-                okhttp3.Response response = client1.newCall(request).execute();
-            }
+                            JSONObject jsonObject = null;
+                            try {
+                                jsonObject = new JSONObject(jsonPI);
+                                for (int i = 0; i < jsonObject.length(); i++) {
+                                    if (jsonObject == null) continue;
+                                    if (jsonObject.has("id_PI"))
+                                        pi.setId_PI(jsonObject.getLong("id_PI"));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+//                                                        Log.d("ID_PI",pi.toString());
+                            putRelationUserPI();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
 
-            @Override
-            public void onFailure(Call<FlashMessage> call, Throwable t) {
+                private void putRelationUserPI() throws IOException {
+                    //Lien ket moi quan he
+                    OkHttpClient client1 = new OkHttpClient();
+                    Log.d("id_userPutRel", id_user.toString());
 
-            }
-        });
+                    String link_id_user = SystemUtils.getServerBaseUrl() + "users/" + id_user;
+
+                    MediaType mediaType = MediaType.parse("text/uri-list");
+                    RequestBody body = RequestBody.create(mediaType, link_id_user);
+                    Request request = new Request.Builder()
+                            .url(SystemUtils.getServerBaseUrl() + "personal_Infomations/" + pi.getId_PI() + "/id_user")
+                            .put(body)
+                            .addHeader("content-type", "text/uri-list")
+                            .build();
+
+                    okhttp3.Response response = client1.newCall(request).execute();
+                }
+
+                @Override
+                public void onFailure(Call<FlashMessage> call, Throwable t) {
+
+                }
+            });
+        }
     }
+}
 //        //create user
 //        auth.createUserWithEmailAndPassword(email, pass)
 //                .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
@@ -321,4 +329,4 @@ public class RegisterActivity extends AppCompatActivity {
 //
 //                    }
 //                });
-}
+

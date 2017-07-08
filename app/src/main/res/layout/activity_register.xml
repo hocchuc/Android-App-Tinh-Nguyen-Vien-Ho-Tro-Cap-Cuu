@@ -3,159 +3,139 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:layout_margin="25dp">
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_alignTop="@+id/imageItemHinh"
+        android:layout_toRightOf="@+id/imageItemHinh"
+        android:enabled="false"
+        android:textStyle="bold">
+
+        <EditText
+            android:id="@+id/txtRegisName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Your name"
+            android:inputType="textPersonName" />
+    </android.support.design.widget.TextInputLayout>
+
+    <RadioGroup
+        android:id="@+id/radSexRegist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtNamePI"
+        android:layout_below="@+id/txtNamePI"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <RadioButton
+            android:id="@+id/radMaleRegist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/male" />
+
+        <RadioButton
+            android:id="@+id/radFeMaleRegist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/female" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/radSexRegist"
+        android:layout_below="@+id/radSexRegist"
+        android:orientation="horizontal"
         android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/imageItemHinh"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"
-            android:background="@drawable/registration" />
+        <EditText
+            android:id="@+id/txtIn_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btnDate"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_calendar" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageItemHinh"
-            android:layout_marginLeft="14dp"
-            android:layout_toRightOf="@+id/imageItemHinh"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:enabled="false"
-            android:id="@+id/txtNamePI"
+            android:padding="5dp"
             android:textStyle="bold">
 
             <EditText
-                android:id="@+id/txtRegisName"
+                android:id="@+id/txtRegisEmail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
-                android:hint="Your name"
-                android:inputType="textPersonName" />
+                android:hint="Your email address"
+                android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
 
-        <RadioGroup
-            android:id="@+id/radSexRegist"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtNamePI"
-            android:layout_below="@+id/txtNamePI"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <RadioButton
-                android:id="@+id/radMaleRegist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/male" />
-
-            <RadioButton
-                android:id="@+id/radFeMaleRegist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:text="@string/female" />
-        </RadioGroup>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/radSexRegist"
-            android:layout_below="@+id/radSexRegist"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:enabled="false"
             android:padding="5dp"
-            android:orientation="horizontal">
+            android:textStyle="bold">
 
             <EditText
-                android:id="@+id/txtIn_date"
-                android:layout_width="wrap_content"
+                android:id="@+id/txtRegisPassword"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="Create a password"
+                android:inputType="textPassword" />
+        </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/btnDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/calendar" />
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <TableLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
-
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="10dp">
-            <android.support.design.widget.TextInputLayout
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:padding="5dp"
+            android:textStyle="bold">
+
+            <EditText
+                android:id="@+id/txtRegisPhoneNumer"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:enabled="false"
-                android:padding="5dp"
-                android:textStyle="bold">
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Mobile phone"
+                android:inputType="phone" />
+        </android.support.design.widget.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/txtRegisEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:ems="10"
-                    android:hint="Your email address"
-                    android:inputType="textEmailAddress" />
-            </android.support.design.widget.TextInputLayout>
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:enabled="false"
-                android:textStyle="bold">
-
-                <EditText
-                    android:id="@+id/txtRegisPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Create a password"
-                    android:inputType="textPassword" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:enabled="false"
-                android:textStyle="bold">
-
-                <EditText
-                    android:id="@+id/txtRegisPhoneNumer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Mobile phone"
-                    android:inputType="phone" />
-            </android.support.design.widget.TextInputLayout>
-
-        </LinearLayout>
-    </TableLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="10dp"
-        android:orientation="vertical">
+        android:layout_marginTop="40dp">
 
         <Button
             android:id="@+id/btnRegist"

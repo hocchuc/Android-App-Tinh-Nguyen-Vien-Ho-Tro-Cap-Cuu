@@ -347,7 +347,6 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addControls() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         arrayAccident = new ArrayList<>();
         arrayUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
@@ -378,9 +377,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         }
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-
+//        setSupportActionBar(toolbar);
         mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -457,7 +454,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void BuildDrawer(Bundle savedInstanceState) {
         // Handle Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //set the back arrow in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -477,7 +474,8 @@ public class MainMenuActivity extends AppCompatActivity
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
-                .withProfileImagesVisible(true)
+//                .withProfileImagesVisible(true)
+                .withOnlySmallProfileImagesVisible(true)
                 .addProfiles(
                         profile
                 )
@@ -504,30 +502,15 @@ public class MainMenuActivity extends AppCompatActivity
                         new PrimaryDrawerItem().withName(R.string.personal_infomation)
                                 .withIcon(FontAwesome.Icon.faw_user_circle)
                                 .withIdentifier(3),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.chat_room)
-                                .withIcon(FontAwesome
-                                        .Icon.faw_comments)
-                                .withIdentifier(4),
-                        new PrimaryDrawerItem()
-                                .withDescription("A more complex sample")
-                                .withName(R.string.setting)
-                                .withIcon(GoogleMaterial.Icon.gmd_settings_applications)
-                                .withIdentifier(5),
                         new SectionDrawerItem().withName(R.string.other_resources),
-                        new SecondaryDrawerItem()
-                                .withName(R.string.framework)
-                                .withIcon(FontAwesome.Icon.faw_github)
-                                .withIdentifier(6),
-                        new SecondaryDrawerItem()
-                                .withName(R.string.drawer_item_contact)
-                                .withIcon(GoogleMaterial.Icon.gmd_format_color_fill)
-                                .withTag("Bullhorn")
-                                .withIdentifier(7),
+//                        new SecondaryDrawerItem()
+//                                .withName(R.string.drawer_item_contact)
+//                                .withIcon(GoogleMaterial.Icon.gmd_format_color_fill)
+//                                .withIdentifier(4),
                         new SecondaryDrawerItem()
                                 .withName("Log Out")
                                 .withIcon(R.drawable.ic_power_settings_new_black_36dp)
-                                .withIdentifier(8)
+                                .withIdentifier(4)
                 )
                 // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -542,12 +525,6 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(MainMenuActivity.this, Personal_Infomation.class);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                            } else if (drawerItem.getIdentifier() == 5) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                            } else if (drawerItem.getIdentifier() == 7) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                            } else if (drawerItem.getIdentifier() == 8) {
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -661,28 +638,25 @@ public class MainMenuActivity extends AppCompatActivity
             StrictMode.setThreadPolicy(policy);
             Response response = client.newCall(request).execute();
             if(response.isSuccessful()) Log.d("removeTokenResponge","SUCCESS");
-
-
-
         }
     }
 
-    private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(IDrawerItem drawerItem
-                , CompoundButton buttonView
-                , boolean isChecked) {
-            if (drawerItem instanceof Nameable) {
-                Log.i("material-drawer", "DrawerItem: "
-                        + ((Nameable) drawerItem).getName()
-                        + " - toggleChecked: "
-                        + isChecked);
-            } else {
-                Log.i("material-drawer"
-                        , "toggleChecked: " + isChecked);
-            }
-        }
-    };
+//    private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
+//        @Override
+//        public void onCheckedChanged(IDrawerItem drawerItem
+//                , CompoundButton buttonView
+//                , boolean isChecked) {
+//            if (drawerItem instanceof Nameable) {
+//                Log.i("material-drawer", "DrawerItem: "
+//                        + ((Nameable) drawerItem).getName()
+//                        + " - toggleChecked: "
+//                        + isChecked);
+//            } else {
+//                Log.i("material-drawer"
+//                        , "toggleChecked: " + isChecked);
+//            }
+//        }
+//    };
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -695,18 +669,18 @@ public class MainMenuActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        if (SystemUtils.getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
-            inflater.inflate(R.menu.embedded, menu);
-            menu.findItem(R.id.menu_1)
-                    .setIcon(new IconicsDrawable(this
-                            , GoogleMaterial.Icon.gmd_sort)
-                            .color(Color.WHITE).actionBar());
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        if (SystemUtils.getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
+//            inflater.inflate(R.menu.embedded, menu);
+//            menu.findItem(R.id.menu_1)
+//                    .setIcon(new IconicsDrawable(this
+//                            , GoogleMaterial.Icon.gmd_sort)
+//                            .color(Color.WHITE).actionBar());
+//        }
+//        return true;
+//    }
 
     @Override
     public void onBackPressed() {
