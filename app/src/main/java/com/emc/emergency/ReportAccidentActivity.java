@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -38,6 +40,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ReportAccidentActivity extends AppCompatActivity {
+    Toolbar toolbar2;
     ActionProcessButton btnCamera, btnSubmit;
     Accident accident;
     String id_user = "ID_USER";
@@ -91,6 +94,18 @@ public class ReportAccidentActivity extends AppCompatActivity {
     }
 
     private void onEvents() {
+        setSupportActionBar(toolbar2);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+// Get access to the custom title view
+        TextView mTitle = (TextView) toolbar2.findViewById(R.id.toolbar_title);
+
+        toolbar2.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         final CustomGrid adapter = new CustomGrid(ReportAccidentActivity.this, DSTainan, DSHinhTainan);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -118,6 +133,13 @@ public class ReportAccidentActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i=new Intent(ReportAccidentActivity.this,MainMenuActivity.class);
+        startActivity(i);
     }
 
     private void sendData() {
@@ -203,6 +225,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
     }
 
     private void onControls() {
+        toolbar2= (Toolbar) findViewById(R.id.toolbar2);
         txtRP_NamePI= (EditText) findViewById(R.id.txtRB_NamePI);
         txtRB_Details= (EditText) findViewById(R.id.txtRB_Details);
         grid = (GridView) findViewById(R.id.grid1);

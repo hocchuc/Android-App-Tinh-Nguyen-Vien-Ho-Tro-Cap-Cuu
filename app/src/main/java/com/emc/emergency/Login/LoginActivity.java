@@ -220,128 +220,132 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             call.enqueue(new Callback<FlashMessage>() {
                 @Override
                 public void onResponse(Call<FlashMessage> call, Response<FlashMessage> response) {
-                    if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            flashMessage = response.body();
-//                        Log.d("body", flashMessage.toString());
+                    try {
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                flashMessage = response.body();
+    //                        Log.d("body", flashMessage.toString());
 
-                        }
-                        try {
-                            if (flashMessage.getStatus().equals("SUCCESS")) {
-                                id = Integer.parseInt(flashMessage.getMessage()); // khi sai mat khau thi vang o day
-                                Log.d("ID_USER", String.valueOf(id));
+                            }
+                            try {
+                                if (flashMessage.getStatus().equals("SUCCESS")) {
+                                    id = Integer.parseInt(flashMessage.getMessage()); // khi sai mat khau thi vang o day
+                                    Log.d("ID_USER", String.valueOf(id));
 
-                                preferences1 = getSharedPreferences(id_user, MODE_PRIVATE);
-                                SharedPreferences.Editor editor1 = preferences1.edit();
-                                editor1.putInt("id_user", id);
-                                editor1.commit();
-                                //GetPersonalInfo();
-                                btnLogin.setProgress(0);
-                                btnLogin.setText("Done");
+                                    preferences1 = getSharedPreferences(id_user, MODE_PRIVATE);
+                                    SharedPreferences.Editor editor1 = preferences1.edit();
+                                    editor1.putInt("id_user", id);
+                                    editor1.commit();
+                                    //GetPersonalInfo();
+                                    btnLogin.setProgress(0);
+                                    btnLogin.setText("Done");
 
-                                token = FirebaseInstanceId.getInstance().getToken();
-                                tokenService.registerTokenInDB(token, id + "");
+                                    token = FirebaseInstanceId.getInstance().getToken();
+                                    tokenService.registerTokenInDB(token, id + "");
 
-                                OkHttpClient client = new OkHttpClient();
-                                Request request = new Request.Builder()
-                                        .url(SystemUtils.getServerBaseUrl() + "users/" + id)
-                                        .get()
-                                        .addHeader("content-type", "application/json")
-                                        .build();
-                                int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                                if (SDK_INT > 8) {
-                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                            .permitAll().build();
-                                    StrictMode.setThreadPolicy(policy);
-                                    try {
-                                        okhttp3.Response response1 = client.newCall(request).execute();
-                                        // Log.d("DSUSer",response1.body().string());
-                                        User user1 = new User();
-                                        User_Type user_type1 = new User_Type();
-
-                                        String jsonUser = response1.body().string();
-                                        JSONObject jsonObject = null;
+                                    OkHttpClient client = new OkHttpClient();
+                                    Request request = new Request.Builder()
+                                            .url(SystemUtils.getServerBaseUrl() + "users/" + id)
+                                            .get()
+                                            .addHeader("content-type", "application/json")
+                                            .build();
+                                    int SDK_INT = Build.VERSION.SDK_INT;
+                                    if (SDK_INT > 8) {
+                                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                .permitAll().build();
+                                        StrictMode.setThreadPolicy(policy);
                                         try {
-                                            jsonObject = new JSONObject(jsonUser);
-                                            if (jsonObject.has("id_user"))
-                                                user1.setId_user(Long.parseLong(jsonObject.getString("id_user")));
-                                            if (jsonObject.has("username"))
-                                                user1.setUser_name(jsonObject.getString("username"));
-                                            if (jsonObject.has("password"))
-                                                user1.setPassword(jsonObject.getString("password"));
-                                            if (jsonObject.has("token"))
-                                                user1.setToken(jsonObject.getString("token"));
-                                            if (jsonObject.has("long_PI"))
-                                                user1.setLong_PI(jsonObject.getDouble("long_PI"));
-                                            if (jsonObject.has("lat_PI"))
-                                                user1.setLat_PI(jsonObject.getDouble("lat_PI"));
-                                            if (jsonObject.has("id_user_type")) {
-                                                String user_type = jsonObject.getString("id_user_type");
-//                                            Log.d("user_type", user_type);
+                                            okhttp3.Response response1 = client.newCall(request).execute();
+                                            // Log.d("DSUSer",response1.body().string());
+                                            User user1 = new User();
+                                            User_Type user_type1 = new User_Type();
 
-                                                try {
-                                                    JSONObject jsonObject1 = new JSONObject(user_type);
-                                                    if (jsonObject1.has("name_user_type"))
-                                                        user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
-                                                    if (jsonObject1.has("id_user_type"))
-                                                        user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
-                                                    user1.setUser_type(user_type1);
-//                                                Log.d("User_type", user_type1.toString());
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
+                                            String jsonUser = response1.body().string();
+                                            JSONObject jsonObject = null;
+                                            try {
+                                                jsonObject = new JSONObject(jsonUser);
+                                                if (jsonObject.has("id_user"))
+                                                    user1.setId_user(Long.parseLong(jsonObject.getString("id_user")));
+                                                if (jsonObject.has("username"))
+                                                    user1.setUser_name(jsonObject.getString("username"));
+                                                if (jsonObject.has("password"))
+                                                    user1.setPassword(jsonObject.getString("password"));
+                                                if (jsonObject.has("token"))
+                                                    user1.setToken(jsonObject.getString("token"));
+                                                if (jsonObject.has("long_PI"))
+                                                    user1.setLong_PI(jsonObject.getDouble("long_PI"));
+                                                if (jsonObject.has("lat_PI"))
+                                                    user1.setLat_PI(jsonObject.getDouble("lat_PI"));
+                                                if (jsonObject.has("id_user_type")) {
+                                                    String user_type = jsonObject.getString("id_user_type");
+    //                                            Log.d("user_type", user_type);
+
+                                                    try {
+                                                        JSONObject jsonObject1 = new JSONObject(user_type);
+                                                        if (jsonObject1.has("name_user_type"))
+                                                            user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
+                                                        if (jsonObject1.has("id_user_type"))
+                                                            user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
+                                                        user1.setUser_type(user_type1);
+    //                                                Log.d("User_type", user_type1.toString());
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+    //                                            Log.d("User1", user1.toString());
                                                 }
-//                                            Log.d("User1", user1.toString());
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
                                             }
-                                        } catch (JSONException e) {
+                                            preferences2 = getSharedPreferences("User", MODE_PRIVATE);
+                                            SharedPreferences.Editor editor2 = preferences2.edit();
+                                            editor2.putBoolean(SystemUtils.IS_LOGINED, true);
+                                            editor2.putString("username", user1.getUser_name());
+                                            editor2.putString("password", user1.getPassword());
+                                            editor2.putString("token", user1.getToken());
+                                            editor2.putString("lat_PI", String.valueOf(user1.getLat_PI()));
+                                            editor2.putString("long_PI", String.valueOf(user1.getLong_PI()));
+                                            editor2.putLong("id_user_type", (user1.getUser_type().getId_user_type()));
+                                            editor2.putString("name_user_type", String.valueOf(user1.getUser_type().getName_user_type()));
+                                            editor2.commit();
+
+
+                                        } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        preferences2 = getSharedPreferences("User", MODE_PRIVATE);
-                                        SharedPreferences.Editor editor2 = preferences2.edit();
-                                        editor2.putBoolean(SystemUtils.IS_LOGINED, true);
-                                        editor2.putString("username", user1.getUser_name());
-                                        editor2.putString("password", user1.getPassword());
-                                        editor2.putString("token", user1.getToken());
-                                        editor2.putString("lat_PI", String.valueOf(user1.getLat_PI()));
-                                        editor2.putString("long_PI", String.valueOf(user1.getLong_PI()));
-                                        editor2.putLong("id_user_type", (user1.getUser_type().getId_user_type()));
-                                        editor2.putString("name_user_type", String.valueOf(user1.getUser_type().getName_user_type()));
-                                        editor2.commit();
-
-
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
                                     }
-                                }
-//                            //authenticate user
-//                            auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
-//                                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                                            // If sign in fails, display a message to the user. If sign in succeeds
-//                                            // the auth state listener will be notified and logic to handle the
-//                                            // signed in user can be handled in the listener.
-//                                            if (!task.isSuccessful()) {
-//                                                // there was an error
-//                                                if (txtPassword.length() < 6) {
-//                                                    txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
-//                                                } else {
-//                                                    Toast.makeText(LoginActivity.this, "auth bị lỗi", Toast.LENGTH_LONG).show();
-//                                                }
-//                                            }
-//                                        }
-//                                    });
+    //                            //authenticate user
+    //                            auth.signInWithEmailAndPassword(user.getUser_name(), user.getPassword())
+    //                                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+    //                                        @Override
+    //                                        public void onComplete(@NonNull Task<AuthResult> task) {
+    //                                            // If sign in fails, display a message to the user. If sign in succeeds
+    //                                            // the auth state listener will be notified and logic to handle the
+    //                                            // signed in user can be handled in the listener.
+    //                                            if (!task.isSuccessful()) {
+    //                                                // there was an error
+    //                                                if (txtPassword.length() < 6) {
+    //                                                    txtPassword.setError("Mật khẩu phải từ 6 ký tự trở lên. ");
+    //                                                } else {
+    //                                                    Toast.makeText(LoginActivity.this, "auth bị lỗi", Toast.LENGTH_LONG).show();
+    //                                                }
+    //                                            }
+    //                                        }
+    //                                    });
 
-//                                                Log.d("editor1",editor1.toString());
-                                RequestPermissions();
-                                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Tài khoản và mật khẩu không đúng.!", Toast.LENGTH_LONG).show();
+    //                                                Log.d("editor1",editor1.toString());
+                                    RequestPermissions();
+                                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Tài khoản và mật khẩu không đúng.!", Toast.LENGTH_LONG).show();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
 
@@ -373,6 +377,14 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             if (!permissionsToRequest.isEmpty()) {
                 ActivityCompat.requestPermissions(LoginActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), REQUEST_CAMERA_PERMISSIONS);
             }
+        }
+        // yeu cau quyen doi voi cac thiet chay android M tro len
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    123
+            );
         }
     }
 

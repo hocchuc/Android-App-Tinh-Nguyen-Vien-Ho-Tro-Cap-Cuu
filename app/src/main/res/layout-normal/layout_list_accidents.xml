@@ -3,19 +3,17 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    card_view:cardCornerRadius="0dp"
-    card_view:cardElevation="8dp">
+    android:layout_height="wrap_content">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp">
+        android:layout_margin="5dp">
 
         <ImageView
             android:id="@+id/imgVAC"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -30,7 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="17dp"
             android:layout_toEndOf="@+id/imgVAC"
             android:layout_toRightOf="@+id/imgVAC"
             android:breakStrategy="balanced"
@@ -38,13 +35,12 @@
             android:textSize="14dp"
             android:textStyle="bold"
             android:inputType="textMultiLine"
-            card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
-            android:layout_marginLeft="16dp"
+            android:lines="20"
+            android:minLines="2"
             card_view:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="0dp"
-            android:layout_marginRight="0dp"
-            card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.0" />
+            card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
+            android:layout_marginLeft="8dp" />
         <TextView
             android:id="@+id/txtDate_AC"
             android:layout_width="wrap_content"
@@ -52,8 +48,8 @@
             android:layout_alignLeft="@+id/txtAddess_Ac"
             android:layout_alignStart="@+id/txtAddess_Ac"
             android:layout_below="@+id/txtAddess_Ac"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:breakStrategy="balanced"
             android:inputType="textMultiLine"
             android:text="TextView"
@@ -70,23 +66,23 @@
             android:text="TextView"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            card_view:layout_constraintLeft_toRightOf="@+id/txtDes_AC"
-            android:layout_marginLeft="16dp"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintTop_toBottomOf="@+id/txtDes_AC"
+            card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
+            android:layout_marginLeft="8dp" />
 
         <TextView
             android:id="@+id/txtDes_AC"
-            android:layout_width="58dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/txtDate_AC"
             android:layout_alignStart="@+id/txtDate_AC"
             android:layout_alignTop="@+id/txtStatus"
             android:text="TextView"
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintTop_toBottomOf="@+id/txtDate_AC"
             card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
-            android:layout_marginLeft="16dp"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginLeft="8dp" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
@@ -97,13 +93,13 @@
             android:clickable="true"
             card_view:fabSize="mini"
             card_view:srcCompat="@drawable/ic_menu_send"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="8dp"
             card_view:layout_constraintRight_toRightOf="parent"
             card_view:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="8dp"
             card_view:layout_constraintLeft_toRightOf="@+id/txtStatus"
             android:layout_marginLeft="8dp"
-            card_view:layout_constraintHorizontal_bias="1.0" />
+            card_view:layout_constraintHorizontal_bias="0.993" />
 
 
     </android.support.constraint.ConstraintLayout>

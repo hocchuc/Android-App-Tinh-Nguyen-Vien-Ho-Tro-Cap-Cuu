@@ -313,23 +313,27 @@ public class fragment_personal_info_page extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // xu ly intent tra ve tu trinh gallery va camera
-        if(resultCode == RESULT_OK){ // neu ket qua ok
-            if(requestCode == REQUEST_CHOOSE_PHOTO){
-                try {
-                    Uri imageUri = data.getData();
-                    InputStream is = getActivity().getContentResolver().openInputStream(imageUri);
-                    bitmap = BitmapFactory.decodeStream(is);
+        try {
+            if(resultCode == RESULT_OK){ // neu ket qua ok
+                if(requestCode == REQUEST_CHOOSE_PHOTO){
+                    try {
+                        Uri imageUri = data.getData();
+                        InputStream is = getActivity().getContentResolver().openInputStream(imageUri);
+                        bitmap = BitmapFactory.decodeStream(is);
+                        imgV.setImageBitmap(bitmap);
+                        sendImageToFirebase(bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }else if(requestCode == RESQUEST_TAKE_PHOTO){
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     imgV.setImageBitmap(bitmap);
                     sendImageToFirebase(bitmap);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 }
-            }else if(requestCode == RESQUEST_TAKE_PHOTO){
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imgV.setImageBitmap(bitmap);
-                sendImageToFirebase(bitmap);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

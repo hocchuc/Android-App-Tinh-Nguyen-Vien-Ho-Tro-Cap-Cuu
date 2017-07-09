@@ -61,8 +61,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:enabled="false"
-            android:inputType="textPersonName" />
+            android:hint="Your birthday"
+            android:enabled="false" />
 
         <Button
             android:id="@+id/btnDate"

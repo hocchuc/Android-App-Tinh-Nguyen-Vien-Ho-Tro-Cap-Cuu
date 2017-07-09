@@ -291,15 +291,6 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addEvents() {
-        // yeu cau quyen doi voi cac thiet chay android M tro len
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    123
-            );
-        }
-
 //        Log.d("UID after put", idUser_UID);
         GPSTracker gps = new GPSTracker(MainMenuActivity.this);
         if (gps.canGetLocation()) {
@@ -352,6 +343,8 @@ public class MainMenuActivity extends AppCompatActivity
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
+
+        pi = new Personal_Infomation();
 
 //        // UID để tìm key đổ vào locationlistener
 //        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
