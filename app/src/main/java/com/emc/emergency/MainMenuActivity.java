@@ -349,6 +349,10 @@ public class MainMenuActivity extends AppCompatActivity
 
         pi = new Personal_Infomation();
 
+        if(isOnline()==false){
+            Logout();
+        }
+
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
         //Log.d("IDusertype",id_usertype.toString());
@@ -373,6 +377,8 @@ public class MainMenuActivity extends AppCompatActivity
         mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
     /**
@@ -751,6 +757,8 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+//
+//        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
 
         if (ActivityCompat.checkSelfPermission(this,
@@ -760,13 +768,27 @@ public class MainMenuActivity extends AppCompatActivity
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            //mMap.setPadding(0, 400, 0, 0);
             // tinh trang giao thong
             googleMap.setTrafficEnabled(true);
         }
 
     }
+    public Boolean isOnline() {
+        try {
+            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+            int returnVal = p1.waitFor();
+            boolean reachable = (returnVal==0);
+            return reachable;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     private void sendRequest() {
+        //String origin = "10.738100, 106.677811";
         String origin = latitude + "," + longitude;
         String destination = viDo + "," + kinhDo;
         try {
@@ -820,6 +842,7 @@ public class MainMenuActivity extends AppCompatActivity
     private class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
         Activity activity;
         ArrayList<Accident> arrAccidents;
+        //    AccidentAdapter accidentsAdapter;
 
         public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
             this.activity = activity;
@@ -907,7 +930,9 @@ public class MainMenuActivity extends AppCompatActivity
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("address"))
                         accident.setAddress(jsonObject.getString("address"));
+                    // Log.d("Accident", accident.toString());
                     ds.add(accident);
+                    // Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
             } catch (Exception ex) {
@@ -938,8 +963,7 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPostExecute(users);
             arrUser.addAll(users);
             View markerView = LayoutInflater.from(getBaseContext()).inflate(R.layout.view_custom_marker, null);
-            final ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(image));
+//            final ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
 
 //            Log.d("UserSize", String.valueOf(arrUser.size()));
             for (int i = 0; i < arrUser.size(); i++) {
@@ -953,38 +977,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 .position(loocation)
                                 .title(arrUser.get(i).getUser_name())
                                 .snippet(String.valueOf(arrUser.get(i).getId_user())))
-                                .setIcon(icon);
-                        // tắt chuyển camera tới các tai nạn vừa load
-                        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
-                        // // TODO: 10-Jul-17 tìm cách tải hình user về 
-                        //imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
-
-//                        imagesRef.getDownloadUrl()
-//                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                    @Override
-//                                    public void onSuccess(Uri uri) {
-//                                        uriAvatar = uri;
-//                                        Log.d("uriAvatar", uri.toString());
-//                                        RequestOptions options = new RequestOptions()
-//                                                .centerCrop()
-//                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-//                                                .placeholder(R.drawable.profile3)
-//                                                .error(R.drawable.material_drawer_circle_mask)
-//                                                .priority(Priority.HIGH);
-//
-//                                        try {
-//                                            Glide.with(getBaseContext()).load(uriAvatar).apply(options).into(image);
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                    }
-//                                }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                e.printStackTrace();
-//
-//                            }
-//                        });
+                                .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
@@ -1052,25 +1045,4 @@ public class MainMenuActivity extends AppCompatActivity
             return userList;
         }
     }
-
-    //Convert view into bitmap, them vien ngoai.
-    private Bitmap getMarkerBitmapFromView(ImageView view) {
-
-        View customMarkerView = view;
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        markerImageView.setImageResource(R.drawable.icon_user_sos);
-        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-        customMarkerView.buildDrawingCache();
-        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        Drawable drawable = customMarkerView.getBackground();
-        if (drawable != null)
-            drawable.draw(canvas);
-        customMarkerView.draw(canvas);
-        return returnedBitmap;
-    }
-
 }

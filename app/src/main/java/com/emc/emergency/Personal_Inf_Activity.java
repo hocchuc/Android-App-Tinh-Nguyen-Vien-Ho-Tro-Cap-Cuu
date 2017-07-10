@@ -74,15 +74,19 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 //                Fragment selectedFragment = null;
-                switch (item.getItemId()) {
-                    case R.id.navigation_pi:
-                        fragment_personal_info_page fragment_personal_info_page = new fragment_personal_info_page();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_personal_info_page).commit();
-                        break;
-                    case R.id.navigation_mi:
-                        fragment_medical_info_page fragment_medical_info_page = new fragment_medical_info_page();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_medical_info_page).commit();
-                        break;
+                try {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_pi:
+                            fragment_personal_info_page fragment_personal_info_page = new fragment_personal_info_page();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_personal_info_page).commit();
+                            break;
+                        case R.id.navigation_mi:
+                            fragment_medical_info_page fragment_medical_info_page = new fragment_medical_info_page();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_medical_info_page).commit();
+                            break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 return true;
             }
