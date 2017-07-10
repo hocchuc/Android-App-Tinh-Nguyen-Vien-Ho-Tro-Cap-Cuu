@@ -202,7 +202,7 @@ public class fragment_personal_info_page extends Fragment {
                     pi1.setBirthday(txtBirthdayPI.getText().toString());
                     pi1.setPhone_PI(txtPhonePI.getText().toString());
                     pi1.setWork_location(txtWKPI.getText().toString());
-
+//                    pi1.setAvatar(imgV.toString());
                     if (radMale.isChecked())
                     {
                         pi1.setSex__PI(true);
@@ -411,7 +411,7 @@ public class fragment_personal_info_page extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(Personal_Infomation pi) {
+        protected void onPostExecute(final Personal_Infomation pi) {
             super.onPostExecute(pi);
 
             try {
