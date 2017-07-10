@@ -289,22 +289,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void addEvents() {
 //        Log.d("UID after put", idUser_UID);
-        GPSTracker gps = new GPSTracker(MainMenuActivity.this);
-        if (gps.canGetLocation()) {
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
-        }
 
-        LocationChange();
-
-
-        if (id_usertype == 2) {
-            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
-        } else {
-            new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
-            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
-
-        }
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -378,7 +363,22 @@ public class MainMenuActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        GPSTracker gps = new GPSTracker(MainMenuActivity.this);
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
 
+        LocationChange();
+
+
+        if (id_usertype == 2) {
+            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+        } else {
+            new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
+            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+
+        }
     }
 
     /**
