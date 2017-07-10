@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -107,6 +108,21 @@ public class fragment_personal_info_page extends Fragment {
     FirebaseStorage storage;
     StorageReference storageRef ;
     Uri uriAvatar = null;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            TextView tbTitle = (TextView) getActivity().findViewById(R.id.toolbar_title2);
+            tbTitle.setText(R.string.Personal_info);
+        }
+    }
 
     public fragment_personal_info_page() {
     }

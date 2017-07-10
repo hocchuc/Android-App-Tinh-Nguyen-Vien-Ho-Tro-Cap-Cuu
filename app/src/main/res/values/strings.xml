@@ -107,4 +107,13 @@
     <string name="SelectImage">Choose Camera or Image Library</string>
     <string name="enter_password">Enter Password</string>
     <string name="details">Details</string>
+    <string name="input_allergic_hint">Dị ứng của bạn</string>
+    <string name="input_allergic_prefill">Táo Mèo</string>
+    <string name="input_des_hint">Mô tả thêm</string>
+    <string name="accept">Accept</string>
+    <string name="Cancle">Cancle</string>
+    <string name="Disease">Disease</string>
+    <string name="Allergic">Allergic</string>
+    <string name="Medicine">Medicine</string>
+    <string name="Personal_info">Personal Infomation</string>
 </resources>

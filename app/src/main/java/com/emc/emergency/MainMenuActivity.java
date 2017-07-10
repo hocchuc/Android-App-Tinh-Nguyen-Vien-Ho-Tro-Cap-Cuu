@@ -422,7 +422,7 @@ public class MainMenuActivity extends AppCompatActivity
                 // luu thong tin vua load duoc vao SharedPreferences
                 SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = preferences1.edit();
-
+                editor1.putLong(SystemUtils.ID_PI,pi.getId_PI());
                 editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
                 editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
                 editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
@@ -751,8 +751,6 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-//
-//        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
 
         if (ActivityCompat.checkSelfPermission(this,
@@ -762,7 +760,6 @@ public class MainMenuActivity extends AppCompatActivity
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            //mMap.setPadding(0, 400, 0, 0);
             // tinh trang giao thong
             googleMap.setTrafficEnabled(true);
         }
@@ -770,7 +767,6 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void sendRequest() {
-        //String origin = "10.738100, 106.677811";
         String origin = latitude + "," + longitude;
         String destination = viDo + "," + kinhDo;
         try {
@@ -824,7 +820,6 @@ public class MainMenuActivity extends AppCompatActivity
     private class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
         Activity activity;
         ArrayList<Accident> arrAccidents;
-        //    AccidentAdapter accidentsAdapter;
 
         public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
             this.activity = activity;
@@ -912,9 +907,7 @@ public class MainMenuActivity extends AppCompatActivity
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("address"))
                         accident.setAddress(jsonObject.getString("address"));
-                    // Log.d("Accident", accident.toString());
                     ds.add(accident);
-                    // Log.d("DS", ds.toString());
                 }
                 Log.d("ds", ds.toString());
             } catch (Exception ex) {
@@ -963,33 +956,35 @@ public class MainMenuActivity extends AppCompatActivity
                                 .setIcon(icon);
                         // tắt chuyển camera tới các tai nạn vừa load
                         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
-                        imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
+                        // // TODO: 10-Jul-17 tìm cách tải hình user về 
+                        //imagesRef = storageRef.child("images/" + arrUser.get(i).getId_user() + ".jpg");
 
-                        imagesRef.getDownloadUrl()
-                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        uriAvatar = uri;
-                                        Log.d("uriAvatar", uri.toString());
-                                        RequestOptions options = new RequestOptions()
-                                                .centerCrop()
-                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                                                .placeholder(R.drawable.profile3)
-                                                .error(R.drawable.material_drawer_circle_mask)
-                                                .priority(Priority.HIGH);
-                                        try {
-                                            Glide.with(getBaseContext()).load(uriAvatar).apply(options).into(image);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                e.printStackTrace();
-
-                            }
-                        });
+//                        imagesRef.getDownloadUrl()
+//                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                    @Override
+//                                    public void onSuccess(Uri uri) {
+//                                        uriAvatar = uri;
+//                                        Log.d("uriAvatar", uri.toString());
+//                                        RequestOptions options = new RequestOptions()
+//                                                .centerCrop()
+//                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+//                                                .placeholder(R.drawable.profile3)
+//                                                .error(R.drawable.material_drawer_circle_mask)
+//                                                .priority(Priority.HIGH);
+//
+//                                        try {
+//                                            Glide.with(getBaseContext()).load(uriAvatar).apply(options).into(image);
+//                                        } catch (Exception e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
+//                                }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                e.printStackTrace();
+//
+//                            }
+//                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();

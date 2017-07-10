@@ -13,7 +13,7 @@ public class SystemUtils {
     public static final Random RANDOM = new Random();
     public static final String API_MODE="LOCAL";//"HEROKU" hoặc "LOCAL"
     public static final String HEROKU_API="https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/";
-    public static final String LOCAL_API="http://192.168.1.42:8080/api/";
+    public static final String LOCAL_API="http://192.168.1.110:8080/api/";
 
     public static final String PUT_USER_TO_ACCIDENT = "http://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/";
 
@@ -27,8 +27,8 @@ public class SystemUtils {
 
 
     //for firebase
-    final private String TYPE_HELPER = "helper";
-
+    public static final  String TYPE_HELPER = "helper";
+    public static final  String id_PI = "id_PI";
     // for sharedPreferent bbảng User
     public static final String USER = "User";
     public static final String EMAIL_PI = "EMAIL_PI";

@@ -71,12 +71,9 @@
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="0dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
         ads:layout_constraintBottom_toBottomOf="parent"
-        ads:layout_constraintHorizontal_bias="0.5"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
         ads:layout_constraintTop_toBottomOf="@+id/linearLayout"
@@ -102,10 +99,8 @@
 
             <FrameLayout
                 android:id="@+id/frameCamera"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="0dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 ads:layout_constraintBottom_toBottomOf="parent"
                 ads:layout_constraintLeft_toLeftOf="parent"
@@ -122,9 +117,9 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
                 ads:layout_constraintBottom_toBottomOf="@+id/frameCamera"
-                ads:layout_constraintHorizontal_bias="0.5"
                 ads:layout_constraintLeft_toLeftOf="@+id/frameCamera"
-                ads:layout_constraintRight_toRightOf="@+id/frameCamera" />
+                ads:layout_constraintRight_toRightOf="@+id/frameCamera"
+                android:layout_marginEnd="8dp" />
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
@@ -135,7 +130,7 @@
         android:id="@+id/guideline"
         ads:layout_constraintGuide_percent="0.48"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteY="282dp"
+        tools:layout_editor_absoluteY="326dp"
         tools:layout_editor_absoluteX="0dp" />
 
 
@@ -144,8 +139,6 @@
         android:id="@+id/messageRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="0dp"
         android:background="@color/md_white_1000"
         ads:layout_constraintBottom_toTopOf="@+id/guideline"
         ads:layout_constraintHorizontal_bias="1.0"

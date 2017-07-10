@@ -195,7 +195,6 @@ public class fragment_accident_page extends Fragment {
                             e.printStackTrace();
                         }
                     }
-
                     if (jsonObject.has("long_AC"))
                         accident.setLong_AC(jsonObject.getDouble("long_AC"));
                     if (jsonObject.has("lat_AC"))

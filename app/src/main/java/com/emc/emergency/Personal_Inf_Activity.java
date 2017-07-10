@@ -13,15 +13,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-
+import com.emc.emergency.Fragment.dummy.DummyContent;
+import com.emc.emergency.Fragment.fragment_allergic_list;
+import com.emc.emergency.Fragment.fragment_disease_list;
 import com.emc.emergency.Fragment.fragment_medical_info_page;
+import com.emc.emergency.Fragment.fragment_medicine_list;
 import com.emc.emergency.Fragment.fragment_personal_info_page;
 import com.emc.emergency.model.Medical_Info;
 import com.emc.emergency.model.Personal_Infomation;
 
-public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener,fragment_medical_info_page.OnListFragmentInteractionListener {
+public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener
+   ,fragment_medical_info_page.OnListFragmentInteractionListener {
+
     BottomNavigationView navigation;
     Toolbar toolbar3;
+    TextView mTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +45,7 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 // Get access to the custom title view
-        TextView mTitle = (TextView) toolbar3.findViewById(R.id.toolbar_title);
+         mTitle = (TextView) toolbar3.findViewById(R.id.toolbar_title);
 
         toolbar3.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,13 +89,15 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
         });
     }
 
+
+
     @Override
-    public void onListFragmentInteraction(Medical_Info mItem) {
+    public void onListFragmentInteraction(Personal_Infomation mItem) {
 
     }
 
     @Override
-    public void onListFragmentInteraction(Personal_Infomation mItem) {
+    public void onListFragmentInteraction(Medical_Info mItem) {
 
     }
 }
