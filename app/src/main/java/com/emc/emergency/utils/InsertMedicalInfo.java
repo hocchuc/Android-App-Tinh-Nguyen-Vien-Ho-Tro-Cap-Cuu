@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+
+import com.emc.emergency.model.Medical_Info;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,13 +36,17 @@ public class InsertMedicalInfo {
     String type_MI;
     String description;
     SharedPreferences sharedPreferences;
+    Activity activity;
     long id_user = 0l;
     long id_pi=0l;
     long id_mi = 0l;
-    public InsertMedicalInfo(Activity activity, String name_MI, String type_MI, String description) {
+    RecyclerView.Adapter adapter;
+    public InsertMedicalInfo(Activity activity, String name_MI, String type_MI, String description, RecyclerView.Adapter adapter) {
+        this.activity = activity;
         this.name_MI = name_MI;
         this.type_MI = type_MI;
         this.description = description;
+        this.adapter = adapter;
 
 //        sharedPreferences = activity.getSharedPreferences(SystemUtils.ID_PI, Context.MODE_PRIVATE);
 //        id_user = sharedPreferences.getLong(SystemUtils.id_PI, -1);
@@ -113,6 +121,10 @@ public class InsertMedicalInfo {
                 try {
                     Response response = client.newCall(request).execute();
                     if(response.isSuccessful())Log.d("response",response.toString());
+                    ArrayList<Medical_Info> medical_infos = new ArrayList<>();
+                    GetMedicalInfo getMedicalInfo = new GetMedicalInfo
+                            (activity,medical_infos, Integer.parseInt(type_MI),adapter);
+                    getMedicalInfo.execute();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

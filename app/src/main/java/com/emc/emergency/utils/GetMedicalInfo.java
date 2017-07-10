@@ -50,9 +50,7 @@ public class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Info
             super.onPostExecute(medical_infos);
             arrMI.addAll(medical_infos);
             Log.d("arrMI",arrMI.toString());
-           // recyclerView.getAdapter().notifyDataSetChanged();
             adapter.notifyDataSetChanged();
-
 
         }
 

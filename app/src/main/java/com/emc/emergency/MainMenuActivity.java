@@ -509,7 +509,7 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 2) {
                                 intent = new Intent(MainMenuActivity.this, AccidentActivity.class);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                intent = new Intent(MainMenuActivity.this, Personal_Infomation.class);
+                                intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);

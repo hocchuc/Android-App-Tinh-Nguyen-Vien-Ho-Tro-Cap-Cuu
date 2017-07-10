@@ -3,6 +3,7 @@ package com.emc.emergency.Adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.View;
 
 import com.emc.emergency.Fragment.fragment_allergic_list;
 import com.emc.emergency.Fragment.fragment_disease_list;
@@ -36,6 +37,16 @@ public class PagerAdapterMI extends FragmentStatePagerAdapter {
     }
 
     @Override
+    public Object instantiateItem(View container, int position) {
+        return super.instantiateItem(container, position);
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return super.isViewFromObject(view, object);
+    }
+
+    @Override
     public int getCount() {
         return 3;
     }
@@ -45,13 +56,13 @@ public class PagerAdapterMI extends FragmentStatePagerAdapter {
         String title = "";
         switch (position){
             case 0:
-                title="Bệnh";
+                title="Disease";
                 break;
             case 1:
-                title="Thuốc";
+                title="Allergic";
                 break;
-            case 3:
-                title="Dị Ứng";
+            case 2:
+                title="Medicine";
                 break;
         }
 

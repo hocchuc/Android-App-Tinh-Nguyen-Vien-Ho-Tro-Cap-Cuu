@@ -90,8 +90,6 @@ public class fragment_accident_page extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(), accidentList, mListener));
 
-        //Log.d("listtruocasyn", accidentList.toString());
-
         return view;
     }
 

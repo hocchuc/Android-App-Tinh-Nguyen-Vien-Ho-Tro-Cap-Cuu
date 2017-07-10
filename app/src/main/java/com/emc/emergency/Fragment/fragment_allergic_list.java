@@ -78,10 +78,11 @@ public class fragment_allergic_list extends Fragment {
 
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.RecyclerViewList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(this.getContext(),arrMI));
-
+        LinearLayoutManager mlayoutManager = new LinearLayoutManager(context);
+        mlayoutManager.setReverseLayout(true);
+        mlayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(mlayoutManager);
+        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI));
         getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,2,recyclerView.getAdapter());
         getMedicalInfo.execute();
         dialog=  new MaterialDialog.Builder(getContext())
@@ -96,11 +97,12 @@ public class fragment_allergic_list extends Fragment {
                         nameMI=edtNameMI.getText().toString();
                         descriptionMI = edtDesMI.getText().toString();
                         if(nameMI.matches("")) Toast.makeText(getContext(), "Bạn phải điền tên dị ứng", Toast.LENGTH_SHORT).show();
-                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"2",descriptionMI);
-                        arrMI.clear();
-                        getMedicalInfo = new GetMedicalInfo(getActivity(),arrMI,2,recyclerView.getAdapter());
+                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"2",descriptionMI,recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
-                        getMedicalInfo.execute();
+
+                        Medical_Info medical_info = new Medical_Info(nameMI,2,descriptionMI);
+                        arrMI.add(medical_info);
+                        recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
 
                     }
                 }).build();

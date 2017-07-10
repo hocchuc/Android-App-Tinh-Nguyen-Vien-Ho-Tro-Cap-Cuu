@@ -77,12 +77,13 @@ public class fragment_disease_list extends Fragment {
         arrMI = new ArrayList<Medical_Info>();
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
         // Set the adapter
-
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view.findViewById(R.id.RecyclerViewList);
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-            recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(this.getContext(),arrMI));
+        Context context = view.getContext();
+        recyclerView = (RecyclerView) view.findViewById(R.id.RecyclerViewList);
+        LinearLayoutManager mlayoutManager = new LinearLayoutManager(context);
+        mlayoutManager.setReverseLayout(true);
+        mlayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(mlayoutManager);
+        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI));
 
         getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,1,recyclerView.getAdapter());
         getMedicalInfo.execute();
@@ -98,12 +99,21 @@ public class fragment_disease_list extends Fragment {
                         nameMI=edtNameMI.getText().toString();
                         descriptionMI = edtDesMI.getText().toString();
                         if(nameMI.matches("")) Toast.makeText(getContext(), "Bạn phải điền tên bệnh", Toast.LENGTH_SHORT).show();
-                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"1",descriptionMI);
-                        arrMI.clear();
-                        getMedicalInfo = new GetMedicalInfo(getActivity(),arrMI,1,recyclerView.getAdapter());
+                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"1",descriptionMI, recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
-                        getMedicalInfo.execute();
 
+                        Medical_Info medical_info = new Medical_Info(nameMI,1,descriptionMI);
+                        arrMI.add(medical_info);
+                        recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
+
+
+
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
                     }
                 }).build();
 

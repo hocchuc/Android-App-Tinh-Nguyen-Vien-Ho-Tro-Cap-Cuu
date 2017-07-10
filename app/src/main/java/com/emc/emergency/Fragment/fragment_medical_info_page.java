@@ -15,9 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.emc.emergency.Adapter.PagerAdapterMI;
 import com.emc.emergency.R;
+import com.emc.emergency.View.SlidingTabLayout;
 import com.emc.emergency.model.Medical_Info;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class fragment_medical_info_page extends Fragment {
+public class fragment_medical_info_page extends Fragment implements TabLayout.OnTabSelectedListener {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -40,8 +42,8 @@ public class fragment_medical_info_page extends Fragment {
     RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
     ViewPager viewPager;
+    TabLayout tabLayout;
     String id_pi="ID_PI";
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -72,17 +74,31 @@ public class fragment_medical_info_page extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_medical_info_page, container, false);
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Disease"));
+        tabLayout.addTab(tabLayout.newTab().setText("Allergic"));
+        tabLayout.addTab(tabLayout.newTab().setText("Medicine"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
         PagerAdapterMI pagerAdapterMI = new PagerAdapterMI(getFragmentManager());
+
         arrMI = new ArrayList<>();
         viewPager = (ViewPager) view.findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapterMI);
-
+        tabLayout.addOnTabSelectedListener(this);
 
 
 
         return view;
     }
-
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            TextView tbTitle = (TextView) getActivity().findViewById(R.id.toolbar_title2);
+            tbTitle.setText(R.string.Medical_Info);
+        }
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -98,6 +114,22 @@ public class fragment_medical_info_page extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 
     /**
