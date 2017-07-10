@@ -43,7 +43,7 @@
                 android:layout_weight="3"
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
-                android:drawableTop="@mipmap/ic_report_accident"
+                android:drawableTop="@drawable/icon_report_accident"
                 android:text="@string/bao_tai_nan" />
 
             <android.support.v4.widget.Space
@@ -61,7 +61,7 @@
                 android:paddingBottom="10sp"
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
-                android:drawableTop="@mipmap/ic_account_box"
+                android:drawableTop="@drawable/icon_personal_infor"
                 android:lines="2"
                 android:text="@string/thong_tin_ca_nhan"
                 android:textColor="@android:color/black" />
@@ -85,7 +85,7 @@
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
                 android:layout_weight="3"
-                android:drawableTop="@mipmap/ic_request_accident"
+                android:drawableTop="@drawable/icon_request_rescue"
                 android:text="@string/yeu_cau_cap_cuu"
                 android:textColor="@android:color/black" />
 
@@ -105,7 +105,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:drawableTop="@mipmap/ic_accident_list"
+                android:drawableTop="@drawable/icon_accident_near_you"
                 android:scaleType="fitCenter"
                 android:text="@string/danh_sach_tai_nan_gan_day" />
         </LinearLayout>

@@ -522,7 +522,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         @Override
         protected void onPostExecute(List<User> userList) {
             super.onPostExecute(userList);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_volunteer);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
 
             for (int i = 0; i < userList.size(); i++) {
                 User user = userList.get(i);

@@ -145,9 +145,6 @@ public class MainMenuActivity extends AppCompatActivity
     Long id_usertype;
     int id_user;
     //-----------------------------------------------------------------------
-//    private MarkerOptions myMarkerOption;
-//    public Marker myMarker;
-//    LatLng myLocation;
     GoogleMap mMap;
     double viDo, kinhDo, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
     String description, address;
@@ -155,7 +152,7 @@ public class MainMenuActivity extends AppCompatActivity
     ImageButton btnToGMap, imgbtnRefresh;
     double latitude = 0;
     double longitude = 0;
-    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
+    SharedPreferences sharedPreferences1, sharedPreferences2, sharedPreferences3;
     /* biến dùng cho firebase */
     FirebaseStorage storage;
     StorageReference storageRef;
@@ -331,8 +328,14 @@ public class MainMenuActivity extends AppCompatActivity
         imgbtnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                startActivity(i);
+                mMap.clear();
+                if (id_usertype == 2) {
+                    new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+                } else {
+                    new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
+                    new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+
+                }
             }
         });
     }
@@ -345,10 +348,6 @@ public class MainMenuActivity extends AppCompatActivity
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
 
         pi = new Personal_Infomation();
-
-//        // UID để tìm key đổ vào locationlistener
-//        sharedPreferences = getApplicationContext().getSharedPreferences("UID", MODE_PRIVATE);
-//        idUser_UID = sharedPreferences.getString("iduser_uid", "");
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
@@ -490,19 +489,13 @@ public class MainMenuActivity extends AppCompatActivity
                                 .withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.accident_activity)
                                 .withIcon(GoogleMaterial.Icon.gmd_error)
-                                .withBadge("22").withBadgeStyle(new BadgeStyle(Color.RED, Color.RED))
                                 .withIdentifier(2),
                         new PrimaryDrawerItem().withName(R.string.personal_infomation)
                                 .withIcon(FontAwesome.Icon.faw_user_circle)
                                 .withIdentifier(3),
-                        new SectionDrawerItem().withName(R.string.other_resources),
-//                        new SecondaryDrawerItem()
-//                                .withName(R.string.drawer_item_contact)
-//                                .withIcon(GoogleMaterial.Icon.gmd_format_color_fill)
-//                                .withIdentifier(4),
                         new SecondaryDrawerItem()
                                 .withName("Log Out")
-                                .withIcon(R.drawable.ic_power_settings_new_black_36dp)
+                                .withIcon(R.drawable.icon_shutdown)
                                 .withIdentifier(4)
                 )
                 // add the items we want to use with our Drawer
@@ -589,6 +582,7 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+        finish();
     }
 
     /**
@@ -761,24 +755,6 @@ public class MainMenuActivity extends AppCompatActivity
 //        googleMap.setOnMarkerClickListener(this);
         LatLng myLocation = new LatLng(latitude, longitude);
 
-//        myMarkerOption = new MarkerOptions()
-//                .position(myLocation)
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-//                .title("Bạn đang ở đây !!")
-//                .snippet("You are here !!");
-//
-//        myMarker = mMap.addMarker(myMarkerOption);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-//        //tat/mo dau cham mau xanh
-//        mMap.setMyLocationEnabled(true);
-//        //tat/mo nut hien thi GPS
-//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//        // tinh trang giao thong
-//        googleMap.setTrafficEnabled(true);
-
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this,
@@ -803,17 +779,6 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-//    @Override
-//    public boolean onMarkerClick(Marker marker) {
-//        LatLng position = marker.getPosition();
-//        if(marker.equals(mMap)){
-//            viDo = Double.parseDouble(String.valueOf(position.latitude));
-//            kinhDo = Double.parseDouble(String.valueOf(position.longitude));
-//        }
-//        Toast.makeText(getApplicationContext(), (int) viDo,Toast.LENGTH_LONG);
-//        return false;
-//    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -878,7 +843,7 @@ public class MainMenuActivity extends AppCompatActivity
 //        arrAccidents.clear();
             arrAccidents.addAll(accidents);
 
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.pin);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
 
             for (int i = 0; i < arrAccidents.size(); i++) {
                 viDoAC = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
@@ -1098,7 +1063,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         View customMarkerView = view;
         ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-        markerImageView.setImageResource(R.drawable.ic_account_circle_black_24dp);
+        markerImageView.setImageResource(R.drawable.icon_user_sos);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
         customMarkerView.buildDrawingCache();
