@@ -181,17 +181,17 @@ public class fragment_accident_page extends Fragment {
                         accident.setDescription_AC(jsonObject.getString("description_AC"));
                     if (jsonObject.has("date_AC")) {
                         accident.setDate_AC(jsonObject.getString("date_AC"));
-                        String dateStart = accident.getDate_AC();
-//                        Log.d("dateStart", dateStart);
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000+0000'");
-                        try {
-                            Date date = format.parse(dateStart);
-//                            Log.d("date", date.toString());
-                            accident.setDate_AC(date.toString());
-                        } catch (ParseException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+//                        String dateStart = accident.getDate_AC();
+////                        Log.d("dateStart", dateStart);
+//                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000+0000'");
+//                        try {
+//                            Date date = format.parse(dateStart);
+////                            Log.d("date", date.toString());
+//                            accident.setDate_AC(date.toString());
+//                        } catch (ParseException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
                     }
                     if (jsonObject.has("long_AC"))
                         accident.setLong_AC(jsonObject.getDouble("long_AC"));

@@ -3,6 +3,7 @@ package com.emc.emergency.Adapter;
 import android.content.Context;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,15 @@ import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.MessageEvent;
 import com.emc.emergency.utils.SystemUtils;
+import com.emc.emergency.utils.ThoiGian;
 import com.google.gson.Gson;
 
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,7 +60,21 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         holder.txtStatus.setText(mValues.get(position).getStatus_AC());
 //        holder.txtLong_Ac.setText((mValues.get(position).getLong_AC().toString()));
 //        holder.txtLat_Ac.setText((mValues.get(position).getLat_AC().toString()));
-        holder.txtDate.setText(mValues.get(position).getDate_AC());
+        String origin = mValues.get(position).getDate_AC();
+        String []subCurrent=origin.split("T");
+        String subDay=subCurrent[0];
+        String subTime=subCurrent[1];
+        String []subCurrent1=subTime.split(".000+0000");
+        String subTime1=subCurrent1[0];
+        Log.d("subTime1",subTime1);
+        String dateStart=subDay+" "+subTime1;
+                        Log.d("dateStart", dateStart);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateStop = dateFormat.format(date);
+        Log.d("dateStop", dateStop);
+        String thoiGianOnOff = ThoiGian.thoiGianOnOff(dateStart,dateStop);
+        holder.txtDate.setText(thoiGianOnOff);
         holder.txtAdress.setText(mValues.get(position).getAddress());
         holder.imgV.setOnClickListener(new View.OnClickListener() {
             @Override

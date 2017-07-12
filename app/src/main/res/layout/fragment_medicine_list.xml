@@ -7,18 +7,6 @@
     tools:context="com.emc.emergency.Fragment.fragment_medicine_list"
     tools:listitem="@layout/fragment_allergic" >
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_input_add"
-        app:fabSize="normal"
-        app:layout_constraintTop_toTopOf="@+id/guideline2"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="30dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginEnd="30dp" />
-
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,4 +30,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_input_add"
+        app:fabSize="normal"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="30dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="30dp" />
 </android.support.constraint.ConstraintLayout>
