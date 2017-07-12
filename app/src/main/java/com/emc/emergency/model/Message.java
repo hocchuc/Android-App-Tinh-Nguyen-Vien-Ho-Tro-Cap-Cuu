@@ -15,18 +15,20 @@
  */
 package com.emc.emergency.model;
 
-public class FriendlyMessage {
+public class Message {
 
     private String id;
     private String text;
     private String name;
     private String photoUrl;
     private String imageUrl;
+    private String user_id;
 
-    public FriendlyMessage() {
+
+    public Message() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl) {
+    public Message(String text, String name, String photoUrl, String imageUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;

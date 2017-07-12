@@ -95,8 +95,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private void showAccidentNotification(String message) {
         Intent i = new Intent(this, ChatBoxActivity.class);
         i.putExtra("type", TYPE_HELPER);
+        Log.d("type",TYPE_HELPER);
+
         i.putExtra("FirebaseKey", FirebaseKey);
-//        Log.d("FirebaseKey",FirebaseKey);
+        Log.d("FirebaseKey",FirebaseKey);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 
@@ -135,10 +137,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     .setContentText(message)
                     .setSound(alarmSound)
                     .setContentIntent(pendingIntent)
-                    .addAction(R.mipmap.ic_accident_list,"Vào trang hành động", pendingIntent)
+                    .addAction(R.drawable.ic_accident_2,"Vào tai nạn", pendingIntent)
                     .addAction(R.drawable.ic_map,
                             getString(R.string.map), navmapPendingIntent)
-                    .addAction(R.drawable.ic_gps_fixed_black_24dp
+                    .addAction(R.drawable.ic_my_location_black_48dp
                             ,"Dẫn đường",mapPendingIntent)
                     .extend(wearableExtender);
 

@@ -28,9 +28,9 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService impleme
         //Call the token service to save the token in the database
         tokenService = new TokenService(this, this);
         sharedPreferences = getSharedPreferences(String.valueOf(id_user), Context.MODE_PRIVATE);
-        final String id = sharedPreferences.getString("id_user", "");
+        final int id = sharedPreferences.getInt("id_user", -1);
         try {
-            tokenService.registerTokenInDB(token, id);
+            tokenService.registerTokenInDB(token, id+"");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -79,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 //    private FirebaseAuth auth;
 
     private static final int REQUEST_CAMERA_PERMISSIONS = 123;
-
+    private static final int  ACCESS_FINE_LOCATION = 456;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,11 +106,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
-        GPSTracker gps = new GPSTracker(LoginActivity.this);
-        if (gps.canGetLocation()) {
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
-        }
+
+        RequestPermissions();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
             }
         });
     }
@@ -272,10 +270,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                                     user1.setPassword(jsonObject.getString("password"));
                                                 if (jsonObject.has("token"))
                                                     user1.setToken(jsonObject.getString("token"));
-                                                if (jsonObject.has("long_PI"))
-                                                    user1.setLong_PI(jsonObject.getDouble("long_PI"));
-                                                if (jsonObject.has("lat_PI"))
-                                                    user1.setLat_PI(jsonObject.getDouble("lat_PI"));
+
                                                 if (jsonObject.has("id_user_type")) {
                                                     String user_type = jsonObject.getString("id_user_type");
     //                                            Log.d("user_type", user_type);
@@ -333,10 +328,9 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     //                                    });
 
     //                                                Log.d("editor1",editor1.toString());
-                                    RequestPermissions();
                                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                                     startActivity(intent);
-                                    finish();
+
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Tài khoản và mật khẩu không đúng.!", Toast.LENGTH_LONG).show();
                                 }
@@ -356,9 +350,33 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             });
         }
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                    GPSTracker gps = new GPSTracker(LoginActivity.this);
+                    if (gps.canGetLocation()) {
+                        latitude = gps.getLatitude();
+                        longitude = gps.getLongitude();
+                    }
+
+                } else {
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
     /**
-     * xin quyền camera
+     * xin quyền camera + location
      */
     private void RequestPermissions() {
         if (Build.VERSION.SDK_INT > 17) {
@@ -378,13 +396,21 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 ActivityCompat.requestPermissions(LoginActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), REQUEST_CAMERA_PERMISSIONS);
             }
         }
-        // yeu cau quyen doi voi cac thiet chay android M tro len
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // yeu cau quyen doi voi cac thiet chay android M tro len / location
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // yeu cau quyen doi voi cac thiet chay android M tro len
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    123
-            );
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        123
+                );
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        456
+                );
+            }
         }
     }
 

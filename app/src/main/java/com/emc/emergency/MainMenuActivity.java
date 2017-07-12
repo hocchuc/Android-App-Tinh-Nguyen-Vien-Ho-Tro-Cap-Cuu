@@ -178,7 +178,7 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
+        //RequestPermissions();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
@@ -334,9 +334,9 @@ public class MainMenuActivity extends AppCompatActivity
 
         pi = new Personal_Infomation();
 
-        if(isOnline()==false){
-            Logout();
-        }
+//        if(isOnline()==false){
+//            Logout();
+//        }
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
@@ -1043,6 +1043,46 @@ public class MainMenuActivity extends AppCompatActivity
 //                Log.e("LOI ", ex.toString());
             }
             return userList;
+        }
+    }
+
+    /**
+     * xin quyền camera + location
+     */
+    private void RequestPermissions() {
+        if (Build.VERSION.SDK_INT > 17) {
+            final String[] permissions = {
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE};
+
+            final List<String> permissionsToRequest = new ArrayList<>();
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(MainMenuActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    permissionsToRequest.add(permission);
+                }
+            }
+            if (!permissionsToRequest.isEmpty()) {
+                ActivityCompat.requestPermissions(MainMenuActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), 123);
+            }
+        }
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // yeu cau quyen doi voi cac thiet chay android M tro len
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        123
+                );
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        456
+                );
+            }
         }
     }
 }

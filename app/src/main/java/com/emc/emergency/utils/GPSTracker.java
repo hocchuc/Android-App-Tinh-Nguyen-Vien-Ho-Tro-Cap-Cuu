@@ -103,34 +103,34 @@ public class GPSTracker extends Service implements LocationListener {
                         }
                     }
                 }
-//                // if GPS Enabled get lat/long using GPS Services
-//                if (isGPSEnabled) {
-//                    if (location == null) {
-//                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                            // TODO: Consider calling
-//                            //    ActivityCompat#requestPermissions
-//                            // here to request the missing permissions, and then overriding
-//                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                            //                                          int[] grantResults)
-//                            // to handle the case where the user grants the permission. See the documentation
-//                            // for ActivityCompat#requestPermissions for more details.
-//                            return getLocation();
-//                        }
-//                        locationManager.requestLocationUpdates(
-//                                LocationManager.GPS_PROVIDER,
-//                                MIN_TIME_BW_UPDATES,
-//                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-//                        Log.d("GPS Enabled", "GPS Enabled");
-//                        if (locationManager != null) {
-//                            location = locationManager
-//                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                            if (location != null) {
-//                                latitude = location.getLatitude();
-//                                longitude = location.getLongitude();
-//                            }
-//                        }
-//                    }
-//                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (location == null) {
+                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return getLocation();
+                        }
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        Log.d("GPS Enabled", "GPS Enabled");
+                        if (locationManager != null) {
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+                }
             }
 
         } catch (Exception e) {
