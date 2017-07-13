@@ -232,7 +232,6 @@ public class fragment_personal_info_page extends Fragment {
                         try {
                             Response response = client.newCall(request).execute();
                             Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
-                            getActivity().finish();
 //                        Log.d("reponsePI_PUT",response.body().string());
                         } catch (IOException e) {
                             e.printStackTrace();
