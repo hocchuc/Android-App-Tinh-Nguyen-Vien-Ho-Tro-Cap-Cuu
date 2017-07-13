@@ -37,6 +37,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -59,9 +60,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.annotation.GlideOption;
 import com.bumptech.glide.request.RequestOptions;
+import com.ebanx.swipebtn.OnStateChangeListener;
+import com.ebanx.swipebtn.SwipeButton;
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_play_video;
 import com.emc.emergency.Login.LoginActivity;
+import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.RequestRescueActivity;
 import com.emc.emergency.model.Accident;
@@ -233,7 +237,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private  RequestOptions options;
-
+    SwipeButton swipeButton;
     Double longitude,latitude;
     Accident accident;
     Accident accident2;
@@ -396,9 +400,23 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 }
             }
         });
+        swipeButton.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onStateChange(boolean active) {
+                if (Type_User.equals("victim")) {
+                    sendDoneToAccident();
+                }
+                
+                finish();
+              
+            }
             
+        });
+    
+ 
         dialog.dismiss();
     }
+ 
     
     /**
      * Khi là android K trở lên => dùng camera fragment và bắt URI ở đây
@@ -674,8 +692,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
 
         recordButton = (RecordButton) findViewById(R.id.record_button);
-
-
+        
+        swipeButton = (SwipeButton) findViewById(R.id.SwipeButton);
     }
 
     /**
@@ -1059,5 +1077,39 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private CameraFragmentApi getCameraFragment() {
         return (CameraFragmentApi) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+    }
+    
+    private void sendDoneToAccident() {
+        OkHttpClient client = new OkHttpClient();
+        
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"status_AC\" : \"Done\"\n}");
+        Request request = new Request.Builder()
+          .url(SystemUtils.getServerBaseUrl()+"accidents/"+accident2.getId_AC())
+          .patch(body)
+          .addHeader("content-type", "application/json;charset=utf-8")
+          .build();
+    
+        try {
+            Response response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "Please swpipe button to cancle accident", Toast.LENGTH_SHORT).show();
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+         if(keyCode == KeyEvent.KEYCODE_HOME)
+           {
+               Toast.makeText(this,
+                     "Volunteer still going to your location, please comeback swipe button to make accident finish ",
+                     Toast.LENGTH_SHORT).show();
+           }
+        return false;
+           
     }
 }
