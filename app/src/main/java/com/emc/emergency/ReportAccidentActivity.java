@@ -61,6 +61,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
     EditText txtRP_NamePI,txtRB_Details;
 
     GridView grid;
+    String AccidentKey="";
     int id;
     String[] DSTainan = {"Gãy chân", "Gãy tay", "Bị bỏng", "Chó cắn", "Đụng xe", "Gãy cổ", "Gãy vai", "Té cầu thang", "Té xe"};
     int[] DSHinhTainan = {
@@ -123,11 +124,13 @@ public class ReportAccidentActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDatabase1  = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
+                AccidentKey= mDatabase1.child(ACCIDENTS_CHILD).push().getKey();
 
                 sendData();
 
-                mDatabase1  = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
-                mDatabase1 .push().setValue(accident2);
+                mDatabase1.child(AccidentKey).setValue(accident2);
+
 
                 btnSubmit.setProgress(1);
                 finish();
@@ -153,10 +156,11 @@ public class ReportAccidentActivity extends AppCompatActivity {
         String currentDateandTime = sdf.format(new Date());
         accident.setDate_AC(currentDateandTime);
 
-        accident.setStatus_AC("Active");
+        accident.setStatus_AC("Pending");
 
         accident.setLat_AC(latitude);
         accident.setLong_AC(longitude);
+        accident.setFirebaseKey(AccidentKey);
 
         // convert object to json
         Gson gson = new Gson();

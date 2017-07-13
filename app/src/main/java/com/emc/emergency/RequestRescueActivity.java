@@ -107,7 +107,7 @@ public class RequestRescueActivity extends AppCompatActivity
         String currentDateandTime = sdf.format(new Date());
         accident.setDate_AC(currentDateandTime);
 
-        accident.setStatus_AC("Active");
+        accident.setStatus_AC("Pending");
 
         accident.setLat_AC(latitude);
         accident.setLong_AC(longitude);

@@ -758,7 +758,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         // Bỏ accident mới vào key vừa tạo trên firebase
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
         // cập nhập firebasekey cho accident vừa tạo
-        Log.d("AccidentKey",AccidentKey);
+//        Log.d("AccidentKey",AccidentKey);
     }
 
 
