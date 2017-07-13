@@ -117,4 +117,7 @@
     <string name="Medicine">Medicine</string>
     <string name="Personal_info">Personal Infomation</string>
     <string name="Medical_Info">Medical infomation</string>
+    <string name="progress_dialog">Video Is Loading</string>
+    <string name="please_wait">please wait</string>
+    <string name="progress_dialog_chatbox">Getting data from Server</string>
 </resources>

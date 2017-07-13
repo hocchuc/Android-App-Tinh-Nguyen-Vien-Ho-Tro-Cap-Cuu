@@ -594,22 +594,6 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-//    private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
-//        @Override
-//        public void onCheckedChanged(IDrawerItem drawerItem
-//                , CompoundButton buttonView
-//                , boolean isChecked) {
-//            if (drawerItem instanceof Nameable) {
-//                Log.i("material-drawer", "DrawerItem: "
-//                        + ((Nameable) drawerItem).getName()
-//                        + " - toggleChecked: "
-//                        + isChecked);
-//            } else {
-//                Log.i("material-drawer"
-//                        , "toggleChecked: " + isChecked);
-//            }
-//        }
-//    };
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -621,19 +605,6 @@ public class MainMenuActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
 
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        if (SystemUtils.getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
-//            inflater.inflate(R.menu.embedded, menu);
-//            menu.findItem(R.id.menu_1)
-//                    .setIcon(new IconicsDrawable(this
-//                            , GoogleMaterial.Icon.gmd_sort)
-//                            .color(Color.WHITE).actionBar());
-//        }
-//        return true;
-//    }
 
     @Override
     public void onBackPressed() {

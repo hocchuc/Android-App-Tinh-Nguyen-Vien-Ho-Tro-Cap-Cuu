@@ -1,6 +1,7 @@
 package com.emc.emergency.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
+import com.emc.emergency.Chat.ChatBoxActivity;
 import com.emc.emergency.Fragment.fragment_accident_page;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
@@ -80,14 +82,23 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, mValues.get(position).getDescription_AC(), Toast.LENGTH_SHORT).show();
-
-                EventBus.getDefault().post(new MessageEvent(SystemUtils.TAG_GO_MAP, new Gson().toJson(mValues.get(position))));
+                Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
+                                       i.putExtra("type", SystemUtils.TYPE_HELPER);
+                                       Log.d("type",SystemUtils.TYPE_HELPER);
+                               
+                                       i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
+                                       Log.d("FirebaseKey",holder.mItem.getFirebaseKey());
+                                       i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             }
         });
         holder.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new MessageEvent(SystemUtils.TAG_GO_MESSAGE, mValues.get(position).getDescription_AC()));
+                Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
+                       i.putExtra("type", SystemUtils.TYPE_HELPER);
+                       Log.d("type",SystemUtils.TYPE_HELPER);
+                       i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
+                v.getContext().startActivity(i);
             }
         });
         // request cho glide

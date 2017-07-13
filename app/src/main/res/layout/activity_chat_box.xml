@@ -8,47 +8,16 @@
     android:padding="2sp"
     android:background="#e8ecf2"
     tools:context=".Chat.ChatBoxActivity">
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="8dp"
-        android:background="@color/md_white_1000"
-        android:orientation="horizontal"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintTop_toTopOf="@+id/guideline"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1">
-
-        <ImageView
-            android:id="@+id/addMessageImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@android:drawable/ic_input_add" />
-
-        <EditText
-            android:id="@+id/messageEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1.86" />
-
-        <Button
-            android:id="@+id/sendButton"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:enabled="false"
-            android:text="SEND"
-            tools:layout_editor_absoluteX="218dp"
-            tools:layout_editor_absoluteY="201dp" />
-
-    </LinearLayout>
+        ads:layout_constraintHorizontal_bias="1.0"
+        ads:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"/>
 
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
@@ -77,7 +46,10 @@
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
         ads:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        tools:layout_constraintLeft_creator="1">
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1">
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -128,11 +100,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline"
-        ads:layout_constraintGuide_percent="0.48"
+        ads:layout_constraintGuide_percent="0.75"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteY="326dp"
+        tools:layout_editor_absoluteY="476dp"
         tools:layout_editor_absoluteX="0dp" />
-
 
 
     <android.support.v7.widget.RecyclerView
@@ -141,13 +112,56 @@
         android:layout_height="0dp"
         android:background="@color/md_white_1000"
         ads:layout_constraintBottom_toTopOf="@+id/guideline"
-        ads:layout_constraintHorizontal_bias="1.0"
+        ads:layout_constraintHorizontal_bias="0.833"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintTop_toTopOf="parent"
-        ads:layout_constraintVertical_bias="0.642"
+        ads:layout_constraintVertical_bias="1.0"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
+        tools:layout_constraintRight_creator="1"
+        ads:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:layout_marginBottom="2dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintBottom_creator="1" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/md_white_1000"
+        android:orientation="horizontal"
+        ads:layout_constraintLeft_toLeftOf="parent"
+        ads:layout_constraintRight_toRightOf="parent"
+        ads:layout_constraintTop_toTopOf="@+id/guideline"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1">
+
+        <ImageView
+            android:id="@+id/addMessageImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@android:drawable/ic_input_add" />
+
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/sendButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:enabled="false"
+            android:text="SEND"
+            tools:layout_editor_absoluteX="218dp"
+            tools:layout_editor_absoluteY="201dp" />
+
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

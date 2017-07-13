@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginBottom="10dp">
-
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="10dp">
 
         <ImageView
             android:id="@+id/messengerImageView"
@@ -31,22 +27,24 @@
                 android:layout_weight="0"
                 android:textAppearance="?android:attr/textAppearanceLarge"/>
             <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:id="@+id/frameImage"
+                android:layout_width="100dp"
+                android:layout_height="150dp">
             <ImageView
                 android:id="@+id/messageImageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@color/colorPrimary"
+                android:background="@color/accent"
                 android:scaleType="fitCenter"/>
                 <ImageView
                     android:id="@+id/btnPlayVideo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingBottom="10dp"
+                    android:paddingBottom="0dp"
                     android:layout_gravity="center_horizontal|center"
                     android:visibility="gone"
+                    android:scaleType="fitCenter"
                     android:src="@mipmap/ic_playvideo" />
             </FrameLayout>
 
@@ -61,4 +59,3 @@
     </LinearLayout>
 
 
-</LinearLayout>

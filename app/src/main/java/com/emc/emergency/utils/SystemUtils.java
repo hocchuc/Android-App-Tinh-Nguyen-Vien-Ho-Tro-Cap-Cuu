@@ -13,7 +13,7 @@ public class SystemUtils {
     public static final Random RANDOM = new Random();
     public static final String API_MODE="LOCAL";//"HEROKU" hoặc "LOCAL"
     public static final String HEROKU_API="https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/";
-    public static final String LOCAL_API="http://192.168.1.31:8080/api/";
+    public static final String LOCAL_API="http://192.168.1.110:8080/api/";
 
     public static final String PUT_USER_TO_ACCIDENT = "http://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/";
 
@@ -40,7 +40,9 @@ public class SystemUtils {
     public static final  String PI = "PERSONAL_INFO";
     public static final String IS_LOGINED ="isLogined";
 
-
+    public static final String DefaultAvatar = "https://firebasestorage.googleapis.com/v0/b/fir-demo-chat-spring.appspot.com/o/images%2Favatar_default%2Fprofile3.jpg?alt=media&token=19cbfd57-614a-4476-8bb3-43235f2928ca";
+    public static final String LOADING_IMAGE_URL = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif";
+    public static String VideoUrl = "VIDEO_URL";
 
     public static int getScreenOrientation() {
         return Resources.getSystem().getConfiguration().orientation;

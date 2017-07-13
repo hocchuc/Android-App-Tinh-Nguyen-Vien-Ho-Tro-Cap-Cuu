@@ -199,6 +199,9 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                         accident.setStatus_AC(jsonObject.getString("status_AC"));
                     if (jsonObject.has("address"))
                         accident.setAddress(jsonObject.getString("address"));
+                    if (jsonObject.has("firebaseKey"))
+                       accident.setFirebaseKey(jsonObject.getString("firebaseKey"));
+                    
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
 //                     Log.d("DS", ds.toString());

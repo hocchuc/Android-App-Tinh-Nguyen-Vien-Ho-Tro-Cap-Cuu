@@ -28,11 +28,13 @@ public class Message {
     public Message() {
     }
 
-    public Message(String text, String name, String photoUrl, String imageUrl) {
+    public Message(String text, String name, String photoUrl, String imageUrl,String user_id) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
+        this.user_id = user_id;
+
     }
 
     public String getId() {
@@ -75,6 +77,14 @@ public class Message {
         this.imageUrl = imageUrl;
     }
 
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
     @Override
     public String toString() {
         return "FriendlyMessage{" +
@@ -83,6 +93,8 @@ public class Message {
                 ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", user_id='" + user_id + '\'' +
+
                 '}';
     }
 }

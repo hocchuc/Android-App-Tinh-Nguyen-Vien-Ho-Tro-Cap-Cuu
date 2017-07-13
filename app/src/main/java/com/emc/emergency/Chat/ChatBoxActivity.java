@@ -21,11 +21,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -39,10 +41,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
@@ -50,6 +54,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.annotation.GlideOption;
@@ -86,6 +91,7 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseAppIndex;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.Indexable;
+import com.google.firebase.appindexing.builders.Actions;
 import com.google.firebase.appindexing.builders.Indexables;
 import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -112,8 +118,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -135,12 +139,39 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     }
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        return Actions.newView("ChatBox", "http://[ENTER-YOUR-URL-HERE]");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        FirebaseUserActions.getInstance().start(getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        FirebaseUserActions.getInstance().end(getIndexApiAction());
+        super.onStop();
+    }
+
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
         ImageView messageImageView;
         TextView messengerTextView;
         ImageView messengerImageView;
         ImageView btnPlayVideo;
+        FrameLayout frameLayout;
         public MessageViewHolder(View v) {
             super(v);
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
@@ -148,8 +179,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
             messengerImageView = (ImageView) itemView.findViewById(R.id.messengerImageView);
             btnPlayVideo = (ImageView) itemView.findViewById(R.id.btnPlayVideo);
+            frameLayout = (FrameLayout) itemView.findViewById(R.id.frameImage);
+            
         }
     }
+
     private String Type_User = "victim";
     private static final String TAG = "ChatBoxActivity";
     public static final String IMAGE_STORE = "images";
@@ -158,40 +192,53 @@ public class ChatBoxActivity extends AppCompatActivity implements
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
+    private static final int REQUEST_CAMERA = 3;
+    
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 100;
     public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
-    private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
+    private static final String LOADING_IMAGE_URL = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif";
     final private String TYPE_HELPER = "helper";
     final private String TYPE_VICTIM = "victim";
 
 
-    String id_user="ID_USER";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-    private RecordButton recordButton;
     public static final MediaType mediaType = MediaType.parse("text/uri-list");
+
+
+    String id_user="ID_USER";
+
+    private String mId_user;
     private String mUsername;
     private String mPhotoUrl;
+
     private SharedPreferences mSharedPreferences,mSharedPreferences2;
+
+
+    private RecordButton recordButton;
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private FirebaseRecyclerAdapter<Message, MessageViewHolder> mFirebaseAdapter;
     private ProgressBar mProgressBar;
+
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAnalytics mFirebaseAnalytics;
+
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
+    private FrameLayout mframeImage;
+
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private GoogleApiClient mGoogleApiClient;
     private  RequestOptions options;
 
     Double longitude,latitude;
     Accident accident;
     Accident accident2;
     Response postResponse,putResponse;
+    MaterialDialog dialog;
     private  String AccidentKey = "" ;
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
@@ -199,7 +246,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
-
+        
+        
+         dialog = new MaterialDialog.Builder(this)
+               .title(R.string.progress_dialog_chatbox)
+               .content(R.string.please_wait)
+               .progress(true, 0)
+               .show();
+        
         FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseAuth.signInAnonymously();
 
@@ -216,11 +270,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             //Tạo mới accident trên serverSpring
             createAccidentOnServer();
 
-            //Tạo mới accident trên firebase
-           // createAccidentOnFirebase();
         }
-
-
 
         //Khởi tạo từng control trong activity
         prepareControl();
@@ -253,10 +303,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                         .setDeveloperModeEnabled(true)
                         .build();
 
-        // Define default config values. Defaults are used when fetched config values are not
-        // available. Eg: if an error occurred fetching values from the server.
+        // Tạo remoteconfig cho độ dài tin nhắn, có thể dùng remote config trên firebase để quản lý
         Map<String, Object> defaultConfigMap = new HashMap<>();
-        defaultConfigMap.put("friendly_msg_length", 40L);
+        defaultConfigMap.put("friendly_msg_length", 100L);
 
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
@@ -312,10 +361,13 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // Tạo lop message chưa thong tin cơ ban
                 Message Message = new Message(mMessageEditText.getText().toString(),
                         mUsername,
-                        mPhotoUrl, null);
+                        mPhotoUrl, null, mId_user);
                 Log.d("messageImage",Message.toString());
+
                 mFirebaseDatabaseReference.
                         child(ACCIDENTS_CHILD).
                         child(AccidentKey).
@@ -326,68 +378,83 @@ public class ChatBoxActivity extends AppCompatActivity implements
         });
 
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
+        
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CameraFragmentApi cameraFragment = getCameraFragment();
-                if (cameraFragment != null) {
-                    cameraFragment.takePhotoOrCaptureVideo(new CameraFragmentResultAdapter() {
-                     @Override
-                     public void onVideoRecorded(String filePath) {
-                     final Uri uri = Uri.fromFile(new File(filePath));
-                                 //todo gui file len firebase
-                     Toast.makeText(getBaseContext(), "onVideoRecorded " + filePath, Toast.LENGTH_SHORT).show();
-                         Message tempMessage =
-                                 new Message(
-                                         null,
-                                         mUsername,
-                                         mPhotoUrl,
-                                         LOADING_IMAGE_URL);
-
-                         // tạo mới một key trong message
-                         mFirebaseDatabaseReference
-                                 .child(ACCIDENTS_CHILD)
-                                 .child(AccidentKey)
-                                 .child(MESSAGES_CHILD)
-                                 .push()
-                                 .setValue(tempMessage,
-                                         new DatabaseReference.CompletionListener() {
-                                             @Override
-                                             public void onComplete(DatabaseError databaseError,
-                                                                    DatabaseReference databaseReference) {
-                                                 // nêu database không có lỗi
-                                                 if (databaseError == null) {
-                                                     // getkey mới
-                                                     String key = databaseReference.getKey();
-                                                     StorageReference storageReference =
-                                                             FirebaseStorage.getInstance()
-                                                                     .getReference()
-                                                                     .child(VIDEO_STORE)
-                                                                     .child(key)
-                                                                     .child(uri.getLastPathSegment());
-                                                     putImageInStorage(storageReference, uri, key);
-                                                 } else {
-                                                     Log.w(TAG, "Unable to write message to database.",
-                                                             databaseError.toException());
-                                                 }
-                                             }
-                                         });
-
-
-
+                
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT) {
+                    onClickedCameraButton();
+                }
+            
+                
+                else {
+                    Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                      if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+                          startActivityForResult(takeVideoIntent, REQUEST_CAMERA);
                       }
-                     @Override
-                    public void onPhotoTaken(byte[] bytes, String filePath) {
-                        Toast.makeText(getBaseContext(), "onPhotoTaken " + filePath, Toast.LENGTH_SHORT).show();
-                    }
-                },
-                            "/storage/self/primary",
-                            "photo0");
                 }
             }
         });
-
+            
+        dialog.dismiss();
+    }
+    
+    /**
+     * Khi là android K trở lên => dùng camera fragment và bắt URI ở đây
+     */
+    private void onClickedCameraButton() {
+    final CameraFragmentApi cameraFragment = getCameraFragment();
+    if (cameraFragment != null) {
+     cameraFragment.takePhotoOrCaptureVideo
+            (new CameraFragmentResultAdapter() {
+                @Override
+                public void onVideoRecorded(String filePath) {
+                 Uri uri = Uri.fromFile(new File(filePath));
+                 uploadVideoFromFilePath(uri);
+                    
+            
+                }
+                      
+                  @Override
+                   public void onPhotoTaken(byte[] bytes, String filePath) {
+                        Toast.makeText(getBaseContext(), "onPhotoTaken " + filePath, Toast.LENGTH_SHORT).show();
+ 
+                    }
+            },
+                        "/storage/self/primary",
+                         "photo0");
+            }
+            
+       
+        
+    }
+    
+    private void uploadVideoFromFilePath(final Uri uri) throws NullPointerException{
+        Message tempMessage = new Message(null, mUsername, mPhotoUrl, SystemUtils.LOADING_IMAGE_URL, mId_user);
+        // tạo mới một key trong message
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+              .child(AccidentKey).child(MESSAGES_CHILD)
+              .push().setValue(tempMessage,
+              new DatabaseReference.CompletionListener() {
+                  @Override
+                  public void onComplete(DatabaseError databaseError,
+                                         DatabaseReference databaseReference) {
+                      // nêu database không có lỗi
+                      if (databaseError == null) {
+                          // getkey mới
+                          String key = databaseReference.getKey();
+                          StorageReference storageReference =
+                                FirebaseStorage.getInstance().getReference().child(VIDEO_STORE)
+                                      .child(key).child(uri.getLastPathSegment());
+                          putImageInStorage(storageReference, uri, key);
+                      } else {
+                          Log.w(TAG, "Unable to write message to database.",
+                                databaseError.toException());
+                      }
+                  }
+              });
+        
     }
 
     private void loadLocation() {
@@ -422,7 +489,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 return Message;
 
             }
-
+            
+            // Bắt sự kiện hiển thị message khi có tin nhắn mới
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
                                               Message Message,
@@ -434,6 +502,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     viewHolder.messageTextView.setText(Message.getText());
                     viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
                     viewHolder.messageImageView.setVisibility(ImageView.GONE);
+                    viewHolder.btnPlayVideo.setVisibility(ImageView.GONE);
+                    viewHolder.frameLayout.setVisibility(ViewGroup.GONE);
+
 
                 } else { // nếu là image/video
                     String imageUrl = Message.getImageUrl();
@@ -445,45 +516,32 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
                         storageReference.getDownloadUrl()
                                 .addOnCompleteListener(
-                                        new OnCompleteListener<Uri>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Uri> task) {
-                                                if (task.isSuccessful()) {
-                                                    final String downloadUrl = task.getResult().toString();
-                                                    if(downloadUrl!=null)
-                                                        options = new RequestOptions()
-                                                                .placeholder(R.mipmap.ic_camera)
-                                                                .error(R.drawable.rect_error)
-                                                                .priority(Priority.HIGH);
+                                      new OnCompleteListener<Uri>() {
+                                          @Override
+                                          public void onComplete(@NonNull Task<Uri> task) {
+                                              if (task.isSuccessful()) {
+                                                  final String downloadUrl = task.getResult().toString();
+                                                  if (downloadUrl != null)
+                                                      options = new RequestOptions()
+                                                                      .placeholder(R.mipmap.ic_camera)
+                                                                      .error(R.drawable.rect_error)
+                                                                      .priority(Priority.HIGH);
 
-                                                    Glide.with(viewHolder.messageImageView.getContext())
-                                                            .load(downloadUrl).apply(options)
-                                                            .into(viewHolder.messageImageView);
-                                                    if(downloadUrl!=null && !downloadUrl.equals("")){
-                                                        if(downloadUrl.contains("videos")){
-                                                            viewHolder.btnPlayVideo.setVisibility(View.VISIBLE);
-                                                            viewHolder.btnPlayVideo.setOnClickListener(new View.OnClickListener() {
-                                                                @Override
-                                                                public void onClick(View v) {
-                                                                    // todo fragment show video
-                                                                    fragment_play_video fragment_video
-                                                                            = com.emc.emergency.
-                                                                            Fragment.fragment_play_video.newInstance(downloadUrl);
-                                                                    getSupportFragmentManager().beginTransaction().add(R.id.frameLayout,fragment_video).commit();
+                                                  Glide.with(viewHolder.messageImageView.getContext())
+                                                        .load(downloadUrl).apply(options)
+                                                        .into(viewHolder.messageImageView);
 
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-                                                } else {
-                                                    Log.w(TAG, "Getting download url was not successful.",
-                                                            task.getException());
-                                                }
-                                            }
-                                        });
+                                              } else {
+                                                  Log.w(TAG, "Getting download url was not successful.",
+                                                        task.getException());
+                                              }
+                                          }
+                                      });
                     } else {
+                        // Do lấy # downloadurl về không còn //gs nên hình và video sẽ vô đây
+
                         options = new RequestOptions()
-                                .override(300, 100)
+                                .fitCenter()
                                 .placeholder(R.mipmap.ic_image)
                                 .error(R.drawable.rect_error)
                                 .priority(Priority.HIGH);
@@ -495,49 +553,26 @@ public class ChatBoxActivity extends AppCompatActivity implements
                         final String downloadUrl = Message.getImageUrl();
                         if(downloadUrl!=null && !downloadUrl.equals("")){
                             if(downloadUrl.contains("videos")){
-                                viewHolder.btnPlayVideo.setVisibility(View.VISIBLE);
-
+                                viewHolder.btnPlayVideo.setVisibility(ImageView.VISIBLE);
+                                if(!viewHolder.btnPlayVideo.isShown()) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        viewHolder.btnPlayVideo.setElevation(2L);
+                                    }
+                                }
                                 viewHolder.btnPlayVideo.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         // todo fragment show video
-                                        final Dialog dialog = new Dialog(ChatBoxActivity.this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-                                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                        dialog.setContentView(R.layout.fragment_fragment_play_video);
-                                        dialog.show();
-
-                                        ProgressBar progressBar = (ProgressBar) dialog.findViewById(R.id.progressBarVideo);
-                                        progressBar.setVisibility(View.VISIBLE);
-
-                                        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                                                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                                        lp.copyFrom(dialog.getWindow().getAttributes());
-                                        dialog.getWindow().setAttributes(lp);
-
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                                            getWindow().setElevation(3);
-                                        }
-                                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                                                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-                                        Log.v("Video-URI", downloadUrl+ "");
-                                        VideoView videoView = (VideoView) dialog.findViewById(R.id.videoView);
-                                        MediaController mediacontroller = new MediaController(v.getContext());
-                                        mediacontroller.setAnchorView(videoView);
-                                        Uri uri = Uri.parse(downloadUrl);
-                                        videoView.setMediaController(mediacontroller);
-                                        videoView.setVideoURI(uri);
-                                        videoView.requestFocus();
-                                        videoView.start();
-                                        progressBar.setVisibility(View.INVISIBLE);
-
-
+                                       Intent intent = new Intent(ChatBoxActivity.this,VideoPlayActivity.class);
+                                        intent.putExtra(SystemUtils.VideoUrl,downloadUrl);
+                                        startActivity(intent);
                                     }
                                 });
                             }
                         }
 
                     }
+
                     viewHolder.messageImageView.setVisibility(ImageView.VISIBLE);
                     viewHolder.messageTextView.setVisibility(TextView.GONE);
                 }
@@ -562,13 +597,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
                             .into(viewHolder.messengerImageView);
                 }
 
-                if (Message.getText() != null) {
-                    // write this message to the on-device index
-                    FirebaseAppIndex.getInstance().update(getMessageIndexable(Message));
-                }
-
-                // log a view action on it
-                FirebaseUserActions.getInstance().end(getMessageViewAction(Message));
             }
         };
 
@@ -616,10 +644,13 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mSharedPreferences2 = getSharedPreferences(SystemUtils.PI, Context.MODE_PRIVATE);
         mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI,ANONYMOUS);
         mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI,"");
-        Log.d("mUsername",mUsername);
 
+        mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
+        mId_user = String.valueOf(mSharedPreferences.getInt(SystemUtils.ID_USER, -1));
+        Log.d("mUsername",mUsername);
         Log.d("mPhotoUrl",mPhotoUrl);
 
+        if(mPhotoUrl.equals("")||mPhotoUrl.equals("null")||mPhotoUrl==null) mPhotoUrl = SystemUtils.DefaultAvatar;
 
 
     }
@@ -652,46 +683,51 @@ public class ChatBoxActivity extends AppCompatActivity implements
      */
     private void buildFragment() {
         fragment_map_page fragment_map_page = new fragment_map_page();
-        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout,fragment_map_page).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, fragment_map_page).commit();
 
 
-        final Configuration.Builder builder = new Configuration.Builder();
-        builder
-                .setCamera(Configuration.CAMERA_FACE_REAR)
-                .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
-                .setMediaQuality(Configuration.MEDIA_QUALITY_LOW);
 
-        CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameCamera, cameraFragment, FRAGMENT_TAG)
-                .commit();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            final Configuration.Builder builder = new Configuration.Builder();
+            builder
+                    .setCamera(Configuration.CAMERA_FACE_REAR)
+                    .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
+                    .setMediaQuality(Configuration.MEDIA_QUALITY_LOW);
 
-        cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
-            @Override
-            public void onRecordStateVideoReadyForRecord() {
-                super.onRecordStateVideoReadyForRecord();
-                recordButton.setActivated(true);
-            }
+            CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
 
-            @Override
-            public void onRecordStateVideoInProgress() {
-                super.onRecordStateVideoInProgress();
-            }
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frameCamera, cameraFragment, FRAGMENT_TAG)
+                    .commit();
 
-            @Override
-            public void onStartVideoRecord(File outputFile) {
-                super.onStartVideoRecord(outputFile);
-            }
+            cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
+                @Override
+                public void onRecordStateVideoReadyForRecord() {
+                    super.onRecordStateVideoReadyForRecord();
+                    recordButton.setActivated(true);
 
-            @Override
-            public void onStopVideoRecord() {
-                super.onStopVideoRecord();
-            }
-        });
+                }
+
+                @Override
+                public void onRecordStateVideoInProgress() {
+                    super.onRecordStateVideoInProgress();
+                }
+
+                @Override
+                public void onStartVideoRecord(File outputFile) {
+                    super.onStartVideoRecord(outputFile);
+                }
+
+                @Override
+                public void onStopVideoRecord() {
+                    super.onStopVideoRecord();
+                }
+            });
 
 
         }
+    }
 
 
     /**
@@ -707,33 +743,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d("AccidentKey",AccidentKey);
     }
 
-    //// TODO: 22-Jun-17 tìm hiểu ?
-    private Action getMessageViewAction(Message Message) {
-        return new Action.Builder(Action.Builder.VIEW_ACTION)
-                .setObject(Message.getName(), MESSAGE_URL.concat(Message.getId()))
-                .setMetadata(new Action.Metadata.Builder().setUpload(false))
-                .build();
-    }
-    //// TODO: 22-Jun-17 tìm hiểu ?
-    private Indexable getMessageIndexable(Message Message) {
-        PersonBuilder sender = Indexables.personBuilder()
-                .setIsSelf(mUsername.equals(Message.getName()))
-                .setName(Message.getName())
-                .setUrl(MESSAGE_URL.concat(Message.getId() + "/sender"));
-
-        PersonBuilder recipient = Indexables.personBuilder()
-                .setName(mUsername)
-                .setUrl(MESSAGE_URL.concat(Message.getId() + "/recipient"));
-
-        Indexable messageToIndex = Indexables.messageBuilder()
-                .setName(Message.getText())
-                .setUrl(MESSAGE_URL.concat(Message.getId()))
-                .setSender(sender)
-                .setRecipient(recipient)
-                .build();
-
-        return messageToIndex;
-    }
 
     @Override
     public void onPause() {
@@ -757,28 +766,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.invite_menu:
-                //sendInvitation();
-                return true;
-            case R.id.crash_menu:
-                FirebaseCrash.logcat(Log.ERROR, TAG, "crash caused");
-                causeCrash();
-                return true;
-            case R.id.sign_out_menu:
-                mUsername = ANONYMOUS;
-                mPhotoUrl = null;
-                startActivity(new Intent(this, LoginActivity.class));
-                return true;
-            case R.id.fresh_config_menu:
-                fetchConfig();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+
 
     private void causeCrash() {
         throw new NullPointerException("Fake null pointer exception");
@@ -825,7 +813,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Log.d(TAG, "Uri: " + uri.toString());
                     // new một message
                     Message tempMessage =
-                            new Message( null, mUsername, mPhotoUrl, LOADING_IMAGE_URL);
+                            new Message( null, mUsername, mPhotoUrl, LOADING_IMAGE_URL,mId_user);
 
                     // tạo mới một key trong message
                     mFirebaseDatabaseReference
@@ -842,13 +830,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                     if (databaseError == null) {
                                         // getkey mới
                                         String key = databaseReference.getKey();
-
-                               /*         StorageReference storageReference =
-                                                FirebaseStorage.getInstance()
-                                                        .getReference()
-                                                        .child(IMAGE_STORE)
-                                                        .child(key)
-                                                        .child(uri.getLastPathSegment());*/
                                         StorageReference storageReference =
                                                 FirebaseStorage.getInstance()
                                                         .getReference()
@@ -865,6 +846,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     }
                 }
             }
+        if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
+              Uri videoUri =  data.getData();
+                uploadVideoFromFilePath(videoUri);
+          }
         }
 
     /**
@@ -888,7 +873,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                             Message Message =
                                     new Message(null, mUsername,
                                             mPhotoUrl,
-                                            task.getResult().getDownloadUrl().toString());
+                                            task.getResult().getDownloadUrl().toString(),mId_user);
                             Log.d("messageImage",Message.toString());
                             mFirebaseDatabaseReference
                                     .child(ACCIDENTS_CHILD)
@@ -951,7 +936,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         String json = gson.toJson(accident);
 
         PostAccident example = new PostAccident();
-        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        int SDK_INT = Build.VERSION.SDK_INT;
         if (SDK_INT > 8)
         {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -997,7 +982,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d("accident2",accident2.toString());
 
         /**
-         * tiếp tục gởi put lên  server để xác định user nào tạo tai nào
+         * tiếp tục gởi put lên  server để xác định user nào tạo tai nạn nào
          */
         PutRelation putRel = new PutRelation();
 
@@ -1069,29 +1054,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
             }
             return putResponse.body().string();
 
-        }
-    }
-    public void sendPatchAccidentKeyToServer(String key){
-        OkHttpClient client = new OkHttpClient();
-
-        MediaType mediaType = MediaType.parse("application/json");
-
-        String strRequest = "{\n      \"firebaseKey\": \""+key+"\"\n}";
-        Log.d("PatchBody",strRequest);
-        RequestBody body = RequestBody.create
-                (mediaType, strRequest);
-        Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl()+"accidents/"+accident2.getId_AC())
-                .patch(body)
-                .addHeader("content-type", "application/json")
-                .addHeader("cache-control", "no-cache")
-                .build();
-
-        // TODO: 21-Jun-17 kiểm soát lỗi từ responge
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

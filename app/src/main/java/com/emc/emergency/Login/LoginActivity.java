@@ -106,12 +106,18 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     }
 
     private void addEvents() {
-
+        // Hiển thị dialog yêu cầu quyền
         RequestPermissions();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                GPSTracker gps = new GPSTracker(LoginActivity.this);
+                if (gps.canGetLocation()) {
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                }
 
                 String username = txtUsername.getText().toString();
                 String password = txtPassword.getText().toString();
@@ -366,7 +372,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     }
 
                 } else {
-
+                    
                 }
                 return;
             }
@@ -384,34 +390,26 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE};
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                                           
+            };
 
             final List<String> permissionsToRequest = new ArrayList<>();
+            boolean flag = false;
+            
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(LoginActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
                     permissionsToRequest.add(permission);
                 }
+           
             }
             if (!permissionsToRequest.isEmpty()) {
                 ActivityCompat.requestPermissions(LoginActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), REQUEST_CAMERA_PERMISSIONS);
             }
         }
-        // yeu cau quyen doi voi cac thiet chay android M tro len / location
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // yeu cau quyen doi voi cac thiet chay android M tro len
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        123
-                );
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        456
-                );
-            }
-        }
+      
     }
 
     @Override
