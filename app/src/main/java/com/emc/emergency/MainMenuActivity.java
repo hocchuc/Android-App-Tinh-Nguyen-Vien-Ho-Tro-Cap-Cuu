@@ -664,17 +664,18 @@ public class MainMenuActivity extends AppCompatActivity
             ((TextView) findViewById(R.id.tvDistance)).setText(route1.distance.text);
 
             originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_start))
                     .title(route1.startAddress)
                     .position(route1.startLocation)));
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_end))
                     .title(description)
                     .snippet(address)
                     .position(route1.endLocation)));
 
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
-                    color(Color.GREEN).
+                    color(Color.RED).
                     width(10);
 
             for (int i = 0; i < route1.points.size(); i++)
