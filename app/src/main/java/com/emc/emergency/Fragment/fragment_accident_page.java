@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
@@ -149,9 +150,13 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         protected void onPostExecute(ArrayList<Accident> accidents) {
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
-            displayAccidentList(accidents);
-
-
+            for(Accident accident:accidents){
+                if(accident.getStatus_AC().equals("Active")){
+//                    displayAccidentList(accidents);
+                    accidentList.add(accident);
+                }
+            }
+            recyclerView.getAdapter().notifyDataSetChanged();
         }
 
         @Override

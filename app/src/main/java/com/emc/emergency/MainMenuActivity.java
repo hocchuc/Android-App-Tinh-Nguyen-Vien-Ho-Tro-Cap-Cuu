@@ -126,7 +126,7 @@ public class MainMenuActivity extends AppCompatActivity
     int id_user;
     //-----------------------------------------------------------------------
     GoogleMap mMap;
-    double viDo, kinhDo, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
+    double viDo=-1, kinhDo=-1, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
     ImageButton btnToGMap, imgbtnRefresh;
@@ -748,13 +748,18 @@ public class MainMenuActivity extends AppCompatActivity
 //    }
 
     private void sendRequest() {
-        //String origin = "10.738100, 106.677811";
-        String origin = latitude + "," + longitude;
-        String destination = viDo + "," + kinhDo;
-        try {
-            new DirectionFinder(MainMenuActivity.this, origin, destination).execute();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if(kinhDo==-1&&viDo==-1){
+            Toast.makeText(this, "Chưa chọn vị trí cần dẫn đường.", Toast.LENGTH_SHORT).show();
+
+        }else {
+            //String origin = "10.738100, 106.677811";
+            String origin = latitude + "," + longitude;
+            String destination = viDo + "," + kinhDo;
+            try {
+                new DirectionFinder(MainMenuActivity.this, origin, destination).execute();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -826,33 +831,34 @@ public class MainMenuActivity extends AppCompatActivity
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
 
         for (int i = 0; i < arrAccident.size(); i++) {
-            viDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLat_AC()));
-            kinhDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLong_AC()));
-            LatLng loocation = new LatLng(viDoAC, kinhDoAC);
-            try {
+            if(arrAccident.get(i).getStatus_AC().equals("Active")){
+                viDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLat_AC()));
+                kinhDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLong_AC()));
+                LatLng loocation = new LatLng(viDoAC, kinhDoAC);
+                try {
 
-                mMap.addMarker(new MarkerOptions()
-                        .position(loocation)
-                        .title(arrAccident.get(i).getDescription_AC())
-                        .snippet(arrAccident.get(i).getAddress())
-                        .icon(icon));
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        LatLng position = marker.getPosition();
-                        viDo = Double.parseDouble(String.valueOf(position.latitude));
-                        kinhDo = Double.parseDouble(String.valueOf(position.longitude));
-                        return false;
-                    }
-                });
-                // tắt chuyển camera tới các tai nạn vừa load
-                // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(arrAccident.get(i).getDescription_AC())
+                            .snippet(arrAccident.get(i).getAddress())
+                            .icon(icon));
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            LatLng position = marker.getPosition();
+                            viDo = Double.parseDouble(String.valueOf(position.latitude));
+                            kinhDo = Double.parseDouble(String.valueOf(position.longitude));
+                            return false;
+                        }
+                    });
+                    // tắt chuyển camera tới các tai nạn vừa load
+                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(MainMenuActivity.this, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainMenuActivity.this, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                }
             }
         }
-
     }
 }
