@@ -301,7 +301,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
-        //Log.d("IDusertype",id_usertype.toString());
+        Log.d("IDusertype",id_usertype.toString());
 
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
@@ -333,8 +333,8 @@ public class MainMenuActivity extends AppCompatActivity
         LocationChange();
 
 
-        if (id_usertype == 2) {
-            new GetAllAccident(MainMenuActivity.this).execute();
+        if (id_usertype == 3) {
+            new GetAllUser(MainMenuActivity.this).execute();
         } else {
             new GetAllUser(MainMenuActivity.this).execute();
             new GetAllAccident(MainMenuActivity.this).execute();

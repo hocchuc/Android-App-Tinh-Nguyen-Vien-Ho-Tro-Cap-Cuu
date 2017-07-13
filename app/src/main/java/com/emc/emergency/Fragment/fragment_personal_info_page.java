@@ -168,6 +168,7 @@ public class fragment_personal_info_page extends Fragment {
         mImageSex = (ImageView) view.findViewById(R.id.imageSex);
         new GetPersonalInfo(this.getActivity(), mItem).execute();
 
+        imgV.setImageResource(R.drawable.profile3);
         imgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

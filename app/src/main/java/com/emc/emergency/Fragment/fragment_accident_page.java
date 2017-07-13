@@ -87,7 +87,10 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        LinearLayoutManager layoutManager=new LinearLayoutManager(context);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(), accidentList, mListener));
 
         return view;
