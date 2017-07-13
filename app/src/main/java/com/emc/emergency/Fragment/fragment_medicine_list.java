@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -14,17 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
-import com.emc.emergency.Fragment.dummy.DummyContent;
-import com.emc.emergency.Fragment.dummy.DummyContent.DummyItem;
 import com.emc.emergency.model.Medical_Info;
-import com.emc.emergency.utils.GetMedicalInfo;
+import com.emc.emergency.task.GetMedicalInfo;
 import com.emc.emergency.utils.InsertMedicalInfo;
 
 import java.util.ArrayList;

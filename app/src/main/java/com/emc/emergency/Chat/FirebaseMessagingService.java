@@ -140,7 +140,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     .addAction(R.drawable.ic_accident_2,"Vào tai nạn", pendingIntent)
                     .addAction(R.drawable.ic_map,
                             getString(R.string.map), navmapPendingIntent)
-                    .addAction(R.drawable.ic_my_location_black_48dp
+                    .addAction(R.drawable.marker
                             ,"Dẫn đường",mapPendingIntent)
                     .extend(wearableExtender);
 

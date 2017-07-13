@@ -1,4 +1,4 @@
-package com.emc.emergency.utils;
+package com.emc.emergency.task;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.util.Log;
 import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.utils.SystemUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

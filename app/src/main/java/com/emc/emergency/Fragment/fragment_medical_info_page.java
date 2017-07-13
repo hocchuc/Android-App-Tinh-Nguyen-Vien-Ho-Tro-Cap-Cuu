@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.emc.emergency.Adapter.PagerAdapterMI;
 import com.emc.emergency.R;
-import com.emc.emergency.View.SlidingTabLayout;
 import com.emc.emergency.model.Medical_Info;
 
 import java.util.ArrayList;

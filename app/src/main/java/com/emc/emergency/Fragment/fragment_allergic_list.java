@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -22,7 +21,7 @@ import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 
 import com.emc.emergency.model.Medical_Info;
-import com.emc.emergency.utils.GetMedicalInfo;
+import com.emc.emergency.task.GetMedicalInfo;
 import com.emc.emergency.utils.InsertMedicalInfo;
 
 import java.util.ArrayList;

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.emc.emergency.Adapter.MyAccidentRecyclerViewAdapter;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.task.ReturnDataAllAccident;
 import com.emc.emergency.utils.SystemUtils;
 
 import org.json.JSONArray;
@@ -26,10 +27,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
 
 
 /**
@@ -38,7 +37,7 @@ import java.util.Date;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class fragment_accident_page extends Fragment {
+public class fragment_accident_page extends Fragment implements ReturnDataAllAccident {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -82,7 +81,7 @@ public class fragment_accident_page extends Fragment {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
         accidentList = new ArrayList<>();
 
-        new GetAccidents(getActivity(), accidentList).execute();
+        new GetAccidents(getActivity(),accidentList).execute();
 
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
@@ -108,6 +107,11 @@ public class fragment_accident_page extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void handleReturnDataAllAccident(ArrayList<Accident> arrAccident) {
+
     }
 
     /**
@@ -181,17 +185,6 @@ public class fragment_accident_page extends Fragment {
                         accident.setDescription_AC(jsonObject.getString("description_AC"));
                     if (jsonObject.has("date_AC")) {
                         accident.setDate_AC(jsonObject.getString("date_AC"));
-//                        String dateStart = accident.getDate_AC();
-////                        Log.d("dateStart", dateStart);
-//                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000+0000'");
-//                        try {
-//                            Date date = format.parse(dateStart);
-////                            Log.d("date", date.toString());
-//                            accident.setDate_AC(date.toString());
-//                        } catch (ParseException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
                     }
                     if (jsonObject.has("long_AC"))
                         accident.setLong_AC(jsonObject.getDouble("long_AC"));

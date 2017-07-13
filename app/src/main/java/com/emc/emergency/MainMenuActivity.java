@@ -1,27 +1,18 @@
 package com.emc.emergency;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.StrictMode;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 
@@ -29,13 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,7 +31,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Fragment.fragment_countdown;
@@ -56,7 +42,10 @@ import com.emc.emergency.model.Personal_Infomation;
 import com.emc.emergency.model.Route;
 
 import com.emc.emergency.model.User;
-import com.emc.emergency.model.User_Type;
+import com.emc.emergency.task.GetAllAccident;
+import com.emc.emergency.task.GetAllUser;
+import com.emc.emergency.task.ReturnDataAllAccident;
+import com.emc.emergency.task.ReturnDataAllUser;
 import com.emc.emergency.utils.DirectionFinder;
 import com.emc.emergency.utils.DirectionFinderListener;
 import com.emc.emergency.utils.GPSTracker;
@@ -74,8 +63,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
@@ -96,31 +83,22 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.MiniDrawer;
-import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.interfaces.ICrossfader;
-import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,7 +111,9 @@ import okhttp3.Response;
 public class MainMenuActivity extends AppCompatActivity
         implements fragment_menu_page.onFragmentMenu1Interaction
         , OnMapReadyCallback, DirectionFinderListener
-        , fragment_countdown.OnFragmentInteractionListener, IRequestListener {
+        , fragment_countdown.OnFragmentInteractionListener, IRequestListener
+        , ReturnDataAllUser
+        , ReturnDataAllAccident {
 
 
     Toolbar toolbar;
@@ -156,40 +136,26 @@ public class MainMenuActivity extends AppCompatActivity
     /* biến dùng cho firebase */
     FirebaseStorage storage;
     StorageReference storageRef;
-    Uri uriAvatar = null;
-    private StorageReference imagesRef;
 
-    //    private Button btnFindPath;
     // XU LY NUT VE DUONG
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
-
-    private ArrayList<Accident> arrayAccident;
-    private ArrayList<User> arrayUser;
-
     Personal_Infomation pi;
     //------------------------
-//    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        //RequestPermissions();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-
         addControls();
-
         BuildDrawer(savedInstanceState);
-
         setLoadImageLogic();
-
         BuildFragment();
-
         addEvents();
     }
 
@@ -207,15 +173,13 @@ public class MainMenuActivity extends AppCompatActivity
                 longitude = location.getLongitude();
 //                LatLng latLng = new LatLng(latitude, longitude);
 
-                 final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
                 mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                             idUser_UID = childSnapshot.getKey();
                         }
-//                        mDatabase.child(idUser_UID).child("lat_PI").setValue(latitude);
- //                       mDatabase.child(idUser_UID).child("long_PI").setValue(longitude);
                     }
 
                     @Override
@@ -223,8 +187,6 @@ public class MainMenuActivity extends AppCompatActivity
 
                     }
                 });
-                // thay đổi market dựa trên location của bản thân
-//                myMarker.setPosition(latLng);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -315,10 +277,11 @@ public class MainMenuActivity extends AppCompatActivity
             public void onClick(View v) {
                 mMap.clear();
                 if (id_usertype == 2) {
-                    new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+                    new GetAllAccident(MainMenuActivity.this).execute();
                 } else {
-                    new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
-                    new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+                    GetAllUser getAllUser = new GetAllUser(MainMenuActivity.this);
+                    getAllUser.execute();
+                    new GetAllAccident(MainMenuActivity.this).execute();
 
                 }
             }
@@ -326,8 +289,6 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void addControls() {
-        arrayAccident = new ArrayList<>();
-        arrayUser = new ArrayList<>();
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
@@ -373,10 +334,10 @@ public class MainMenuActivity extends AppCompatActivity
 
 
         if (id_usertype == 2) {
-            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+            new GetAllAccident(MainMenuActivity.this).execute();
         } else {
-            new GetAllUsers(MainMenuActivity.this, arrayUser).execute();
-            new GetAccidents(MainMenuActivity.this, arrayAccident).execute();
+            new GetAllUser(MainMenuActivity.this).execute();
+            new GetAllAccident(MainMenuActivity.this).execute();
 
         }
     }
@@ -428,7 +389,7 @@ public class MainMenuActivity extends AppCompatActivity
                 // luu thong tin vua load duoc vao SharedPreferences
                 SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = preferences1.edit();
-                editor1.putLong(SystemUtils.ID_PI,pi.getId_PI());
+                editor1.putLong(SystemUtils.ID_PI, pi.getId_PI());
                 editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
                 editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
                 editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
@@ -593,44 +554,43 @@ public class MainMenuActivity extends AppCompatActivity
 
     /**
      * Xóa SharedPreferences và set isLogined = false
-     *
      */
     private void removeSharedPreferences() {
         SharedPreferences preferences2 = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
         SharedPreferences.Editor editor2 = preferences2.edit();
-        editor2.putBoolean("isLogined",false);
+        editor2.putBoolean("isLogined", false);
         editor2.putString("username", "");
-        editor2.putString("password","");
+        editor2.putString("password", "");
         editor2.putString("token", "");
         editor2.putString("lat_PI", "");
         editor2.putString("long_PI", "");
-        editor2.putLong("id_user_type",3);
-        editor2.putString("name_user_type","");
+        editor2.putLong("id_user_type", 3);
+        editor2.putString("name_user_type", "");
         editor2.commit();
     }
 
     /**
      * Xóa token của device trên server Spring
      */
-    private void removeTokenFromServer() throws IOException{
+    private void removeTokenFromServer() throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\n\t\"token\":\"\"\n}");
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
                 .patch(body)
                 .addHeader("content-type", "application/json;charset=utf-8")
                 .build();
 
-        Log.d("removeToken",SystemUtils.getServerBaseUrl()+"users/"+id_user);
+        Log.d("removeToken", SystemUtils.getServerBaseUrl() + "users/" + id_user);
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Response response = client.newCall(request).execute();
-            if(response.isSuccessful()) Log.d("removeTokenResponge","SUCCESS");
+            if (response.isSuccessful()) Log.d("removeTokenResponge", "SUCCESS");
         }
     }
 
@@ -772,20 +732,20 @@ public class MainMenuActivity extends AppCompatActivity
             // tinh trang giao thong
             googleMap.setTrafficEnabled(true);
         }
+    }
 
-    }
-    public Boolean isOnline() {
-        try {
-            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
-            int returnVal = p1.waitFor();
-            boolean reachable = (returnVal==0);
-            return reachable;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public Boolean isOnline() {
+//        try {
+//            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+//            int returnVal = p1.waitFor();
+//            boolean reachable = (returnVal == 0);
+//            return reachable;
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     private void sendRequest() {
         //String origin = "10.738100, 106.677811";
@@ -839,250 +799,60 @@ public class MainMenuActivity extends AppCompatActivity
         super.onStop();
     }
 
-    private class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
-        Activity activity;
-        ArrayList<Accident> arrAccidents;
-        //    AccidentAdapter accidentsAdapter;
-
-        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
-            this.activity = activity;
-            this.arrAccidents = arrAccidents;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            arrAccidents.clear();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Accident> accidents) {
-            super.onPostExecute(accidents);
-//        arrAccidents.clear();
-            arrAccidents.addAll(accidents);
-
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
-
-            for (int i = 0; i < arrAccidents.size(); i++) {
-                viDoAC = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-                kinhDoAC = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-                LatLng loocation = new LatLng(viDoAC, kinhDoAC);
+    @Override
+    public void handleReturnDataAllUser(ArrayList<User> arrUser) {
+        for (int i = 0; i < arrUser.size(); i++) {
+            if (arrUser.get(i).getUser_type().getId_user_type() == 2) {
+                viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
+                kinhDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
+                LatLng loocation = new LatLng(viDoUser, kinhDoUser);
                 try {
 
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
-                            .title(arrAccidents.get(i).getDescription_AC())
-                            .snippet(arrAccidents.get(i).getAddress())
-                            .icon(icon));
-                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(Marker marker) {
-                            LatLng position = marker.getPosition();
-                            viDo = Double.parseDouble(String.valueOf(position.latitude));
-                            kinhDo = Double.parseDouble(String.valueOf(position.longitude));
-                            return false;
-                        }
-                    });
-                    // tắt chuyển camera tới các tai nạn vừa load
-                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
-
+                            .title(arrUser.get(i).getUser_name())
+                            .snippet(String.valueOf(arrUser.get(i).getId_user())))
+                            .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainMenuActivity.this, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
                 }
             }
-        }
-
-        @Override
-        protected ArrayList<Accident> doInBackground(Void... params) {
-            ArrayList<Accident> ds = new ArrayList<>();
-            try {
-                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-                StringBuilder builder = new StringBuilder();
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    builder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                JSONObject jsonObj = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
-
-                Log.d("JsonObject", _embeddedObject.toString());
-                Log.d("JsonArray", accidentsSONArray.toString());
-
-                for (int i = 0; i < accidentsSONArray.length(); i++) {
-                    Accident accident = new Accident();
-                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
-                    if (jsonObject == null) continue;
-                    if (jsonObject.has("description_AC"))
-                        accident.setDescription_AC(jsonObject.getString("description_AC"));
-                    if (jsonObject.has("date_AC"))
-                        accident.setDate_AC(jsonObject.getString("date_AC"));
-                    if (jsonObject.has("long_AC"))
-                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
-                    if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
-                    if (jsonObject.has("status_AC"))
-                        accident.setStatus_AC(jsonObject.getString("status_AC"));
-                    if (jsonObject.has("address"))
-                        accident.setAddress(jsonObject.getString("address"));
-                    // Log.d("Accident", accident.toString());
-                    ds.add(accident);
-                    // Log.d("DS", ds.toString());
-                }
-                Log.d("ds", ds.toString());
-            } catch (Exception ex) {
-                Log.e("LOI ", ex.toString());
-            }
-            return ds;
         }
     }
 
-    private class GetAllUsers extends AsyncTask<Void, Void, ArrayList<User>> {
-        Activity activity;
-        ArrayList<User> arrUser;
+    @Override
+    public void handleReturnDataAllAccident(ArrayList<Accident> arrAccident) {
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
 
-        public GetAllUsers(Activity activity, ArrayList<User> arrUser) {
-            this.activity = activity;
-            this.arrUser = arrUser;
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            arrUser.clear();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<User> users) {
-            super.onPostExecute(users);
-            arrUser.addAll(users);
-            View markerView = LayoutInflater.from(getBaseContext()).inflate(R.layout.view_custom_marker, null);
-//            final ImageView image = (ImageView) markerView.findViewById(R.id.profile_image);
-
-//            Log.d("UserSize", String.valueOf(arrUser.size()));
-            for (int i = 0; i < arrUser.size(); i++) {
-                if (arrUser.get(i).getUser_type().getId_user_type() == 2) {
-                    viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
-                    kinhDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
-                    LatLng loocation = new LatLng(viDoUser, kinhDoUser);
-                    try {
-
-                        mMap.addMarker(new MarkerOptions()
-                                .position(loocation)
-                                .title(arrUser.get(i).getUser_name())
-                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
-                                .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(activity, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        protected ArrayList<User> doInBackground(Void... params) {
-            ArrayList<User> userList = new ArrayList<>();
+        for (int i = 0; i < arrAccident.size(); i++) {
+            viDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLat_AC()));
+            kinhDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLong_AC()));
+            LatLng loocation = new LatLng(viDoAC, kinhDoAC);
             try {
 
-                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-                StringBuilder builder = new StringBuilder();
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    builder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                JSONObject jsonObject = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
-                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-//                Log.d("jsonObj", jsonObject.toString());
-                for (int i = 0; i < usersJSONArray.length(); i++) {
-                    User user1 = new User();
-                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
-                    if (jsonObj.has("id_user"))
-                        user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));
-                    if (jsonObj.has("username"))
-                        user1.setUser_name(jsonObj.getString("username"));
-                    if (jsonObj.has("token"))
-                        user1.setToken(jsonObj.getString("token"));
-                    if (jsonObj.has("password"))
-                        user1.setPassword(jsonObj.getString("password"));
-                    if (jsonObj.has("long_PI"))
-                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
-                    if (jsonObj.has("lat_PI"))
-                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
-                    if (jsonObj.has("id_user_type")) {
-                        String user_type = jsonObj.getString("id_user_type");
-                        User_Type user_type1 = new User_Type();
-                        try {
-                            JSONObject jsonObject1 = new JSONObject(user_type);
-                            if (jsonObject1.has("id_user_type"))
-                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
-                            if (jsonObject1.has("name_user_type"))
-                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        user1.setUser_type(user_type1);
+                mMap.addMarker(new MarkerOptions()
+                        .position(loocation)
+                        .title(arrAccident.get(i).getDescription_AC())
+                        .snippet(arrAccident.get(i).getAddress())
+                        .icon(icon));
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        LatLng position = marker.getPosition();
+                        viDo = Double.parseDouble(String.valueOf(position.latitude));
+                        kinhDo = Double.parseDouble(String.valueOf(position.longitude));
+                        return false;
                     }
-//                    Log.d("User1", user1.toString());
-                    userList.add(user1);
-                }
-                Log.d("DSUser1", userList.toString());
-            } catch (Exception ex) {
-//                Log.e("LOI ", ex.toString());
-            }
-            return userList;
-        }
-    }
+                });
+                // tắt chuyển camera tới các tai nạn vừa load
+                // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loocation, 13));
 
-    /**
-     * xin quyền camera + location
-     */
-    private void RequestPermissions() {
-        if (Build.VERSION.SDK_INT > 17) {
-            final String[] permissions = {
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE};
-
-            final List<String> permissionsToRequest = new ArrayList<>();
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(MainMenuActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add(permission);
-                }
-            }
-            if (!permissionsToRequest.isEmpty()) {
-                ActivityCompat.requestPermissions(MainMenuActivity.this, permissionsToRequest.toArray(new String[permissionsToRequest.size()]), 123);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(MainMenuActivity.this, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
             }
         }
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // yeu cau quyen doi voi cac thiet chay android M tro len
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        123
-                );
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        456
-                );
-            }
-        }
     }
 }
