@@ -1,6 +1,7 @@
 package com.emc.emergency.Fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -108,7 +109,7 @@ public class fragment_personal_info_page extends Fragment {
     FirebaseStorage storage;
     StorageReference storageRef ;
     Uri uriAvatar = null;
-
+    ProgressDialog progressDialog;
     @Override
     public void onResume() {
         super.onResume();
@@ -141,7 +142,7 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        progressDialog = progressDialog.show(getContext(),getString(R.string.progress_dialog_loading),getString(R.string.load_data_from_server));
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -195,6 +196,8 @@ public class fragment_personal_info_page extends Fragment {
 
                 }
                 else {
+                    progressDialog.show();
+                    
                     Personal_Infomation pi1 = new Personal_Infomation();
                     pi1.setName_PI(txtNamePI.getText().toString());
                     pi1.setEmail_PI(txtEmailPI.getText().toString());
@@ -209,7 +212,20 @@ public class fragment_personal_info_page extends Fragment {
                         pi1.setSex__PI(true);
                     }
                     else pi1.setSex__PI(false);
-
+                
+                    txtEmailPI.setEnabled(false);
+                    txtBirthdayPI.setEnabled(false);
+                    txtPID.setEnabled(false);
+                    txtAddressPI.setEnabled(false);
+                    txtWKPI.setEnabled(false);
+                    txtPhonePI.setEnabled(false);
+                    txtNamePI.setEnabled(false);
+                    imgV.setEnabled(false);
+                    btnEdit.setImageResource(android.R.drawable.ic_menu_edit);
+                    radFeMale.setVisibility(View.INVISIBLE);
+                    radMale.setVisibility(View.INVISIBLE);
+                    
+                    
                     Gson gson = new Gson();
                     String json = gson.toJson(pi1);
 
@@ -232,6 +248,7 @@ public class fragment_personal_info_page extends Fragment {
                         try {
                             Response response = client.newCall(request).execute();
                             Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
+                            if(progressDialog.isShowing())progressDialog.dismiss();
 //                        Log.d("reponsePI_PUT",response.body().string());
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -243,7 +260,7 @@ public class fragment_personal_info_page extends Fragment {
             }
         });
 
-
+        
         return view;
     }
 
@@ -468,6 +485,7 @@ public class fragment_personal_info_page extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if(progressDialog.isShowing())progressDialog.dismiss();
         }
 
         @Override

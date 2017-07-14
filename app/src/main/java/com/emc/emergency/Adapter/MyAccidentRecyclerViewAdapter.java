@@ -95,10 +95,11 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
+                       i.setAction(SystemUtils.TYPE_HELPER);
                        i.putExtra("type", SystemUtils.TYPE_HELPER);
                        Log.d("type",SystemUtils.TYPE_HELPER);
                        i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
-                v.getContext().startActivity(i);
+                    v.getContext().startActivity(i);
             }
         });
         // request cho glide

@@ -17,6 +17,7 @@ package com.emc.emergency.Chat; /**
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -243,6 +244,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     Accident accident2;
     Response postResponse,putResponse;
     MaterialDialog dialog;
+    ProgressDialog progressDialog;
     private  String AccidentKey = "" ;
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
@@ -251,6 +253,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
         
+        progressDialog =  ProgressDialog.show(this,getString(R.string.progress_dialog_loading),getString(R.string.load_data_from_server));
         
          dialog = new MaterialDialog.Builder(this)
                .title(R.string.progress_dialog_chatbox)
@@ -269,9 +272,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
         //Lấy tọa độ hiện tại đang đứng
         loadLocation();
         //Kiểm tra người vào chat này là ai, nếu là victim thì tạo acccident mới
-        if(Type_User.equals("victim")) {
+        if(Type_User.equals(TYPE_VICTIM)) {
 
-            //Tạo mới accident trên serverSpring
+            //Tạo mới accident trên serverSpring + Firebase
             createAccidentOnServer();
 
         }
@@ -406,15 +409,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 if (Type_User.equals("victim")) {
                     sendDoneToAccident();
                 }
-                
+                Intent intent = new Intent(ChatBoxActivity.this,MainMenuActivity.class);
+                startActivity(intent);
                 finish();
+                
               
             }
             
         });
     
  
-        dialog.dismiss();
+        if(dialog.isShowing())dialog.dismiss();
+        if(progressDialog.isShowing())progressDialog.dismiss();
     }
  
     
@@ -645,31 +651,38 @@ public class ChatBoxActivity extends AppCompatActivity implements
      * Lấy intent về để kiểm tra có phải người giúp đỡ không.
      */
     private void prepareAccidentRoom() {
-        Intent intent = getIntent();
-        //nếu intent gửi tới có kiểu user là type_helper
-        if(intent.hasExtra("type")) {
-            if (intent.getStringExtra("type").equals(TYPE_HELPER)) {
-                Type_User = TYPE_HELPER;
-                Log.d("Type_User", Type_User);
-                AccidentKey = intent.getStringExtra("FirebaseKey");
-                Log.d("AccidentKey", AccidentKey);
-
-            }
-        } else
-        {
-
-        }
         mSharedPreferences2 = getSharedPreferences(SystemUtils.PI, Context.MODE_PRIVATE);
-        mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI,ANONYMOUS);
-        mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI,"");
-
-        mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
-        mId_user = String.valueOf(mSharedPreferences.getInt(SystemUtils.ID_USER, -1));
-        Log.d("mUsername",mUsername);
-        Log.d("mPhotoUrl",mPhotoUrl);
-
-        if(mPhotoUrl.equals("")||mPhotoUrl.equals("null")||mPhotoUrl==null) mPhotoUrl = SystemUtils.DefaultAvatar;
-
+           mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI,ANONYMOUS);
+           mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI,"");
+           Log.d("mUsername",mUsername);
+           Log.d("mPhotoUrl",mPhotoUrl);
+           
+           mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
+           mId_user = String.valueOf(mSharedPreferences.getInt(SystemUtils.ID_USER, -1));
+   
+           if(mPhotoUrl.equals("")||mPhotoUrl.equals("null")||mPhotoUrl==null) mPhotoUrl = SystemUtils.DefaultAvatar;
+        
+        Intent intent = getIntent();
+        if(intent!=null) {
+            //nếu intent gửi tới có kiểu user là type_helper
+            if (intent.hasExtra("type")) {
+                if (intent.getStringExtra("type").equals(TYPE_HELPER)) {
+                    Type_User = TYPE_HELPER;
+                    Log.d("Type_User", Type_User);
+                    AccidentKey = intent.getStringExtra("FirebaseKey");
+                    Log.d("AccidentKey", AccidentKey);
+            
+                }
+            }
+            if(intent.getAction()!=null) {
+                if (intent.getAction().equals(TYPE_HELPER)) {
+                    Type_User = TYPE_HELPER;
+                    Log.d("Type_User", Type_User);
+                    AccidentKey = intent.getStringExtra("FirebaseKey");
+                    Log.d("AccidentKey", AccidentKey);
+                }
+            }
+        }
 
     }
 

@@ -1,7 +1,7 @@
 <resources>
     <!-- Sample menu -->
     <string name="action_settings">Settings</string>
-    <string name="app_name">EmergencySOS</string>
+    <string name="app_name">Emergency SOS</string>
 
     <!-- Drawer Items -->
     <string name="drawer_item_persistent_compact_header">PersistentHeader Drawer</string>
@@ -57,8 +57,6 @@
     <string name="btnRegister">Register</string>
     <string name="btn_send">Send</string>
     <string name="google_maps_key">AIzaSyAd_TF15-iHiTuoV5aprBjmJcH8VuCT6yQ</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">1</string>
     <string name="long_ac">Long</string>
     <string name="des_ac">des_ac</string>
@@ -98,18 +96,18 @@
     <string name="invite_menu_label">Invite</string>
     <string name="cause_crash">Crash</string>
     <string name="birthday">Birthday</string>
-    <string name="map">Bản Đồ</string>
+    <string name="map">Map</string>
     <string name="personal_information">Personal Information</string>
     <string name="medical_information">Medical Information</string>
     <string name="Name">Name</string>
     <string name="type">type</string>
-    <string name="seach">Seach</string>
+    <string name="seach">Search</string>
     <string name="SelectImage">Choose Camera or Image Library</string>
     <string name="enter_password">Enter Password</string>
     <string name="details">Details</string>
-    <string name="input_allergic_hint">Dị ứng của bạn</string>
-    <string name="input_allergic_prefill">Táo Mèo</string>
-    <string name="input_des_hint">Mô tả thêm</string>
+    <string name="input_allergic_hint">Your allergic</string>
+    <string name="input_allergic_prefill">allergic</string>
+    <string name="input_des_hint">More Description</string>
     <string name="accept">Accept</string>
     <string name="Cancle">Cancle</string>
     <string name="Disease">Disease</string>
@@ -120,4 +118,10 @@
     <string name="progress_dialog">Video Is Loading</string>
     <string name="please_wait">please wait</string>
     <string name="progress_dialog_chatbox">Getting data from Server</string>
+    <string name="wrongpassword">Username or password is wrong</string>
+    <string name="pleasecheckconnection">Cannot react server. please check your connection</string>
+    <string name="progress_dialog_loading">Loading</string>
+    <string name="load_data_from_server">Please wait we are load data from server for you</string>
+    <string name="cleanning">Cleanning</string>
+    <string name="we_are_cleanning">We are cleanning your information, please wait a moment</string>
 </resources>

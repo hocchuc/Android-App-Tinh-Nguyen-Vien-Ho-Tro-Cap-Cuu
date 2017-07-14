@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.emc.emergency.Chat.IRequestListener;
 import com.emc.emergency.Chat.TokenService;
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     EditText txtUsername;
     EditText txtPassword;
     Personal_Infomation pi;
-
+    MaterialDialog progressDialog;
     SharedPreferences preferences, preferences1, preferences2;
     String userState = "StoreUserState";
     String id_user = "ID_USER";
@@ -86,8 +87,12 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //Get Firebase auth instance
-//        auth = FirebaseAuth.getInstance();
+      
+        progressDialog = new MaterialDialog.Builder(this)
+                   .title(R.string.progress_dialog_loading)
+                   .content(R.string.please_wait)
+                   .progress(true, 0)
+                   .show();
 
         addControls();
         addEvents();
@@ -108,7 +113,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     private void addEvents() {
         // Hiển thị dialog yêu cầu quyền
         RequestPermissions();
-
+        progressDialog.dismiss();
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,15 +199,22 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     private void sendUser(final User user) {
         progressBar.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(user.getUser_name())) {
+            btnLogin.setError("Enter email address");
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         } else if (TextUtils.isEmpty(user.getPassword())) {
+            btnLogin.setError("Enter password!");
+            
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
         } else if (user.getPassword().length() < 6) {
+            btnLogin.setError("Phải nhập từ 6 ký tự trở lên");
+            
             Toast.makeText(this, "Phải nhập từ 6 ký tự trở lên", Toast.LENGTH_SHORT).show();
             return;
         }else if (Utility.validate(user.getUser_name())==false) {
+            btnLogin.setError("Sai cú pháp - Example@gmail.com");
+            
             Toast.makeText(this, "Sai cú pháp - Example@gmail.com", Toast.LENGTH_SHORT).show();
             return;
         }  else {
@@ -338,7 +350,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     startActivity(intent);
 
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Tài khoản và mật khẩu không đúng.!", Toast.LENGTH_LONG).show();
+                                    btnLogin.setError(getString(R.string.wrongpassword));
+                                    Toast.makeText(getApplicationContext(),R.string.wrongpassword, Toast.LENGTH_LONG).show();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -351,7 +364,9 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
                 @Override
                 public void onFailure(Call<FlashMessage> call, Throwable t) {
-
+                    btnLogin.setError(getString(R.string.pleasecheckconnection));
+                    Toast.makeText(getApplicationContext(),R.string.pleasecheckconnection, Toast.LENGTH_LONG).show();
+                    
                 }
             });
         }
@@ -364,7 +379,6 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     GPSTracker gps = new GPSTracker(LoginActivity.this);
                     if (gps.canGetLocation()) {
                         latitude = gps.getLatitude();
@@ -372,7 +386,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     }
 
                 } else {
-                    
+                    Toast.makeText(this, "App can't start without GPS permission, Closing", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 return;
             }

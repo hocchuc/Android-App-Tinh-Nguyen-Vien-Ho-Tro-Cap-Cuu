@@ -26,8 +26,8 @@ public class VideoPlayActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_fragment_play_video);
         Intent intent = getIntent();
         videoUrl = intent.getStringExtra(SystemUtils.VideoUrl);
-        
-
+        progressBar = (ProgressBar) findViewById(R.id.progressBarVideo);
+    
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .title(R.string.progress_dialog)
             .content(R.string.please_wait)
@@ -47,6 +47,7 @@ public class VideoPlayActivity extends AppCompatActivity {
         videoView.setVideoURI(uri);
         videoView.requestFocus();
         videoView.start();
+        progressBar.setVisibility(View.GONE);
         dialog.dismiss();
        
     }

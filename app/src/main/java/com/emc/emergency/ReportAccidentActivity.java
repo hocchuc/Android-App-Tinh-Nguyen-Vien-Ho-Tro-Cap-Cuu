@@ -247,7 +247,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
     /**
      * Gửi accident lên server
      */
-    public class PostAccident {
+    public class PostAccident  {
 
         OkHttpClient client = new OkHttpClient();
 
@@ -262,8 +262,10 @@ public class ReportAccidentActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return postResponse.body().string();
-
+           
+                return postResponse.body().string();
+            
+    
         }
     }
 

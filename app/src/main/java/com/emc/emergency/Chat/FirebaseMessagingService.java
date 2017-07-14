@@ -54,16 +54,23 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.d(TAG, "Message received: " + message);
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
             {
-                showAccidentNotification(message);
+                //showAccidentNotification(message);
 
             }
 
         }
-
+        
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            showInboxStyleNotification(remoteMessage.getNotification().getBody());
+            
+            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+            location = remoteMessage.getData().get("address");
+            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+            showAccidentNotification(remoteMessage.getNotification().getBody());
+            
+            
 
         }
 
@@ -72,8 +79,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private void showBasicNotification(String message) {
         Intent i = new Intent(this,ChatBoxActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
+        i.putExtra("type", TYPE_HELPER);
+              Log.d("type",TYPE_HELPER);
+        
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
@@ -98,21 +107,21 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Log.d("type",TYPE_HELPER);
 
         i.putExtra("FirebaseKey", FirebaseKey);
-        Log.d("FirebaseKey",FirebaseKey);
+        if(FirebaseKey!=null&&!FirebaseKey.equals(""))Log.d("FirebaseKey",FirebaseKey);
+        i.setAction("TYPE_HELPER");
 
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i,PendingIntent.FLAG_CANCEL_CURRENT);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if(alarmSound==null) alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW);
         Uri geoUri = Uri.parse("geo:0,0?q=" + Uri.encode(location));
         mapIntent.setData(geoUri);
 
-        String uriBegin = "geo:" + Latitude + "," + Longtitude;
-        String query = Latitude + "," + Longtitude + "(" + message + ")";
-        String encodedQuery = Uri.encode(query);
-        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-        Uri uri = Uri.parse(uriString);
+//        String uriBegin = "geo:" + Latitude + "," + Longtitude;
+//        String query = Latitude + "," + Longtitude + "(" + message + ")";
+//        String encodedQuery = Uri.encode(query);
+//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
+//        Uri uri = Uri.parse(uriString);
         // intent thong thuong navigation
         mapIntent.setData(geoUri);
         PendingIntent mapPendingIntent =
@@ -139,7 +148,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     .addAction(R.drawable.ic_accident_2,"Vào tai nạn", pendingIntent)
                     .addAction(R.drawable.ic_map,
                             getString(R.string.map), navmapPendingIntent)
-                    .addAction(R.drawable.marker
+                    .addAction(R.drawable.ic_accident_location
                             ,"Dẫn đường",mapPendingIntent)
                     .extend(wearableExtender);
 
@@ -149,8 +158,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 builder.setSmallIcon(R.mipmap.ic_accident_noti);
             }
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-            notificationManager.notify(notificationId, builder.build());
+            playBeep();
+        
+            notificationManager.notify(++notificationId, builder.build());
 
         }
 
@@ -174,6 +184,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, notification);
+        playBeep();
     }
 
     /**

@@ -20,6 +20,7 @@ import com.dd.processbutton.iml.ActionProcessButton;
 import com.emc.emergency.Chat.ChatBoxActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.RequestRescueActivity;
+import com.emc.emergency.utils.SystemUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -164,6 +165,7 @@ public class fragment_countdown extends DialogFragment {
             try {
                 Intent intent = new Intent(getActivity(), ChatBoxActivity.class);
                 intent.putExtra("type","victim");
+                intent.setAction(SystemUtils.TYPE_VICTIM);
 
                 startActivity(intent);
             } catch (Exception e) {

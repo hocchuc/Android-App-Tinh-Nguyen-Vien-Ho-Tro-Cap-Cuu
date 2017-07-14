@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
@@ -115,7 +116,8 @@ public class MainMenuActivity extends AppCompatActivity
         , ReturnDataAllUser
         , ReturnDataAllAccident {
 
-
+    MaterialDialog mProgressDialog;
+    
     Toolbar toolbar;
     private AccountHeader headerResult = null;
     public Drawer result = null;
@@ -150,12 +152,24 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        
+        progressDialog = ProgressDialog.show(this,getString(R.string.progress_dialog_loading),
+              getString(R.string.load_data_from_server));
+        
+        mProgressDialog = new MaterialDialog.Builder(this)
+                     .title(R.string.progress_dialog_chatbox)
+                     .content(R.string.please_wait)
+                     .progress(true, 0)
+                     .show();
+        
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         addControls();
         BuildDrawer(savedInstanceState);
-        setLoadImageLogic();
+        
         BuildFragment();
+        setLoadImageLogic();
+        
         addEvents();
     }
 
@@ -251,7 +265,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void addEvents() {
 //        Log.d("UID after put", idUser_UID);
-
+        
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,6 +300,9 @@ public class MainMenuActivity extends AppCompatActivity
                 }
             }
         });
+        
+       if(mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if(progressDialog.isShowing())progressDialog.dismiss();
     }
 
     private void addControls() {
@@ -313,7 +330,6 @@ public class MainMenuActivity extends AppCompatActivity
             pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
             pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
             pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-//            Log.d("EmailPI", pi.getEmail_PI());
         } else {
             GetPersonalInfo();
 
@@ -478,6 +494,8 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
+                                mProgressDialog.show();
+                                progressDialog.show(MainMenuActivity.this,getString(R.string.cleanning),getString(R.string.we_are_cleanning));
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -549,6 +567,10 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if(progressDialog.isShowing())progressDialog.dismiss();
+        Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+        intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
         finish();
     }
 
@@ -558,7 +580,9 @@ public class MainMenuActivity extends AppCompatActivity
     private void removeSharedPreferences() {
         SharedPreferences preferences2 = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
         SharedPreferences.Editor editor2 = preferences2.edit();
+        
         editor2.putBoolean("isLogined", false);
+        
         editor2.putString("username", "");
         editor2.putString("password", "");
         editor2.putString("token", "");
@@ -608,12 +632,12 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        //handle the back press close the drawer first and if the drawer is closed, close the activity
         View mSwipeButton = findViewById(R.id.btnSwipe2Confirm);
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         }
-        // neu swipe button dang mo, nguoi dung nhan backpress
+        // neu swipe button dang mo, nguoi dung nhan backpress thi se ẩn swipebutton
         if (!mSwipeButton.isActivated()) {
             mSwipeButton.setVisibility(View.INVISIBLE);
         } else {
@@ -724,7 +748,6 @@ public class MainMenuActivity extends AppCompatActivity
             Toast.makeText(this, "Chưa chọn vị trí cần dẫn đường.", Toast.LENGTH_SHORT).show();
 
         }else {
-            //String origin = "10.738100, 106.677811";
             String origin = latitude + "," + longitude;
             String destination = viDo + "," + kinhDo;
             try {
