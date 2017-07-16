@@ -13,10 +13,9 @@ public class Accident {
 	private Double long_AC;
 	private Double lat_AC;
 	private String status_AC;
-	private List<Chat> chat = new ArrayList<>();
-	private List<Image> image = new ArrayList<>();
     private String address;
     private String firebaseKey;
+    private Long id_admin_active;
 
     public Accident() {
     }
@@ -85,22 +84,6 @@ public class Accident {
         this.status_AC = status_AC;
     }
 
-    public List<Chat> getChat() {
-        return chat;
-    }
-
-    public void setChat(List<Chat> chat) {
-        this.chat = chat;
-    }
-
-    public List<Image> getImage() {
-        return image;
-    }
-
-    public void setImage(List<Image> image) {
-        this.image = image;
-    }
-
     public String getFirebaseKey() {
         return firebaseKey;
     }
@@ -109,7 +92,15 @@ public class Accident {
         this.firebaseKey = firebaseKey;
     }
 
-    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, List<Chat> chat, List<Image> image, String address) {
+    public Long getId_admin_active() {
+        return id_admin_active;
+    }
+
+    public void setId_admin_active(Long id_admin_active) {
+        this.id_admin_active = id_admin_active;
+    }
+
+    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, String address) {
         this.id_AC = id_AC;
         this.id_user = id_user;
         this.description_AC = description_AC;
@@ -117,8 +108,6 @@ public class Accident {
         this.long_AC = long_AC;
         this.lat_AC = lat_AC;
         this.status_AC = status_AC;
-        this.chat = chat;
-        this.image = image;
         this.address = address;
     }
 

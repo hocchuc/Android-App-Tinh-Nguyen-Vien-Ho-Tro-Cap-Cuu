@@ -10,4 +10,8 @@
         android:id="@+id/navigation_mi"
         android:icon="@drawable/icon_medical_info"
         android:title="@string/medical_information" />
+    <item
+        android:id="@+id/navigation_contract"
+        android:icon="@drawable/icon_contract"
+        android:title="@string/volunteer"/>
 </menu>

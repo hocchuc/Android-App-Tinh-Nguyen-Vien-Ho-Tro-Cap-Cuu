@@ -7,9 +7,8 @@ import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 import com.emc.emergency.utils.SystemUtils;
 
 import org.json.JSONArray;
@@ -21,17 +20,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Info>> {
+public class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Information>> {
     SharedPreferences sharedPreferences;
     String id_pi="ID_PI";
         Activity activity;
-        ArrayList<Medical_Info> arrMI;
+        ArrayList<Medical_Information> arrMI;
         int medical_type=0;
         RecyclerView recyclerView;
         RecyclerView.Adapter adapter;
 
 
-        public GetMedicalInfo(Activity activity, ArrayList<Medical_Info> arrMI, int medical_type, RecyclerView.Adapter adapter) {
+        public GetMedicalInfo(Activity activity, ArrayList<Medical_Information> arrMI, int medical_type, RecyclerView.Adapter adapter) {
             this.activity = activity;
             this.arrMI = arrMI;
             this.medical_type = medical_type;
@@ -47,17 +46,17 @@ public class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Info
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Medical_Info> medical_infos) {
-            super.onPostExecute(medical_infos);
-            arrMI.addAll(medical_infos);
+        protected void onPostExecute(ArrayList<Medical_Information> medical_informations) {
+            super.onPostExecute(medical_informations);
+            arrMI.addAll(medical_informations);
             Log.d("arrMI",arrMI.toString());
             adapter.notifyDataSetChanged();
 
         }
 
         @Override
-        protected ArrayList<Medical_Info> doInBackground(Void... params) {
-            ArrayList<Medical_Info> ds = new ArrayList<>();
+        protected ArrayList<Medical_Information> doInBackground(Void... params) {
+            ArrayList<Medical_Information> ds = new ArrayList<>();
             sharedPreferences = activity.getSharedPreferences(id_pi, Context.MODE_PRIVATE);
             long id = sharedPreferences.getLong("id_PI", -1);
 
@@ -81,7 +80,7 @@ public class GetMedicalInfo extends AsyncTask<Void, Void, ArrayList<Medical_Info
                 Log.d("JsonArray MI", miJsonArr.toString());
 
                 for (int i = 0; i < miJsonArr.length(); i++) {
-                    Medical_Info medicalInfo = new Medical_Info();
+                    Medical_Information medicalInfo = new Medical_Information();
                     JSONObject jsonObject = miJsonArr.getJSONObject(i);
                     if (jsonObject == null) continue;
                     if (jsonObject.has("type_MI"))

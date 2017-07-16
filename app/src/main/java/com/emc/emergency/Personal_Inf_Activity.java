@@ -1,29 +1,26 @@
 package com.emc.emergency;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.emc.emergency.Fragment.dummy.DummyContent;
-import com.emc.emergency.Fragment.fragment_allergic_list;
-import com.emc.emergency.Fragment.fragment_disease_list;
+import com.emc.emergency.Fragment.fragment_contract;
 import com.emc.emergency.Fragment.fragment_medical_info_page;
-import com.emc.emergency.Fragment.fragment_medicine_list;
 import com.emc.emergency.Fragment.fragment_personal_info_page;
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 import com.emc.emergency.model.Personal_Infomation;
 
 public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener
-   ,fragment_medical_info_page.OnListFragmentInteractionListener {
+   ,fragment_medical_info_page.OnListFragmentInteractionListener,fragment_contract.OnFragmentInteractionListener {
 
     BottomNavigationView navigation;
     Toolbar toolbar3;
@@ -84,6 +81,10 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
                             fragment_medical_info_page fragment_medical_info_page = new fragment_medical_info_page();
                             getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_medical_info_page).commit();
                             break;
+                        case R.id.navigation_contract:
+                            fragment_contract fragment_contract = new fragment_contract();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.content1, fragment_contract).commit();
+                            break;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -101,7 +102,12 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
     }
 
     @Override
-    public void onListFragmentInteraction(Medical_Info mItem) {
+    public void onListFragmentInteraction(Medical_Information mItem) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 }

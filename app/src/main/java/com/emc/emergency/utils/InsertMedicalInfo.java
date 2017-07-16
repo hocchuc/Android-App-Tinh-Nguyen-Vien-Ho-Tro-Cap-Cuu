@@ -7,7 +7,7 @@ import android.os.StrictMode;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 import com.emc.emergency.task.GetMedicalInfo;
 
 import org.json.JSONException;
@@ -121,9 +121,9 @@ public class InsertMedicalInfo {
                 try {
                     Response response = client.newCall(request).execute();
                     if(response.isSuccessful())Log.d("response",response.toString());
-                    ArrayList<Medical_Info> medical_infos = new ArrayList<>();
+                    ArrayList<Medical_Information> medical_informations = new ArrayList<>();
                     GetMedicalInfo getMedicalInfo = new GetMedicalInfo
-                            (activity,medical_infos, Integer.parseInt(type_MI),adapter);
+                            (activity, medical_informations, Integer.parseInt(type_MI),adapter);
                     getMedicalInfo.execute();
                 } catch (IOException e) {
                     e.printStackTrace();

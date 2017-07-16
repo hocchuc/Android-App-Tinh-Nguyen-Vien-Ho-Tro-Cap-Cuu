@@ -71,7 +71,6 @@ import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.RequestRescueActivity;
 import com.emc.emergency.model.Accident;
-import com.emc.emergency.model.Image;
 import com.emc.emergency.model.Message;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
