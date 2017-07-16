@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group>
+    <item android:title="Show Medical Infomation"
+        android:id="@+id/ShowMedi">Show Medical Infomation</item>
+    <item android:title="Report True"
+        android:id="@+id/ReportTrue">Report True</item>
+    <item android:title="Report Fake"
+          android:id="@+id/ReportFake">Report Fake</item>
+    <item android:title="Exit"
+          android:id="@+id/Exit">Exit</item>
+</group>
+</menu>

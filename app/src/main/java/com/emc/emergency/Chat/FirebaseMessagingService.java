@@ -35,6 +35,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private Double Longtitude = null;
     private String location="";
     private String FirebaseKey="";
+    private String id_AC="";
     final private String TYPE_HELPER = "helper";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -51,11 +52,12 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
             location = remoteMessage.getData().get("address");
             FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+            id_AC = remoteMessage.getData().get("id_AC");
             Log.d(TAG, "Message received: " + message);
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
             {
                 //showAccidentNotification(message);
-
+                
             }
 
         }
@@ -68,6 +70,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
             location = remoteMessage.getData().get("address");
             FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+            id_AC = remoteMessage.getData().get("id_AC");
+            
             showAccidentNotification(remoteMessage.getNotification().getBody());
             
             
@@ -79,8 +83,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private void showBasicNotification(String message) {
         Intent i = new Intent(this,ChatBoxActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        
         i.putExtra("type", TYPE_HELPER);
               Log.d("type",TYPE_HELPER);
+        
         
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
 
@@ -108,6 +114,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         i.putExtra("FirebaseKey", FirebaseKey);
         if(FirebaseKey!=null&&!FirebaseKey.equals(""))Log.d("FirebaseKey",FirebaseKey);
+        i.putExtra("id_AC", id_AC);
+        
         i.setAction("TYPE_HELPER");
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i,PendingIntent.FLAG_CANCEL_CURRENT);
@@ -117,12 +125,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Uri geoUri = Uri.parse("geo:0,0?q=" + Uri.encode(location));
         mapIntent.setData(geoUri);
 
-//        String uriBegin = "geo:" + Latitude + "," + Longtitude;
-//        String query = Latitude + "," + Longtitude + "(" + message + ")";
-//        String encodedQuery = Uri.encode(query);
-//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-//        Uri uri = Uri.parse(uriString);
-        // intent thong thuong navigation
+
         mapIntent.setData(geoUri);
         PendingIntent mapPendingIntent =
                 PendingIntent.getActivity(this, 0, mapIntent, 0);
@@ -269,36 +272,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
 
     }
-   /* *//**
-     * Appending message to list view
-     * *//*
-    private void appendMessage(final Chat m) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                listMessages.add(m);
-
-                adapter.notifyDataSetChanged();
-
-                // Playing device's notification
-                playBeep();
-            }
-        });
-    }
-
-    private void showToast(final String message) {
-
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message,
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }*/
+   
 
     /**
      * Plays device's default notification sound

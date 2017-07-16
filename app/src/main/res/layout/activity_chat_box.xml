@@ -10,46 +10,19 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Chat.ChatBoxActivity">
-    <com.ebanx.swipebtn.SwipeButton
-        android:id="@+id/SwipeButton"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:button_background="@drawable/shape_button"
-        app:button_bottom_padding="20dp"
-        app:button_image_disabled="@drawable/ic_lock_open_black_24dp"
-        app:button_image_enabled="@drawable/ic_lock_outline_black_24dp"
-        app:button_left_padding="20dp"
-        app:button_right_padding="20dp"
-        app:inner_text="SWIPE TO STOP SOS"
-        app:inner_text_background="@drawable/shape_rounded"
-        app:inner_text_bottom_padding="18dp"
-        app:inner_text_color="@android:color/holo_red_light"
-        app:inner_text_size="18sp"
-        app:inner_text_top_padding="18dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintLeft_creator="1"
         ads:layout_constraintLeft_toLeftOf="parent"
-        ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintHorizontal_bias="1.0"
         ads:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintLeft_creator="1"/>
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="76dp"
-        android:layout_height="77dp"
-        android:id="@+id/progressBar"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintLeft_toLeftOf="parent"
-        ads:layout_constraintTop_toTopOf="@+id/messageRecyclerView"
-        android:layout_marginTop="8dp"
-        ads:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
-        ads:layout_constraintVertical_bias="0.336"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintLeft_creator="1" />
+        ads:layout_constraintHorizontal_bias="1.0">
+
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -117,7 +90,7 @@
         android:id="@+id/guideline"
         ads:layout_constraintGuide_percent="0.7"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteY="510dp"
+        tools:layout_editor_absoluteY="476dp"
         tools:layout_editor_absoluteX="0dp" />
 
 
@@ -125,18 +98,37 @@
         android:id="@+id/messageRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="8dp"
         android:background="@color/md_white_1000"
+        android:visibility="visible"
         ads:layout_constraintBottom_toTopOf="@+id/guideline"
-        ads:layout_constraintHorizontal_bias="0.833"
+        ads:layout_constraintHorizontal_bias="0.0"
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
-        ads:layout_constraintVertical_bias="1.0"
+        ads:layout_constraintTop_toBottomOf="@+id/toolbar"
+        ads:layout_constraintVertical_bias="0.0"
+        tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        ads:layout_constraintTop_toBottomOf="@+id/SwipeButton"
-        android:layout_marginBottom="2dp"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintBottom_creator="1" />
+        tools:layout_constraintTop_creator="1"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="76dp"
+        android:layout_height="77dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        ads:layout_constraintBottom_toBottomOf="parent"
+        ads:layout_constraintLeft_toLeftOf="parent"
+        ads:layout_constraintRight_toRightOf="parent"
+        ads:layout_constraintTop_toTopOf="@+id/messageRecyclerView"
+        ads:layout_constraintVertical_bias="0.336"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -177,6 +169,36 @@
             tools:layout_editor_absoluteY="201dp" />
 
     </LinearLayout>
+
+    <com.ebanx.swipebtn.SwipeButton
+        android:id="@+id/SwipeButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:visibility="invisible"
+        ads:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        ads:layout_constraintLeft_toLeftOf="parent"
+        ads:layout_constraintRight_toRightOf="@+id/messageRecyclerView"
+        ads:layout_constraintTop_toTopOf="parent"
+        ads:layout_constraintVertical_bias="0.614"
+        app:button_background="@drawable/shape_button"
+        app:button_bottom_padding="20dp"
+        app:button_image_disabled="@drawable/ic_lock_open_black_24dp"
+        app:button_image_enabled="@drawable/ic_lock_outline_black_24dp"
+        app:button_left_padding="20dp"
+        app:button_right_padding="20dp"
+        app:inner_text="SWIPE TO STOP SOS"
+        app:inner_text_background="@drawable/shape_rounded"
+        app:inner_text_bottom_padding="18dp"
+        app:inner_text_color="@android:color/holo_red_light"
+        app:inner_text_size="18sp"
+        app:inner_text_top_padding="18dp"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"/>
 
 
 </android.support.constraint.ConstraintLayout>

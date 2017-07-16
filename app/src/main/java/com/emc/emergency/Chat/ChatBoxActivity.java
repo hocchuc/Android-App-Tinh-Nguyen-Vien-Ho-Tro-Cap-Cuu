@@ -34,6 +34,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -118,7 +119,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -214,7 +217,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
 
     String id_user="ID_USER";
-
     private String mId_user;
     private String mUsername;
     private String mPhotoUrl;
@@ -228,7 +230,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private LinearLayoutManager mLinearLayoutManager;
     private FirebaseRecyclerAdapter<Message, MessageViewHolder> mFirebaseAdapter;
     private ProgressBar mProgressBar;
-
+    private Toolbar toolbar;
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -245,6 +247,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     Response postResponse,putResponse;
     MaterialDialog dialog;
     ProgressDialog progressDialog;
+    private String id_AC = "";
     private  String AccidentKey = "" ;
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
@@ -273,7 +276,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         loadLocation();
         //Kiểm tra người vào chat này là ai, nếu là victim thì tạo acccident mới
         if(Type_User.equals(TYPE_VICTIM)) {
-
+            
             //Tạo mới accident trên serverSpring + Firebase
             createAccidentOnServer();
 
@@ -421,8 +424,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
  
         if(dialog.isShowing())dialog.dismiss();
         if(progressDialog.isShowing())progressDialog.dismiss();
+        
+        
     }
- 
+    
     
     /**
      * Khi là android K trở lên => dùng camera fragment và bắt URI ở đây
@@ -480,7 +485,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
               });
         
     }
-
+    
+  
+    
     private void loadLocation() {
         GPSTracker gps = new GPSTracker(ChatBoxActivity.this);
         if (gps.canGetLocation()) {
@@ -671,6 +678,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Log.d("Type_User", Type_User);
                     AccidentKey = intent.getStringExtra("FirebaseKey");
                     Log.d("AccidentKey", AccidentKey);
+                    id_AC = intent.getStringExtra("id_AC");
+                    
             
                 }
             }
@@ -680,6 +689,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Log.d("Type_User", Type_User);
                     AccidentKey = intent.getStringExtra("FirebaseKey");
                     Log.d("AccidentKey", AccidentKey);
+                    id_AC = intent.getStringExtra("id_AC");
                 }
             }
         }
@@ -707,6 +717,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
         recordButton = (RecordButton) findViewById(R.id.record_button);
         
         swipeButton = (SwipeButton) findViewById(R.id.SwipeButton);
+        
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        
+        
     }
 
     /**
@@ -793,7 +808,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        if(Type_User.equals(SystemUtils.TYPE_HELPER))
+        inflater.inflate(R.menu.chat_box_menu, menu);
+        else    inflater.inflate(R.menu.chat_box_menu_user, menu);
+        
         return true;
     }
 
@@ -1125,4 +1143,83 @@ public class ChatBoxActivity extends AppCompatActivity implements
         return false;
            
     }
+    
+    @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.Exit:{
+                    swipeButton.setVisibility(View.VISIBLE);
+                    break;
+                }
+                case R.id.ShowMedi :{
+                    ShowMedicalInfo();
+                    break;
+                }
+                case R.id.ReportFake :{
+                    try {
+                        ReportFakeAccident();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                case R.id.ReportTrue :{
+                    try {
+                        ReportTrueAccident();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                
+            }
+            
+            return super.onOptionsItemSelected(item);
+        }
+        
+        private void ReportFakeAccident() throws IOException {
+            OkHttpClient client = new OkHttpClient();
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a",Locale.ENGLISH);
+            String date = df.format(Calendar.getInstance().getTime());
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
+                                   "\",\n   \"id_action_type\":\"3\",\n  \"date\":\"" + date + "\" \n}");
+    
+            Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+                                ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
+            Request request = new Request.Builder()
+                                    .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                                    .post(body)
+                                    .addHeader("content-type", "text/plain")
+                                    .build();
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                   .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Response response = client.newCall(request).execute();
+            
+        }
+        private void ReportTrueAccident() throws IOException {
+            OkHttpClient client = new OkHttpClient();
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a",Locale.ENGLISH);
+            String date = df.format(Calendar.getInstance().getTime());
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
+                               "\",\n   \"id_action_type\":\"4\",\n  \"date\":\"" + date + "\" \n}");
+            Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+                                ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
+            Request request = new Request.Builder()
+                                    .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                                    .post(body)
+                                    .addHeader("content-type", "text/plain")
+                                    .build();
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                   .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Response response = client.newCall(request).execute();
+        }
+        
+        private void ShowMedicalInfo() {
+        }
+    
 }
