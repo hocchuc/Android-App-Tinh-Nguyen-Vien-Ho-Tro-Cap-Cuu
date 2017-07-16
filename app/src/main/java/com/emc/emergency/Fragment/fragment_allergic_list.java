@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 import com.emc.emergency.task.GetMedicalInfo;
 import com.emc.emergency.utils.InsertMedicalInfo;
 
@@ -37,7 +37,7 @@ public class fragment_allergic_list extends Fragment {
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    ArrayList<Medical_Info> arrMI;
+    ArrayList<Medical_Information> arrMI;
     GetMedicalInfo getMedicalInfo;
     FloatingActionButton floatingActionButton;
     String nameMI,descriptionMI ="";
@@ -71,7 +71,7 @@ public class fragment_allergic_list extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_allergic_list, container, false);
-        arrMI = new ArrayList<Medical_Info>();
+        arrMI = new ArrayList<Medical_Information>();
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
         // Set the adapter
 
@@ -99,8 +99,8 @@ public class fragment_allergic_list extends Fragment {
                         InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"2",descriptionMI,recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
 
-                        Medical_Info medical_info = new Medical_Info(nameMI,2,descriptionMI);
-                        arrMI.add(medical_info);
+                        Medical_Information medical_information = new Medical_Information(nameMI,2,descriptionMI);
+                        arrMI.add(medical_information);
                         recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
 
                     }

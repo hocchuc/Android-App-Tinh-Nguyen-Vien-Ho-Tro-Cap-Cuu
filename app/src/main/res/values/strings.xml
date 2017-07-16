@@ -124,4 +124,5 @@
     <string name="load_data_from_server">Please wait we are load data from server for you</string>
     <string name="cleanning">Cleanning</string>
     <string name="we_are_cleanning">We are cleanning your information, please wait a moment</string>
+    <string name="volunteer">Sign up volunteer</string>
 </resources>

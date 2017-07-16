@@ -22,7 +22,8 @@ public class User implements Serializable {
     private String token;
     private Double lat_PI;
     private Double long_PI;
-    private long id_user;
+    private Long id_user;
+    private boolean id_signup_volumteer;
 
     public String getUser_name() {
         return user_name;
@@ -72,12 +73,20 @@ public class User implements Serializable {
         this.long_PI = long_PI;
     }
 
-    public long getId_user() {
+    public Long getId_user() {
         return id_user;
     }
 
-    public void setId_user(long id_user) {
+    public void setId_user(Long id_user) {
         this.id_user = id_user;
+    }
+
+    public boolean getId_signup_volumteer() {
+        return id_signup_volumteer;
+    }
+
+    public void setId_signup_volumteer(boolean id_signup_volumteer) {
+        this.id_signup_volumteer = id_signup_volumteer;
     }
 
     public User(String user_name, String password) {

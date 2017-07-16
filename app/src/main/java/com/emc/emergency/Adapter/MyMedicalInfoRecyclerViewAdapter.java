@@ -1,32 +1,17 @@
 package com.emc.emergency.Adapter;
 
 import android.content.Context;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Fragment.fragment_accident_page;
-import com.emc.emergency.Fragment.fragment_medical_info_page;
 import com.emc.emergency.R;
-import com.emc.emergency.model.Accident;
-import com.emc.emergency.model.Medical_Info;
-import com.emc.emergency.model.MessageEvent;
-import com.emc.emergency.utils.SystemUtils;
-import com.google.gson.Gson;
-
-import org.greenrobot.eventbus.EventBus;
+import com.emc.emergency.model.Medical_Information;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
@@ -35,10 +20,10 @@ import java.util.List;
  */
 public class MyMedicalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyMedicalInfoRecyclerViewAdapter.ViewHolder> {
     private final Context context;
-    private final ArrayList<Medical_Info> mValues;
+    private final ArrayList<Medical_Information> mValues;
     //private final fragment_medical_info_page.OnListFragmentInteractionListener mListener;
 
-    public MyMedicalInfoRecyclerViewAdapter(Context context, ArrayList<Medical_Info> items) {
+    public MyMedicalInfoRecyclerViewAdapter(Context context, ArrayList<Medical_Information> items) {
         this.context = context;
         mValues = items;
     }
@@ -65,7 +50,7 @@ public class MyMedicalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyMed
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public  View mView;
-        public Medical_Info mItem;
+        public Medical_Information mItem;
         public final TextView txtNameMI;
         public final TextView txDesMI;
 

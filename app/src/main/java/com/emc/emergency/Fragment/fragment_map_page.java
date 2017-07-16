@@ -570,7 +570,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     User user1 = new User();
                     JSONObject jsonObj = usersJSONArray.getJSONObject(i);
                     if (jsonObj.has("id_user"))
-                        user1.setId_user(Integer.parseInt((jsonObj.getString("id_user"))));
+                        user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
                     if (jsonObj.has("username"))
                         user1.setUser_name(jsonObj.getString("username"));
                     if (jsonObj.has("token"))

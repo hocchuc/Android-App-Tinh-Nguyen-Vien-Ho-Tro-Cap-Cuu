@@ -2,8 +2,8 @@
 package com.emc.emergency.model;
 
 
-public class Medical_Info  {
-	public Medical_Info() {
+public class Medical_Information {
+	public Medical_Information() {
 	}
 	private Long id_MI;
 	private Personal_Infomation id_PI;
@@ -51,7 +51,7 @@ public class Medical_Info  {
 		this.descriptionMI = descriptionMI;
 	}
 
-	public Medical_Info(String name_MI, Integer type_MI, String descriptionMI) {
+	public Medical_Information(String name_MI, Integer type_MI, String descriptionMI) {
 		this.name_MI = name_MI;
 		this.type_MI = type_MI;
 		this.descriptionMI = descriptionMI;

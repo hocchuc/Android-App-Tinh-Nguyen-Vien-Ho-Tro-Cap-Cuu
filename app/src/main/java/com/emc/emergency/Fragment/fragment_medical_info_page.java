@@ -1,17 +1,12 @@
 package com.emc.emergency.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +14,7 @@ import android.widget.TextView;
 
 import com.emc.emergency.Adapter.PagerAdapterMI;
 import com.emc.emergency.R;
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 
 import java.util.ArrayList;
 
@@ -37,7 +32,7 @@ public class fragment_medical_info_page extends Fragment implements TabLayout.On
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<Medical_Info> arrMI;
+    ArrayList<Medical_Information> arrMI;
     RecyclerView recyclerView;
     SharedPreferences sharedPreferences;
     ViewPager viewPager;
@@ -143,7 +138,7 @@ public class fragment_medical_info_page extends Fragment implements TabLayout.On
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Medical_Info mItem);
+        void onListFragmentInteraction(Medical_Information mItem);
     }
 
 

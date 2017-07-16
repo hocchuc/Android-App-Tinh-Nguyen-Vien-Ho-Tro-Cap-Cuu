@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.emc.emergency.Adapter.MyMedicalInfoRecyclerViewAdapter;
 import com.emc.emergency.R;
 
-import com.emc.emergency.model.Medical_Info;
+import com.emc.emergency.model.Medical_Information;
 import com.emc.emergency.task.GetMedicalInfo;
 import com.emc.emergency.utils.InsertMedicalInfo;
 
@@ -34,7 +34,7 @@ public class fragment_disease_list extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
    // private OnListFragmentInteractionListener mListener;
-    ArrayList<Medical_Info> arrMI;
+    ArrayList<Medical_Information> arrMI;
     GetMedicalInfo getMedicalInfo;
     FloatingActionButton floatingActionButton;
     String nameMI,descriptionMI ="";
@@ -73,7 +73,7 @@ public class fragment_disease_list extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_disease_list, container, false);
-        arrMI = new ArrayList<Medical_Info>();
+        arrMI = new ArrayList<Medical_Information>();
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
         // Set the adapter
         Context context = view.getContext();
@@ -101,8 +101,8 @@ public class fragment_disease_list extends Fragment {
                         InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"1",descriptionMI, recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
 
-                        Medical_Info medical_info = new Medical_Info(nameMI,1,descriptionMI);
-                        arrMI.add(medical_info);
+                        Medical_Information medical_information = new Medical_Information(nameMI,1,descriptionMI);
+                        arrMI.add(medical_information);
                         recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
 
 

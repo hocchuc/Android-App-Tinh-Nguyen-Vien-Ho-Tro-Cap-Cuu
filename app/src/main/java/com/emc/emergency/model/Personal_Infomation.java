@@ -3,8 +3,6 @@ package com.emc.emergency.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Model cho quản lý thông tin cá nhân
@@ -22,7 +20,7 @@ public class Personal_Infomation implements Serializable  {
 	private String email_PI;
 	private User id_user;
 	private String avatar;
-	private ArrayList<Medical_Info> medical_Info;
+	private ArrayList<Medical_Information> medical_Information;
 
 	public Long getId_PI() {
 		return id_PI;
@@ -112,12 +110,12 @@ public class Personal_Infomation implements Serializable  {
 		this.avatar = avatar;
 	}
 
-	public ArrayList<Medical_Info> getMedical_Info() {
-		return medical_Info;
+	public ArrayList<Medical_Information> getMedical_Information() {
+		return medical_Information;
 	}
 
-	public void setMedical_Info(ArrayList<Medical_Info> medical_Info) {
-		this.medical_Info = medical_Info;
+	public void setMedical_Information(ArrayList<Medical_Information> medical_Information) {
+		this.medical_Information = medical_Information;
 	}
 
 	public Personal_Infomation() {
