@@ -154,6 +154,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
           //TODO thêm locate sau này, sử dụng giờ hệ thống
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         String currentDateandTime = sdf.format(new Date());
+//        accident.setId_user((long) id);
         accident.setDate_AC(currentDateandTime);
 
         accident.setStatus_AC("Pending");
@@ -259,8 +260,8 @@ public class ReportAccidentActivity extends AppCompatActivity {
                     .build();
             try {
                 postResponse = client.newCall(request).execute();
-                if(null == postResponse.body().string() ||  postResponse.body().string().equals(""))
-                    return "";
+//                if(null == postResponse.body().string() ||  postResponse.body().string().equals(""))
+//                    return "";
                 
                 return postResponse.body().string();
             } catch (IOException e) {

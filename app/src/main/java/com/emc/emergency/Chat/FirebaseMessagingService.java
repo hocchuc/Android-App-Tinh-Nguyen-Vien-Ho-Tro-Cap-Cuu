@@ -80,28 +80,28 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     }
 
-    private void showBasicNotification(String message) {
-        Intent i = new Intent(this,ChatBoxActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        
-        i.putExtra("type", TYPE_HELPER);
-              Log.d("type",TYPE_HELPER);
-        
-        
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setAutoCancel(true)
-                .setContentTitle("Basic Notification")
-                .setContentText(message)
-                .setSmallIcon(R.mipmap.ic_alert)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        manager.notify(0,builder.build());
-
-    }
+//    private void showBasicNotification(String message) {
+//        Intent i = new Intent(this,ChatBoxActivity.class);
+//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//        i.putExtra("type", TYPE_HELPER);
+//              Log.d("type",TYPE_HELPER);
+//
+//
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+//                .setAutoCancel(true)
+//                .setContentTitle("Basic Notification")
+//                .setContentText(message)
+//                .setSmallIcon(R.mipmap.ic_alert)
+//                .setContentIntent(pendingIntent);
+//
+//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//        manager.notify(0,builder.build());
+//
+//    }
 
     /**
      * Hiện thị noti tai nạn
@@ -167,112 +167,112 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         }
 
-    public void showInboxStyleNotification(String message) {
-        Intent i = new Intent(this,ChatBoxActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//    public void showInboxStyleNotification(String message) {
+//        Intent i = new Intent(this,ChatBoxActivity.class);
+//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        Notification.Builder builder = new Notification.Builder(this)
+//                .setContentTitle("Inbox Style notification")
+//                .setContentText(message)
+//                .setSmallIcon(R.drawable.ic_notification)
+//                .addAction(R.drawable.ic_notification, "show activity", pendingIntent);
+//
+//        Notification notification = new Notification.InboxStyle(builder)
+//                .addLine(message).addLine("Second message")
+//                .addLine("Third message")
+//                .setSummaryText("+3 more").build();
+//        // Put the auto cancel notification flag
+//        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        notificationManager.notify(0, notification);
+//        playBeep();
+//    }
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle("Inbox Style notification")
-                .setContentText(message)
-                .setSmallIcon(R.drawable.ic_notification)
-                .addAction(R.drawable.ic_notification, "show activity", pendingIntent);
-
-        Notification notification = new Notification.InboxStyle(builder)
-                .addLine(message).addLine("Second message")
-                .addLine("Third message")
-                .setSummaryText("+3 more").build();
-        // Put the auto cancel notification flag
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notification);
-        playBeep();
-    }
-
-    /**
-     * Parsing the JSON message received from server The intent of message will
-     * be identified by JSON node 'flag'. flag = self, message belongs to the
-     * person. flag = new, a new person joined the conversation. flag = message,
-     * a new message received from server. flag = exit, somebody left the
-     * conversation.
-     * */
-    private void parseMessage(final String msg) {
-
-        try {
-            JSONObject jObj = new JSONObject(msg);
-
-            // JSON node 'flag'
-            String flag = jObj.getString("flag");
-
-            // if flag is 'self', this JSON contains session id
-            if (flag.equalsIgnoreCase(SystemUtils.TAG_SELF)) {
-
-                String sessionId = jObj.getString("sessionId");
-
-                // Save the session id in shared preferences
-                FirebaseUtils.storeSessionId(sessionId);
-
-                Log.e(TAG, "Your session id: " + FirebaseUtils.getSessionId());
-
-            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_NEW)) {
-                // If the flag is 'new', new person joined the room
-                String name = jObj.getString("name");
-                String message = jObj.getString("message");
-
-                // number of people online
-                String onlineCount = jObj.getString("onlineCount");
-
-               /* showToast(name + message + ". Currently " + onlineCount
-                        + " people online!");*/
-
-            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_LOAD_MESSAGE)) {
-                // if the flag is 'message', new message received
-                String fromName = "";//name;
-                String message = jObj.getString("message");
-                String sessionId = jObj.getString("sessionId");
-                boolean isSelf = true;
-
-                // Checking if the message was sent by you
-                if (!sessionId.equals(FirebaseUtils.getSessionId())) {
-                    fromName = jObj.getString("name");
-                    isSelf = false;
-                }
-
-
-                //Chat m = new Chat(fromName, message, isSelf);
-
-                // Appending the message to chat list
-                //  appendMessage(m);
-
-            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_EXIT)) {
-                // If the flag is 'exit', somebody left the conversation
-                String name = jObj.getString("name");
-                String message = jObj.getString("message");
-
-                //showToast(name + message);
-            }
-            // nếu flag là Tag_Old_Message thì load tin nhắn mới
-            else if(flag.equalsIgnoreCase(SystemUtils.TAG_LOAD_MESSAGE)) {
-                // if the flag is 'old_message', check if loaded or not by me
-                String fromName = jObj.getString("name");
-                String message = jObj.getString("message");
-                String sessionId = jObj.getString("sessionId");
-                // Nếu ssID người gửi không bằng với client thì add vao list tin nhắn
-                if(!sessionId.equals(FirebaseUtils.getSessionId())) {
-                    // Chat m = new Chat(fromName, message, false);
-                    //   appendMessage(m);
-                }
-
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-   
+//    /**
+//     * Parsing the JSON message received from server The intent of message will
+//     * be identified by JSON node 'flag'. flag = self, message belongs to the
+//     * person. flag = new, a new person joined the conversation. flag = message,
+//     * a new message received from server. flag = exit, somebody left the
+//     * conversation.
+//     * */
+//    private void parseMessage(final String msg) {
+//
+//        try {
+//            JSONObject jObj = new JSONObject(msg);
+//
+//            // JSON node 'flag'
+//            String flag = jObj.getString("flag");
+//
+//            // if flag is 'self', this JSON contains session id
+//            if (flag.equalsIgnoreCase(SystemUtils.TAG_SELF)) {
+//
+//                String sessionId = jObj.getString("sessionId");
+//
+//                // Save the session id in shared preferences
+//                FirebaseUtils.storeSessionId(sessionId);
+//
+//                Log.e(TAG, "Your session id: " + FirebaseUtils.getSessionId());
+//
+//            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_NEW)) {
+//                // If the flag is 'new', new person joined the room
+//                String name = jObj.getString("name");
+//                String message = jObj.getString("message");
+//
+//                // number of people online
+//                String onlineCount = jObj.getString("onlineCount");
+//
+//               /* showToast(name + message + ". Currently " + onlineCount
+//                        + " people online!");*/
+//
+//            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_LOAD_MESSAGE)) {
+//                // if the flag is 'message', new message received
+//                String fromName = "";//name;
+//                String message = jObj.getString("message");
+//                String sessionId = jObj.getString("sessionId");
+//                boolean isSelf = true;
+//
+//                // Checking if the message was sent by you
+//                if (!sessionId.equals(FirebaseUtils.getSessionId())) {
+//                    fromName = jObj.getString("name");
+//                    isSelf = false;
+//                }
+//
+//
+//                //Chat m = new Chat(fromName, message, isSelf);
+//
+//                // Appending the message to chat list
+//                //  appendMessage(m);
+//
+//            } else if (flag.equalsIgnoreCase(SystemUtils.TAG_EXIT)) {
+//                // If the flag is 'exit', somebody left the conversation
+//                String name = jObj.getString("name");
+//                String message = jObj.getString("message");
+//
+//                //showToast(name + message);
+//            }
+//            // nếu flag là Tag_Old_Message thì load tin nhắn mới
+//            else if(flag.equalsIgnoreCase(SystemUtils.TAG_LOAD_MESSAGE)) {
+//                // if the flag is 'old_message', check if loaded or not by me
+//                String fromName = jObj.getString("name");
+//                String message = jObj.getString("message");
+//                String sessionId = jObj.getString("sessionId");
+//                // Nếu ssID người gửi không bằng với client thì add vao list tin nhắn
+//                if(!sessionId.equals(FirebaseUtils.getSessionId())) {
+//                    // Chat m = new Chat(fromName, message, false);
+//                    //   appendMessage(m);
+//                }
+//
+//            }
+//
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+//
 
     /**
      * Plays device's default notification sound

@@ -101,7 +101,7 @@ public class fragment_contract extends Fragment {
                 + "Trợ cấp ổn định nơi ở, tính theo thời gian thực hiện nhiệm vụ. \n"
                 + "Khoản trợ cấp này được trả ngay từ khi công việc bắt đầu.\n"
                 + "Nhận hỗ trợ sinh hoạt phí dành cho tình nguyện viên hàng tháng.\n"
-                + "Được công tác nước ngoài (khi được chỉ định và giai đoạn cuối của nhiệm vụ)\n"
+                + "Được công tác nước ngoài (khi được chỉ định và giai đoạn cuối của nhiệm vụ).\n"
                 + "Được hưởng bảo hiểm thương tật vĩnh viễn, bảo hiểm y tế và nhân thọ.\n"
                 + "Nghỉ phép hai ngày rưỡi trong một tháng.\n"
                 + "Nhận trợ cấp tái ổn định cuộc sống khi hoàn tất tốt nhiệm vụ.";
