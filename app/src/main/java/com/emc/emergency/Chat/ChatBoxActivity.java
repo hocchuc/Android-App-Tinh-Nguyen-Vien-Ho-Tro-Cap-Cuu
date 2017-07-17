@@ -19,7 +19,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
+import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,27 +43,28 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.VideoView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
-
+import com.bumptech.glide.annotation.GlideOption;
 import com.bumptech.glide.request.RequestOptions;
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
 import com.emc.emergency.Fragment.fragment_map_page;
 import com.emc.emergency.Fragment.fragment_play_video;
-
+import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 
@@ -70,7 +72,7 @@ import com.emc.emergency.model.Accident;
 import com.emc.emergency.model.Message;
 import com.emc.emergency.utils.GPSTracker;
 import com.emc.emergency.utils.SystemUtils;
-
+import com.emc.emergency.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.camerafragment.CameraFragment;
 import com.github.florent37.camerafragment.CameraFragmentApi;
@@ -130,7 +132,7 @@ import okhttp3.Response;
 public class ChatBoxActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, fragment_map_page.onFragmentMapInteraction, fragment_play_video.OnFragmentInteractionListener {
 
-    private static final String FRAGMENT_TAG = "fragment_tag";
+    private static final String FRAGMENT_TAG = "fragment_tag" ;
 
     @Override
     public void onFragmentMapInteraction(Uri uri) {
@@ -253,7 +255,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_box);
-
+        
         progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading), getString(R.string.load_data_from_server));
 
         dialog = new MaterialDialog.Builder(this)
@@ -650,6 +652,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
      * Lấy intent về để kiểm tra có phải người giúp đỡ không.
      */
     private void prepareAccidentRoom() {
+       
+          
         mSharedPreferences2 = getSharedPreferences(SystemUtils.PI, Context.MODE_PRIVATE);
         mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI, ANONYMOUS);
         mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI, "");
@@ -675,22 +679,24 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
-
+                    SendMessageJoinToServer(Type_User,AccidentKey,mUsername);
                 }
             }
-//            if(intent.getAction()!=null) {
-//                if (intent.getAction().equals(TYPE_HELPER)) {
-//                    Type_User = TYPE_HELPER;
-//                    Log.d("Type_User", Type_User);
-//                    AccidentKey = intent.getStringExtra("FirebaseKey");
-//                    Log.d("AccidentKey", AccidentKey);
-//                    id_AC = intent.getStringExtra("id_AC");
-//                }
-//            }
+
         }
 
     }
-
+    
+    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
+        // Tạo lop message chưa thong tin cơ ban
+        Message Message = new Message(mUsername + " đã tham gia",
+                                           mUsername,
+                                           mPhotoUrl, null, mId_user);
+        Log.d("messageImage", Message.toString());
+    
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey). child(MESSAGES_CHILD).push().setValue(Message);
+    }
+    
     private void SendtoActionOnServer() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a");
@@ -699,7 +705,12 @@ public class ChatBoxActivity extends AppCompatActivity implements
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/octet-stream");
-        RequestBody body = RequestBody.create(mediaType, "{\n\t\"id_user\": \"" + id + "\",\n\t\"id_AC\": \"" + id_AC + "\",\n\t\"date\": \"" + currentDateTime + "\"\n}");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"id_user\": \"" + mId_user + "\",\n\t\"id_AC\": \""
+                                                               + id_AC + "\",\n\t\"date\": \"" + currentDateTime + "\"\n}");
+        
+        Log.d("SendtoActionOnServer", "{\n\t\"id_user\": \"" + mId_user + "\",\n\t\"id_AC\": \""
+                                            + id_AC + "\",\n\t\"date\": \"" + currentDateTime + "\"\n}");
+        
         Request request = new Request.Builder()
                 .url(SystemUtils.getServerBaseUrl() + "accident/join")
                 .post(body)
@@ -711,9 +722,13 @@ public class ChatBoxActivity extends AppCompatActivity implements
             StrictMode.setThreadPolicy(policy);
             try {
                 Response response = client.newCall(request).execute();
+                Log.d("response",response.body().string());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            catch (NullPointerException e) {
+             e.printStackTrace();
+             }
         }
     }
 
@@ -806,8 +821,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
         // cập nhập firebasekey cho accident vừa tạo
 //        Log.d("AccidentKey",AccidentKey);
-        mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
-        id = mSharedPreferences.getInt(SystemUtils.ID_USER, -1);
+        
 
         Log.d("id_user_chat", String.valueOf(id));
     }
@@ -983,6 +997,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
      * Gửi dữ liệu mới lên server
      */
     private void createAccidentOnServer() {
+        mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
+        id = mSharedPreferences.getInt(SystemUtils.ID_USER, -1);
+        
         accident = new Accident();
         accident.setDescription_AC("Tai nạn");
 
@@ -1208,7 +1225,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
                 ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
                 .addHeader("content-type", "text/plain")
                 .build();
@@ -1229,7 +1246,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
                 ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
                 .addHeader("content-type", "text/plain")
                 .build();

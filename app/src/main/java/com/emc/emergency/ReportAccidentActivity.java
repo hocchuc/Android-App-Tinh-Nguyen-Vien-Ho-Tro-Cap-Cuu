@@ -131,7 +131,6 @@ public class ReportAccidentActivity extends AppCompatActivity {
 
                 mDatabase1.child(AccidentKey).setValue(accident2);
 
-
                 btnSubmit.setProgress(1);
                 finish();
             }
