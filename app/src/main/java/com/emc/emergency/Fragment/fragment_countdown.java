@@ -19,7 +19,7 @@ import com.dd.processbutton.iml.ActionProcessButton;
 
 import com.emc.emergency.Chat.ChatBoxActivity;
 import com.emc.emergency.R;
-import com.emc.emergency.RequestRescueActivity;
+
 import com.emc.emergency.utils.SystemUtils;
 
 /**

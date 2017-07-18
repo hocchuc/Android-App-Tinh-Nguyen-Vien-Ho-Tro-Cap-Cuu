@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -36,6 +37,7 @@ import android.widget.Toast;
 import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.model.Accident;
+import com.emc.emergency.model.Accident_Detail;
 import com.emc.emergency.model.MessageEvent;
 import com.emc.emergency.model.Route;
 import com.emc.emergency.model.User;
@@ -68,12 +70,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -89,15 +99,15 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "vido";
     private static final String ARG_PARAM2 = "kinhdo";
-    LocationManager locationManager;
+//    LocationManager locationManager;
     GoogleMap mMap;
-    OnMapReadyCallback onMapReadyCallback;
-    ArrayList<Accident> accidentList;
+//    OnMapReadyCallback onMapReadyCallback;
+//    ArrayList<Accident> accidentList;
     double lat = 0;
     double lon = 0;
     double viDo = 0;
     double kinhDo = 0;
-    String moTa, diaChi;
+//    String moTa, diaChi;
     private final Handler mHandler;
     private Runnable mAnimation;
 
@@ -133,21 +143,24 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         }
     }
 
-    private GoogleMap map;
+//    private GoogleMap map;
     // TODO: Rename and change types of parameters
     private double mParam1;
     private double mParam2;
     String mprovider;
     MapView mapView;
+    private SharedPreferences sharedPreferences;
+    String id_AC="";
+    ArrayList<Accident_Detail> accident_details;
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
 //    private EditText etDestination;
 
     Button btnVeDuong;
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
-    private ProgressDialog progressDialog;
+//    private List<Marker> originMarkers = new ArrayList<>();
+//    private List<Marker> destinationMarkers = new ArrayList<>();
+//    private List<Polyline> polylinePaths = new ArrayList<>();
+//    private ProgressDialog progressDialog;
 
 
     private onFragmentMapInteraction mListener;
@@ -208,6 +221,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         View view = inflater.inflate(R.layout.fragment_map_page, container, false);
         btnVeDuong = (Button) view.findViewById(R.id.btnVeDuong);
+
+        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
+        id_AC = sharedPreferences.getString("id_acc","");
+
         return view;
     }
 
@@ -264,8 +281,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         /**
          * Tạo accident xung quanh và các user
          */
-        accidentList = new ArrayList<>();
-        new GetAccidents(getActivity(), accidentList).execute();
+//        accidentList = new ArrayList<>();
+//        new GetAccidents(getActivity(), accidentList).execute();
         new GetAllUsers(getContext()).execute();
         mMap.setMyLocationEnabled(true);
         /**
@@ -286,84 +303,84 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
     }
 
-    class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
-        Activity activity;
-        ArrayList<Accident> arrAccidents;
-//    AccidentAdapter accidentsAdapter;
-
-        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
-            this.activity = activity;
-            this.arrAccidents = arrAccidents;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            arrAccidents.clear();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Accident> accidents) {
-            super.onPostExecute(accidents);
-            arrAccidents.addAll(accidents);
-
-            for (int i = 0; i < arrAccidents.size(); i++) {
-                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-                LatLng loocation = new LatLng(viDo, kinhDo);
-                mMap.addMarker(new MarkerOptions()
-                        .position(loocation)
-                        .title(arrAccidents.get(i).getDescription_AC())
-                        .snippet(arrAccidents.get(i).getAddress()));
-            }
-        }
-
-        @Override
-        protected ArrayList<Accident> doInBackground(Void... params) {
-            ArrayList<Accident> ds = new ArrayList<>();
-            try {
-                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-                StringBuilder builder = new StringBuilder();
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    builder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                JSONObject jsonObj = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
-
-                Log.d("JsonObject", _embeddedObject.toString());
-                Log.d("JsonArray", accidentsSONArray.toString());
-
-                for (int i = 0; i < accidentsSONArray.length(); i++) {
-                    Accident accident = new Accident();
-                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
-                    if (jsonObject == null) continue;
-                    if (jsonObject.has("description_AC"))
-                        accident.setDescription_AC(jsonObject.getString("description_AC"));
-                    if (jsonObject.has("date_AC"))
-                        accident.setDate_AC(jsonObject.getString("date_AC"));
-                    if (jsonObject.has("long_AC"))
-                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
-                    if (jsonObject.has("lat_AC"))
-                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
-                    if (jsonObject.has("status_AC"))
-                        accident.setStatus_AC(jsonObject.getString("status_AC"));
-                    if (jsonObject.has("address"))
-                        accident.setAddress(jsonObject.getString("address"));
-                    ds.add(accident);
-                }
-                Log.d("ds", ds.toString());
-            } catch (Exception ex) {
-                Log.e("LOI ", ex.toString());
-            }
-            return ds;
-        }
-    }
+//    class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
+//        Activity activity;
+//        ArrayList<Accident> arrAccidents;
+////    AccidentAdapter accidentsAdapter;
+//
+//        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
+//            this.activity = activity;
+//            this.arrAccidents = arrAccidents;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            arrAccidents.clear();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(ArrayList<Accident> accidents) {
+//            super.onPostExecute(accidents);
+//            arrAccidents.addAll(accidents);
+//
+//            for (int i = 0; i < arrAccidents.size(); i++) {
+//                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
+//                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
+//                LatLng loocation = new LatLng(viDo, kinhDo);
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(loocation)
+//                        .title(arrAccidents.get(i).getDescription_AC())
+//                        .snippet(arrAccidents.get(i).getAddress()));
+//            }
+//        }
+//
+//        @Override
+//        protected ArrayList<Accident> doInBackground(Void... params) {
+//            ArrayList<Accident> ds = new ArrayList<>();
+//            try {
+//                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
+//                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+//                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+//                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+//                StringBuilder builder = new StringBuilder();
+//                String line = bufferedReader.readLine();
+//                while (line != null) {
+//                    builder.append(line);
+//                    line = bufferedReader.readLine();
+//                }
+//                JSONObject jsonObj = new JSONObject(builder.toString());
+//                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
+//                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
+//
+//                Log.d("JsonObject", _embeddedObject.toString());
+//                Log.d("JsonArray", accidentsSONArray.toString());
+//
+//                for (int i = 0; i < accidentsSONArray.length(); i++) {
+//                    Accident accident = new Accident();
+//                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
+//                    if (jsonObject == null) continue;
+//                    if (jsonObject.has("description_AC"))
+//                        accident.setDescription_AC(jsonObject.getString("description_AC"));
+//                    if (jsonObject.has("date_AC"))
+//                        accident.setDate_AC(jsonObject.getString("date_AC"));
+//                    if (jsonObject.has("long_AC"))
+//                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
+//                    if (jsonObject.has("lat_AC"))
+//                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
+//                    if (jsonObject.has("status_AC"))
+//                        accident.setStatus_AC(jsonObject.getString("status_AC"));
+//                    if (jsonObject.has("address"))
+//                        accident.setAddress(jsonObject.getString("address"));
+//                    ds.add(accident);
+//                }
+//                Log.d("ds", ds.toString());
+//            } catch (Exception ex) {
+//                Log.e("LOI ", ex.toString());
+//            }
+//            return ds;
+//        }
+//    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -507,8 +524,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     class GetAllUsers extends AsyncTask<Void, String, List<User>> {
         Context context;
 
-        String json;
-
         public GetAllUsers(Context context) {
             this.context = context;
 
@@ -523,6 +538,37 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         protected void onPostExecute(List<User> userList) {
             super.onPostExecute(userList);
             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+            accident_details=new ArrayList<>();
+
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = RequestBody.create(null, new byte[0]);
+            Request request = new Request.Builder()
+                    .url(SystemUtils.getServerBaseUrl()+"accident/GetAllUserJoined/"+id_AC)
+                    .post(body)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                JSONArray jsonArray=new JSONArray(response.body().string());
+                for(int i=0;i<jsonArray.length();i++){
+                    Accident_Detail accident_detail=new Accident_Detail();
+                    User user=new User();
+                    JSONObject jsonObject=jsonArray.getJSONObject(i);
+                    if (jsonObject.has("id_user")) {
+                        user.setId_user(Long.parseLong(jsonObject.getString("id_user")));
+                        accident_detail.setUser_id(user);
+                    }
+                    if(jsonObject.has("date"))
+                        accident_detail.setDate_create(jsonObject.getString("date"));
+                    accident_details.add(accident_detail);
+//                    Log.d("ds_chitiet_tainan",accident_details.toString());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             for (int i = 0; i < userList.size(); i++) {
                 User user = userList.get(i);
@@ -530,19 +576,21 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 viDo = user.getLat_PI();
                 kinhDo = user.getLong_PI();
                 LatLng loocation = new LatLng(viDo, kinhDo);
-                try {
+               for(int j=0;j<accident_details.size();j++){
+                   if(userList.get(i).getId_user()==accident_details.get(j).getUser_id().getId_user()){
+                       try {
 
-                    mMap.addMarker(new MarkerOptions()
-                            .position(loocation)
-                            .title(user.getUser_name())
-                            .snippet(String.valueOf(user.getUser_type().getId_user_type())))
-                            .setIcon(icon);
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
-                }
+                           mMap.addMarker(new MarkerOptions()
+                                   .position(loocation)
+                                   .title(user.getUser_name())
+                                   .snippet(String.valueOf(user.getUser_type().getId_user_type())))
+                                   .setIcon(icon);
+                       } catch (Exception e) {
+                           e.printStackTrace();
+                           Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+                       }
+                   }
+               }
             }
 
         }
@@ -565,7 +613,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 JSONObject jsonObject = new JSONObject(builder.toString());
                 JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
                 JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-                Log.d("jsonObj", jsonObject.toString());
+//                Log.d("jsonObj", jsonObject.toString());
                 for (int i = 0; i < usersJSONArray.length(); i++) {
                     User user1 = new User();
                     JSONObject jsonObj = usersJSONArray.getJSONObject(i);

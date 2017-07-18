@@ -18,7 +18,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.emc.emergency.RequestRescueActivity.mediaType;
+import static com.emc.emergency.Chat.ChatBoxActivity.mediaType;
 
 /**
  * Token service to handle the registration into the database
