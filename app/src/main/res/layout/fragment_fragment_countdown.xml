@@ -7,7 +7,7 @@
     android:minWidth="1000sp"
     android:minHeight="1000sp"
     android:background="@color/colorPrimary"
-    tools:context="com.emc.emergency.Fragment.fragment_countdown">
+    tools:context="com.emc.emergency.Main_Menu.fragment_countdown">
 
     <Space
         android:layout_width="match_parent"

@@ -9,7 +9,7 @@
     android:background="#e8ecf2"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Chat.ChatBoxActivity">
+    tools:context=".ChatBox.ChatBoxActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"

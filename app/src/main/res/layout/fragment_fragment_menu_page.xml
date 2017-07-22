@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.emc.emergency.Fragment.fragment_menu_page"
+    tools:context="com.emc.emergency.Main_Menu.fragment_menu_page"
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
     <LinearLayout

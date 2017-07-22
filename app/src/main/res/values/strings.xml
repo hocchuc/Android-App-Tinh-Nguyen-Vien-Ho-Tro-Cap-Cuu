@@ -2,82 +2,43 @@
     <!-- Sample menu -->
     <string name="action_settings">Settings</string>
     <string name="app_name">Emergency SOS</string>
+    <string name="google_maps_key">AIzaSyAd_TF15-iHiTuoV5aprBjmJcH8VuCT6yQ</string>
+    <string name="Emergency_SOS">Emergency SOS VN</string>
 
-    <!-- Drawer Items -->
-    <string name="drawer_item_persistent_compact_header">PersistentHeader Drawer</string>
-    <string name="drawer_item_persistent_compact_header_desc">Smaller persistent account header</string>
-    <string name="drawer_item_compact_header">CompactHeader Drawer</string>
-    <string name="drawer_item_compact_header_desc">Smaller account header</string>
-    <string name="drawer_item_action_bar_drawer">ActionBar Drawer</string>
-    <string name="drawer_item_action_bar_drawer_desc">Shows how to use with an actionbar</string>
-    <string name="drawer_item_multi_drawer">Multi Drawer</string>
-    <string name="drawer_item_multi_drawer_desc">Left and Right side drawer</string>
-    <string name="drawer_item_non_translucent_status_drawer">NonTranslucentStatus Drawer</string>
-    <string name="drawer_item_non_translucent_status_drawer_desc">Drawer below statusBar</string>
-    <string name="drawer_item_advanced_drawer">Advanced Drawer</string>
-    <string name="drawer_item_advanced_drawer_desc">More advanced drawer features</string>
-    <string name="drawer_item_embedded_drawer">Embedded Drawer</string>
-    <string name="drawer_item_embedded_drawer_desc">Embed the drawer anywhere</string>
-    <string name="drawer_item_mini_drawer">MiniDrawer</string>
-    <string name="drawer_item_mini_drawer_desc">Always visible MiniDrawer</string>
-    <string name="drawer_item_fullscreen_drawer">FullScreen Drawer</string>
-    <string name="drawer_item_fullscreen_drawer_desc">Drawer in FullScreen activity</string>
-    <string name="drawer_item_custom_container_drawer">CustomContainer Drawer</string>
-    <string name="drawer_item_custom_container_drawer_desc">Drawer in different view hirachy</string>
-    <string name="drawer_item_menu_drawer">Menu Drawer</string>
-    <string name="drawer_item_menu_drawer_desc">Drawer from menu.xml</string>
-    <string name="drawer_item_fragment_drawer">Fragment Drawer</string>
-    <string name="drawer_item_fragment_drawer_desc">Use drawer within fragments</string>
-    <string name="drawer_item_collapsing_toolbar_drawer">CollapsingToolbar Drawer</string>
-    <string name="drawer_item_collapsing_toolbar_drawer_desc">Uses a CollapsingToolbarLayout</string>
-    <string name="drawer_item_crossfade_drawer_layout_drawer">CrossfadeDrawerLayout</string>
-    <string name="drawer_item_crossfade_drawer_layout_drawer_desc">2-Step Drawer behavior</string>
-
-    <string name="drawer_item_menu_drawer_item">Menu Drawer Item</string>
-    <string name="drawer_item_menu_drawer_item_desc">Sample menu item with overflow button</string>
-
-    <string name="drawer_item_home">Home</string>
-    <string name="drawer_item_free_play">Free Play</string>
-    <string name="drawer_item_custom">Custom</string>
-    <string name="drawer_item_section_header">Section Header</string>
-    <string name="drawer_item_settings">Settings</string>
-    <string name="drawer_item_help">Help</string>
-    <string name="drawer_item_open_source">Open Source</string>
-    <string name="drawer_item_contact">Contact</string>
-
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</string>
-
-    <!-- Strings related to login -->
+    <!-- Login -->
     <string name="title_activity_login">Login</string>
     <string name="register_title">Register</string>
     <string name="login_title">Login</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="pwd">Password</string>
+    <!--Register-->
     <string name="btnRegister">Register</string>
     <string name="btn_send">Send</string>
-    <string name="google_maps_key">AIzaSyAd_TF15-iHiTuoV5aprBjmJcH8VuCT6yQ</string>
-    <string name="hello_blank_fragment">1</string>
     <string name="long_ac">Long</string>
     <string name="des_ac">des_ac</string>
     <string name="status_ac">status_ac</string>
     <string name="lat_ac">lat_ac</string>
     <string name="date_ac">date_ac</string>
     <string name="adress_ac">Adress_Ac</string>
+    <!--Main Menu-->
+    <string name="danh_sach_tai_nan_gan_day">Accident near you</string>
+
+    <!--Report Accident-->
     <string name="cap_cuu">Cấp Cứu</string>
     <string name="yeu_cau_cap_cuu">Request Rescue</string>
     <string name="thong_tin_ca_nhan">Your Personal Infomation</string>
     <string name="so_dien_thoai_cap_cuu">Emergency Contact</string>
-    <string name="danh_sach_tai_nan_gan_day">Accident near you</string>
-    <string name="danh_sach_benh_vien">Hospital near you</string>
+    <!--Accident near by-->
     <string name="title_activity_accident">AccidentActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="main_menu_activity">Main Menu</string>
     <string name="accident_activity">Accident List</string>
+    <!--Personal Infomation-->
     <string name="personal_infomation">Personal infomation</string>
-    <string name="Emergency_SOS">Emergency SOS VN</string>
+    <!--Chat Box-->
     <string name="chat_room">Message</string>
     <string name="setting">Setting</string>
     <string name="other_resources">Link outside</string>
@@ -92,22 +53,19 @@
     <string name="enter_your_email_id">Enter your Email ID</string>
     <string name="description">Description</string>
     <string name="sign_out">Sign out</string>
-    <string name="fresh_config">Config</string>
-    <string name="invite_menu_label">Invite</string>
-    <string name="cause_crash">Crash</string>
     <string name="birthday">Birthday</string>
     <string name="map">Map</string>
     <string name="personal_information">Personal Information</string>
     <string name="medical_information">Medical Information</string>
     <string name="Name">Name</string>
     <string name="type">type</string>
-    <string name="seach">Search</string>
     <string name="SelectImage">Choose Camera or Image Library</string>
     <string name="enter_password">Enter Password</string>
     <string name="details">Details</string>
     <string name="input_allergic_hint">Your allergic</string>
     <string name="input_allergic_prefill">allergic</string>
     <string name="input_des_hint">More Description</string>
+    <!--Medical Info-->
     <string name="accept">Accept</string>
     <string name="Cancle">Cancle</string>
     <string name="Disease">Disease</string>
@@ -125,4 +83,5 @@
     <string name="cleanning">Cleanning</string>
     <string name="we_are_cleanning">We are cleanning your information, please wait a moment</string>
     <string name="volunteer">Sign up volunteer</string>
+    <string name="hello_blank_fragment">Hello</string>
 </resources>

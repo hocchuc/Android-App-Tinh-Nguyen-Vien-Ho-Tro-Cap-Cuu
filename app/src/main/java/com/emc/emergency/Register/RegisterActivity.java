@@ -2,59 +2,42 @@ package com.emc.emergency.Register;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 
 import com.emc.emergency.Login.LoginActivity;
-import com.emc.emergency.MainMenuActivity;
 import com.emc.emergency.R;
-import com.emc.emergency.model.FlashMessage;
-import com.emc.emergency.model.Personal_Infomation;
-import com.emc.emergency.model.User;
+import com.emc.emergency.Helper.Model.FlashMessage;
+import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.User;
 
-import com.emc.emergency.utils.SystemUtils;
-import com.emc.emergency.utils.Utility;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
+import com.emc.emergency.Helper.Utils.SystemUtils;
+import com.emc.emergency.Helper.Utils.Utility;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,12 +45,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Activity Đăng ký tài khoản
+ */
 public class RegisterActivity extends AppCompatActivity {
     Button btnRegister, btnLogin, btnDate;
     EditText txtRegitersUsername, txtRegisterEmai, txtRegisterPassword, txtIn_Date, txtRegisterPhone;
     RadioButton radMale, radFalse;
     private ProgressBar progressBar;
-    //    private FirebaseAuth auth;
     double lat = 0;
     double lng = 0;
     private int mYear, mMonth, mDay;
@@ -82,12 +67,6 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-//        Firebase.setAndroidContext(this);
-
-
-        //Get Firebase auth instance
-//        auth = FirebaseAuth.getInstance();
 
         addControls();
         addEvents();
@@ -178,9 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
             // set your desired log level
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            // add your other interceptors …
-            // add logging as last interceptor
-            //JacksonConverter converter = JacksonConverter(new ObjectMapper());
+        
 
             httpClient.addInterceptor(logging);  // <-- this is the important line!
             Retrofit.Builder builder = new Retrofit.Builder()

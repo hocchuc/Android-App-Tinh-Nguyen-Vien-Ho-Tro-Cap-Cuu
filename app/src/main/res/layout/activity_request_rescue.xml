@@ -13,7 +13,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.emc.emergency.AccidentActivity">
+    tools:context="com.emc.emergency.Accidents_List.AccidentActivity">
 
     <FrameLayout
         android:id="@+id/contentRequest1"

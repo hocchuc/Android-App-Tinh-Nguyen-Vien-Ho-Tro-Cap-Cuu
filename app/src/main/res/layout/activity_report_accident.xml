@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.emc.emergency.ReportAccidentActivity">
+    tools:context="com.emc.emergency.Report_Accident.ReportAccidentActivity">
 
     <!--<Space-->
     <!--android:layout_width="match_parent"-->

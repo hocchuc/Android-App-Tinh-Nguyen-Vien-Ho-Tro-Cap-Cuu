@@ -1,8 +1,8 @@
 package com.emc.emergency.Register;
 
 
-import com.emc.emergency.model.FlashMessage;
-import com.emc.emergency.model.User;
+import com.emc.emergency.Helper.Model.FlashMessage;
+import com.emc.emergency.Helper.Model.User;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

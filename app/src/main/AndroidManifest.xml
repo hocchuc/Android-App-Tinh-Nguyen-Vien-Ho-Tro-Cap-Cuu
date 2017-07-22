@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".utils.BaseApplication"
+        android:name=".Helper.Utils.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -56,33 +56,33 @@
             </intent-filter>
         </activity>
         <activity android:name=".Register.RegisterActivity" />
-        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".Main_Menu.MainMenuActivity" />
         <activity
-            android:name=".Chat.ChatBoxActivity"
+            android:name=".ChatBox.ChatBoxActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".AccidentActivity"
+            android:name=".Accidents_List.AccidentActivity"
             android:label="@string/title_activity_accident" />
         <activity
-            android:name=".Personal_Inf_Activity"
+            android:name=".Personal_Information.Personal_Inf_Activity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ReportAccidentActivity"
+            android:name=".Report_Accident.ReportAccidentActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".RequestRescueActivity"
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name=".Chat.FirebaseInstanceIDService"
+            android:name=".Helper.Services.FirebaseInstanceIDService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".Chat.FirebaseMessagingService"
+            android:name=".Helper.Services.FirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -104,7 +104,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
         AndroidManifest.xml
-        <activity android:name=".Chat.VideoPlayActivity"></activity>
+        <activity android:name=".ChatBox.VideoPlayActivity"></activity>
     </application>
 
 </manifest>
