@@ -60,7 +60,7 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
-import com.emc.emergency.Main_Menu.fragment_map_page;
+import com.emc.emergency.Helper.Model.UserJoined;
 
 import com.emc.emergency.Main_Menu.MainMenuActivity;
 import com.emc.emergency.R;
@@ -132,7 +132,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private static final String FRAGMENT_TAG = "fragment_tag";
     private static final String FRIENDLY_MSG_LENGTH = "100";
-    
+
     @Override
     public void onFragmentMapInteraction(Uri uri) {
 
@@ -218,7 +218,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
 
-    private SharedPreferences mSharedPreferences,mSharedPreferences2,preferences;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2, preferences;
 
 
     private RecordButton recordButton;
@@ -233,7 +233,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
-    private FrameLayout mframeImage;
+    //    private FrameLayout mframeImage;
+    Double Latitude;
+    Double Longtitude;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private RequestOptions options;
@@ -248,6 +250,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String AccidentKey = "";
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
+//    private DatabaseReference mDatabase1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,12 +269,13 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mFirebaseAuth.signInAnonymously();
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        //Lấy tọa độ hiện tại đang đứng
+        loadLocation();
 
         //load Intent về để xử lý, lúc này quyết định type của user
         prepareAccidentRoom();
 
-        //Lấy tọa độ hiện tại đang đứng
-        loadLocation();
+
         //Kiểm tra người vào chat này là ai, nếu là victim thì tạo acccident mới
         if (Type_User.equals(TYPE_VICTIM)) {
 
@@ -484,9 +488,39 @@ public class ChatBoxActivity extends AppCompatActivity implements
         GPSTracker gps = new GPSTracker(ChatBoxActivity.this);
         if (gps.canGetLocation()) {
             latitude = gps.getLatitude();
+//            Latitude=gps.getLatitude();
             longitude = gps.getLongitude();
+//            Longtitude=gps.getLongitude();
         }
 
+//        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        LocationListener locationListener = new LocationListener(){
+//            @Override
+//            public void onLocationChanged(Location location) {
+//                Latitude=location.getLatitude();
+//                Longtitude=location.getLongitude();
+//            }
+//
+//            @Override
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderEnabled(String provider) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderDisabled(String provider) {
+//
+//            }
+//        };
+//        // Register the listener with the Location Manager to receive location updates
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//        }
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
     private void LoadMessage() {
@@ -653,8 +687,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         mSharedPreferences2 = getSharedPreferences(SystemUtils.PI, Context.MODE_PRIVATE);
         mUsername = mSharedPreferences2.getString(SystemUtils.NAME_PI, ANONYMOUS);
         mPhotoUrl = mSharedPreferences2.getString(SystemUtils.AVATAR_PI, "");
-        Log.d("mUsername", mUsername);
-        Log.d("mPhotoUrl", mPhotoUrl);
+//        Log.d("mUsername", mUsername);
+//        Log.d("mPhotoUrl", mPhotoUrl);
 
         mSharedPreferences = getSharedPreferences(id_user, Context.MODE_PRIVATE);
         mId_user = String.valueOf(mSharedPreferences.getInt(SystemUtils.ID_USER, -1));
@@ -672,6 +706,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     AccidentKey = intent.getStringExtra("FirebaseKey");
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
+//                    Longtitude = intent.getDoubleExtra("lon_AC",Longtitude);
+//                    Latitude = Double.valueOf(intent.getStringExtra("lat_AC"));
 
                     preferences = getSharedPreferences("ID_ACC", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences.edit();
@@ -681,6 +717,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
                     SendtoActionOnServer();
 
+                    SendtoActionOnFirebase();
                 }
             }
 //            if(intent.getAction()!=null) {
@@ -695,20 +732,32 @@ public class ChatBoxActivity extends AppCompatActivity implements
         }
 
     }
+    private void SendtoActionOnFirebase() {
+        UserJoined userJoined = new UserJoined();
 
-    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
-        // Tạo lop message chưa thong tin cơ ban
-        Message Message = new Message(mUsername + " đã tham gia",
-                                           mUsername,
-                                           mPhotoUrl, null, mId_user);
-        Log.d("messageImage", Message.toString());
+        userJoined.setUser_id(Long.valueOf(mId_user));
+        userJoined.setLat_userjoined(latitude);
+        userJoined.setLong_userjoined(longitude);
 
-        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey). child(MESSAGES_CHILD).push().setValue(Message);
+//        mDatabase1 = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").push().setValue(userJoined);
     }
+
+//    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
+//        // Tạo lop message chưa thong tin cơ ban
+//        Message Message = new Message(mUsername + " đã tham gia",
+//                mUsername,
+//                mPhotoUrl, null, mId_user);
+//        Log.d("messageImage", Message.toString());
+//
+//        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey).child(MESSAGES_CHILD).push().setValue(Message);
+//    }
 
     private void SendtoActionOnServer() {
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a",Locale.US);
         String currentDateTime = dateFormat.format(date);
 //        Log.d("currentDateTime",currentDateTime);
         OkHttpClient client = new OkHttpClient();
@@ -726,12 +775,13 @@ public class ChatBoxActivity extends AppCompatActivity implements
             StrictMode.setThreadPolicy(policy);
             try {
                 Response response = client.newCall(request).execute();
+                Log.d("Reponse_1",response.body().string());
+
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
-            catch (NullPointerException e) {
-             e.printStackTrace();
-             }
         }
     }
 

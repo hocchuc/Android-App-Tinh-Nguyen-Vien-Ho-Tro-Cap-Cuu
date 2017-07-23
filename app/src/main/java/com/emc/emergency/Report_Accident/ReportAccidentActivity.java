@@ -263,17 +263,17 @@ public class ReportAccidentActivity extends AppCompatActivity {
                 postResponse = client.newCall(request).execute();
 //                if(null == postResponse.body().string() ||  postResponse.body().string().equals(""))
 //                    return "";
-                
+
                 return postResponse.body().string();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            
-            
+
+
                 return "";
-              
-            
-    
+
+
+
         }
     }
 

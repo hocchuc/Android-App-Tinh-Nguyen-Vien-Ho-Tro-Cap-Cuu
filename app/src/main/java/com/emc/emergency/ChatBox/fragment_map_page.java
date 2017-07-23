@@ -1,4 +1,4 @@
-package com.emc.emergency.Main_Menu;
+package com.emc.emergency.ChatBox;
 
 import android.Manifest;
 import android.content.Context;
