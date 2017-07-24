@@ -28,6 +28,7 @@ import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.emc.emergency.Helper.Model.UserJoined;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Accident;
 import com.emc.emergency.Helper.Model.Accident_Detail;
@@ -47,6 +48,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 
@@ -86,17 +92,24 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "vido";
     private static final String ARG_PARAM2 = "kinhdo";
-//    LocationManager locationManager;
+    //    LocationManager locationManager;
     GoogleMap mMap;
-//    OnMapReadyCallback onMapReadyCallback;
+    //    OnMapReadyCallback onMapReadyCallback;
 //    ArrayList<Accident> accidentList;
     double lat = 0;
     double lon = 0;
     double viDo = 0;
     double kinhDo = 0;
-//    String moTa, diaChi;
+    //    String moTa, diaChi;
     private final Handler mHandler;
     private Runnable mAnimation;
+    String AccidentKey = "";
+    String UserJoinedKey="";
+    int id_user;
+    ArrayList<UserJoined> arrUserJoineds;
+    String Active = "";
+    public static final String ACCIDENTS_CHILD = "accidents";
+    private DatabaseReference mFirebaseDatabaseReference;
 
 
     /**
@@ -130,14 +143,14 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         }
     }
 
-//    private GoogleMap map;
+    //    private GoogleMap map;
     // TODO: Rename and change types of parameters
     private double mParam1;
     private double mParam2;
     String mprovider;
     MapView mapView;
-    private SharedPreferences sharedPreferences;
-    String id_AC="";
+    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
+    String id_AC = "";
     ArrayList<Accident_Detail> accident_details;
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
@@ -209,8 +222,17 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         View view = inflater.inflate(R.layout.fragment_map_page, container, false);
         btnVeDuong = (Button) view.findViewById(R.id.btnVeDuong);
 
+        arrUserJoineds = new ArrayList<>();
+
         sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
-        id_AC = sharedPreferences.getString("id_acc","");
+        id_AC = sharedPreferences.getString("id_acc", "");
+
+        sharedPreferences1 = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
+        id_user = sharedPreferences1.getInt("id_user", -1);
+
+        sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+        AccidentKey = sharedPreferences2.getString("accident_key", "");
+        Active = sharedPreferences2.getString("Type_active", "");
 
         return view;
     }
@@ -265,12 +287,14 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         Marker marker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
 
-        /**
-         * Tạo accident xung quanh và các user
-         */
-//        accidentList = new ArrayList<>();
-//        new GetAccidents(getActivity(), accidentList).execute();
-        new GetAllUsers(getContext()).execute();
+//        /**
+//         * Tạo các user xung qunah
+//         */
+////        accidentList = new ArrayList<>();
+////        new GetAccidents(getActivity(), accidentList).execute();
+//        new GetAllUsers(getContext()).execute();
+        if (Active.equals("Active"))
+            SendtoActionOnFirebase();
         mMap.setMyLocationEnabled(true);
         /**
          * Tạo hiệu ứng nảy
@@ -289,85 +313,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         // marker is centered and for the marker's info window to open, if it has one).
 
     }
-
-//    class GetAccidents extends AsyncTask<Void, Void, ArrayList<Accident>> {
-//        Activity activity;
-//        ArrayList<Accident> arrAccidents;
-////    AccidentAdapter accidentsAdapter;
-//
-//        public GetAccidents(Activity activity, ArrayList<Accident> arrAccidents) {
-//            this.activity = activity;
-//            this.arrAccidents = arrAccidents;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            arrAccidents.clear();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(ArrayList<Accident> accidents) {
-//            super.onPostExecute(accidents);
-//            arrAccidents.addAll(accidents);
-//
-//            for (int i = 0; i < arrAccidents.size(); i++) {
-//                viDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLong_AC()));
-//                kinhDo = Double.parseDouble(String.valueOf(arrAccidents.get(i).getLat_AC()));
-//                LatLng loocation = new LatLng(viDo, kinhDo);
-//                mMap.addMarker(new MarkerOptions()
-//                        .position(loocation)
-//                        .title(arrAccidents.get(i).getDescription_AC())
-//                        .snippet(arrAccidents.get(i).getAddress()));
-//            }
-//        }
-//
-//        @Override
-//        protected ArrayList<Accident> doInBackground(Void... params) {
-//            ArrayList<Accident> ds = new ArrayList<>();
-//            try {
-//                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
-//                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-//                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-//                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-//                StringBuilder builder = new StringBuilder();
-//                String line = bufferedReader.readLine();
-//                while (line != null) {
-//                    builder.append(line);
-//                    line = bufferedReader.readLine();
-//                }
-//                JSONObject jsonObj = new JSONObject(builder.toString());
-//                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-//                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
-//
-//                Log.d("JsonObject", _embeddedObject.toString());
-//                Log.d("JsonArray", accidentsSONArray.toString());
-//
-//                for (int i = 0; i < accidentsSONArray.length(); i++) {
-//                    Accident accident = new Accident();
-//                    JSONObject jsonObject = accidentsSONArray.getJSONObject(i);
-//                    if (jsonObject == null) continue;
-//                    if (jsonObject.has("description_AC"))
-//                        accident.setDescription_AC(jsonObject.getString("description_AC"));
-//                    if (jsonObject.has("date_AC"))
-//                        accident.setDate_AC(jsonObject.getString("date_AC"));
-//                    if (jsonObject.has("long_AC"))
-//                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
-//                    if (jsonObject.has("lat_AC"))
-//                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
-//                    if (jsonObject.has("status_AC"))
-//                        accident.setStatus_AC(jsonObject.getString("status_AC"));
-//                    if (jsonObject.has("address"))
-//                        accident.setAddress(jsonObject.getString("address"));
-//                    ds.add(accident);
-//                }
-//                Log.d("ds", ds.toString());
-//            } catch (Exception ex) {
-//                Log.e("LOI ", ex.toString());
-//            }
-//            return ds;
-//        }
-//    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -508,136 +453,177 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onStop();
     }
 
-    class GetAllUsers extends AsyncTask<Void, String, List<User>> {
-        Context context;
+    private void SendtoActionOnFirebase() {
+        final UserJoined userJoined = new UserJoined();
 
-        public GetAllUsers(Context context) {
-            this.context = context;
+        userJoined.setUser_id(Long.valueOf(id_user));
+        userJoined.setLat_userjoined(lat);
+        userJoined.setLong_userjoined(lon);
 
-        }
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        UserJoinedKey=mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").push().getKey();
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").child(UserJoinedKey).setValue(userJoined);
+        // Get a reference to our posts
+        DatabaseReference ref = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").child(UserJoinedKey);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(List<User> userList) {
-            super.onPostExecute(userList);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
-            accident_details=new ArrayList<>();
-
-            OkHttpClient client = new OkHttpClient();
-
-            RequestBody body = RequestBody.create(null, new byte[0]);
-            Request request = new Request.Builder()
-                    .url(SystemUtils.getServerBaseUrl()+"accident/GetAllUserJoined/"+id_AC)
-                    .post(body)
-                    .build();
-
-            try {
-                Response response = client.newCall(request).execute();
-                JSONArray jsonArray=new JSONArray(response.body().string());
-                for(int i=0;i<jsonArray.length();i++){
-                    Accident_Detail accident_detail=new Accident_Detail();
-                    User user=new User();
-                    JSONObject jsonObject=jsonArray.getJSONObject(i);
-                    if (jsonObject.has("id_user")) {
-                        user.setId_user(Long.parseLong(jsonObject.getString("id_user")));
-                        accident_detail.setUser_id(user);
-                    }
-                    if(jsonObject.has("date"))
-                        accident_detail.setDate_create(jsonObject.getString("date"));
-                    accident_details.add(accident_detail);
-//                    Log.d("ds_chitiet_tainan",accident_details.toString());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            for (int i = 0; i < userList.size(); i++) {
-                User user = userList.get(i);
-//                if(user.getId_user_type().equals("2"))
-                viDo = user.getLat_PI();
-                kinhDo = user.getLong_PI();
+                viDo = userJoined1.getLat_userjoined();
+                kinhDo = userJoined1.getLong_userjoined();
                 LatLng loocation = new LatLng(viDo, kinhDo);
-               for(int j=0;j<accident_details.size();j++){
-                   if(userList.get(i).getId_user()==accident_details.get(j).getUser_id().getId_user()){
-                       try {
+                mMap.addMarker(new MarkerOptions()
+                        .position(loocation)
+                        .title(String.valueOf(userJoined1.getUser_id())))
+                        .setIcon(icon);
 
-                           mMap.addMarker(new MarkerOptions()
-                                   .position(loocation)
-                                   .title(user.getUser_name())
-                                   .snippet(String.valueOf(user.getUser_type().getId_user_type())))
-                                   .setIcon(icon);
-                       } catch (Exception e) {
-                           e.printStackTrace();
-                           Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
-                       }
-                   }
-               }
             }
 
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        @Override
-        protected List<User> doInBackground(Void... params) {
-            List<User> userList = new ArrayList<>();
-            try {
-
-                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
-                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-                StringBuilder builder = new StringBuilder();
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    builder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                JSONObject jsonObject = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
-                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-//                Log.d("jsonObj", jsonObject.toString());
-                for (int i = 0; i < usersJSONArray.length(); i++) {
-                    User user1 = new User();
-                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
-                    if (jsonObj.has("id_user"))
-                        user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
-                    if (jsonObj.has("username"))
-                        user1.setUser_name(jsonObj.getString("username"));
-                    if (jsonObj.has("token"))
-                        user1.setToken(jsonObj.getString("token"));
-                    if (jsonObj.has("password"))
-                        user1.setPassword(jsonObj.getString("password"));
-                    if (jsonObj.has("long_PI"))
-                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
-                    if (jsonObj.has("lat_PI"))
-                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
-                    if (jsonObj.has("id_user_type")) {
-                        String user_type = jsonObj.getString("id_user_type");
-                        User_Type user_type1 = new User_Type();
-                        try {
-                            JSONObject jsonObject1 = new JSONObject(user_type);
-                            if (jsonObject1.has("id_user_type"))
-                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
-                            if (jsonObject1.has("name_user_type"))
-                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        user1.setUser_type(user_type1);
-                    }
-                    Log.d("User1", user1.toString());
-                    userList.add(user1);
-                }
-            } catch (Exception ex) {
-                Log.e("LOI ", ex.toString());
             }
-            return userList;
-        }
+        });
+
     }
+//    class GetAllUsers extends AsyncTask<Void, String, List<User>> {
+//        Context context;
+//
+//        public GetAllUsers(Context context) {
+//            this.context = context;
+//
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<User> userList) {
+//            super.onPostExecute(userList);
+//            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+//            accident_details=new ArrayList<>();
+//
+//            OkHttpClient client = new OkHttpClient();
+//
+//            RequestBody body = RequestBody.create(null, new byte[0]);
+//            Request request = new Request.Builder()
+//                    .url(SystemUtils.getServerBaseUrl()+"accident/GetAllUserJoined/"+id_AC)
+//                    .post(body)
+//                    .build();
+//
+//            try {
+//                Response response = client.newCall(request).execute();
+//                JSONArray jsonArray=new JSONArray(response.body().string());
+//                for(int i=0;i<jsonArray.length();i++){
+//                    Accident_Detail accident_detail=new Accident_Detail();
+//                    User user=new User();
+//                    JSONObject jsonObject=jsonArray.getJSONObject(i);
+//                    if (jsonObject.has("id_user")) {
+//                        user.setId_user(Long.parseLong(jsonObject.getString("id_user")));
+//                        accident_detail.setUser_id(user);
+//                    }
+//                    if(jsonObject.has("date"))
+//                        accident_detail.setDate_create(jsonObject.getString("date"));
+//                    accident_details.add(accident_detail);
+////                    Log.d("ds_chitiet_tainan",accident_details.toString());
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//            for (int i = 0; i < userList.size(); i++) {
+//                User user = userList.get(i);
+////                if(user.getId_user_type().equals("2"))
+//                viDo = user.getLat_PI();
+//                kinhDo = user.getLong_PI();
+//                LatLng loocation = new LatLng(viDo, kinhDo);
+//               for(int j=0;j<accident_details.size();j++){
+//                   if(userList.get(i).getId_user()==accident_details.get(j).getUser_id().getId_user()){
+//                       try {
+//
+//                           mMap.addMarker(new MarkerOptions()
+//                                   .position(loocation)
+//                                   .title(user.getUser_name())
+//                                   .snippet(String.valueOf(user.getUser_type().getId_user_type())))
+//                                   .setIcon(icon);
+//                       } catch (Exception e) {
+//                           e.printStackTrace();
+//                           Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
+//                       }
+//                   }
+//               }
+//            }
+//
+//        }
+//
+//        @Override
+//        protected List<User> doInBackground(Void... params) {
+//            List<User> userList = new ArrayList<>();
+//            try {
+//
+//                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
+//                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+//                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
+//                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
+//                StringBuilder builder = new StringBuilder();
+//                String line = bufferedReader.readLine();
+//                while (line != null) {
+//                    builder.append(line);
+//                    line = bufferedReader.readLine();
+//                }
+//                JSONObject jsonObject = new JSONObject(builder.toString());
+//                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
+//                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
+////                Log.d("jsonObj", jsonObject.toString());
+//                for (int i = 0; i < usersJSONArray.length(); i++) {
+//                    User user1 = new User();
+//                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+//                    if (jsonObj.has("id_user"))
+//                        user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
+//                    if (jsonObj.has("username"))
+//                        user1.setUser_name(jsonObj.getString("username"));
+//                    if (jsonObj.has("token"))
+//                        user1.setToken(jsonObj.getString("token"));
+//                    if (jsonObj.has("password"))
+//                        user1.setPassword(jsonObj.getString("password"));
+//                    if (jsonObj.has("long_PI"))
+//                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
+//                    if (jsonObj.has("lat_PI"))
+//                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
+//                    if (jsonObj.has("id_user_type")) {
+//                        String user_type = jsonObj.getString("id_user_type");
+//                        User_Type user_type1 = new User_Type();
+//                        try {
+//                            JSONObject jsonObject1 = new JSONObject(user_type);
+//                            if (jsonObject1.has("id_user_type"))
+//                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
+//                            if (jsonObject1.has("name_user_type"))
+//                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        user1.setUser_type(user_type1);
+//                    }
+//                    Log.d("User1", user1.toString());
+//                    userList.add(user1);
+//                }
+//            } catch (Exception ex) {
+//                Log.e("LOI ", ex.toString());
+//            }
+//            return userList;
+//        }
+//    }
 
 }

@@ -390,7 +390,6 @@ public class MainMenuActivity extends AppCompatActivity
                         if(jsonObject.has("name_user_type"))
                             user_type.setName_user_type(jsonObject.getString("name_user_type"));
                         user1.setUser_type(user_type);
-//                        Log.d("user1",user1.toString());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -447,16 +446,16 @@ public class MainMenuActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
 //                // luu thong tin vua load duoc vao SharedPreferences
-//                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-//                SharedPreferences.Editor editor1 = preferences1.edit();
-//                if (pi.getId_PI() != null) {
-//                    editor1.putLong(SystemUtils.ID_PI, pi.getId_PI());
-//                    editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
-//                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-//                    editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
-//                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-//                }
-//                editor1.commit();
+                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = preferences1.edit();
+                if (pi.getId_PI() != null) {
+                    editor1.putLong(SystemUtils.ID_PI, pi.getId_PI());
+                    editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
+                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                    editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
+                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+                }
+                editor1.commit();
             } catch (IOException e) {
                 e.printStackTrace();
             }

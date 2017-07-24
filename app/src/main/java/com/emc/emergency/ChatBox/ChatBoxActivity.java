@@ -218,7 +218,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
 
-    private SharedPreferences mSharedPreferences, mSharedPreferences2, preferences;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1;
 
 
     private RecordButton recordButton;
@@ -234,8 +234,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
     //    private FrameLayout mframeImage;
-    Double Latitude;
-    Double Longtitude;
+//
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private RequestOptions options;
@@ -704,20 +703,21 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
                     AccidentKey = intent.getStringExtra("FirebaseKey");
+
+                    preferences1 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+                    SharedPreferences.Editor editor1 = preferences1.edit();
+                    editor1.putString("accident_key", AccidentKey);
+                    editor1.putString("Type_active","Active");
+                    editor1.commit();
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
 //                    Longtitude = intent.getDoubleExtra("lon_AC",Longtitude);
 //                    Latitude = Double.valueOf(intent.getStringExtra("lat_AC"));
-
-                    preferences = getSharedPreferences("ID_ACC", MODE_PRIVATE);
-                    SharedPreferences.Editor editor1 = preferences.edit();
-                    editor1.putString("id_acc", id_AC);
-                    editor1.commit();
 //                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
 
-                    SendtoActionOnFirebase();
+//                    SendtoActionOnFirebase();
                 }
             }
 //            if(intent.getAction()!=null) {
@@ -732,18 +732,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
         }
 
     }
-    private void SendtoActionOnFirebase() {
-        UserJoined userJoined = new UserJoined();
-
-        userJoined.setUser_id(Long.valueOf(mId_user));
-        userJoined.setLat_userjoined(latitude);
-        userJoined.setLong_userjoined(longitude);
-
-//        mDatabase1 = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
-        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
-                .child("User joined").push().setValue(userJoined);
-    }
+//    private void SendtoActionOnFirebase() {
+//        UserJoined userJoined = new UserJoined();
+//
+//        userJoined.setUser_id(Long.valueOf(mId_user));
+//        userJoined.setLat_userjoined(latitude);
+//        userJoined.setLong_userjoined(longitude);
+//
+////        mDatabase1 = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
+//        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+//                .child(AccidentKey)
+//                .child("User joined").push().setValue(userJoined);
+//    }
 
 //    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
 //        // Tạo lop message chưa thong tin cơ ban
@@ -870,6 +870,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         // Chuẩn bị folder cho accident và lấy key về
         AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
         accident.setFirebaseKey(AccidentKey);
+
         // Bỏ accident mới vào key vừa tạo trên firebase
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
         // cập nhập firebasekey cho accident vừa tạo
