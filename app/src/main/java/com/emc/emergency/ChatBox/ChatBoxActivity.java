@@ -744,7 +744,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                .child(AccidentKey)
 //                .child("User joined").push().setValue(userJoined);
 //    }
-
+//// TODO: 24/7/2017  
 //    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
 //        // Tạo lop message chưa thong tin cơ ban
 //        Message Message = new Message(mUsername + " đã tham gia",
@@ -1250,7 +1250,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             }
             case R.id.ReportTrue: {
                 try {
-                    ReportTrueAccident();
+                    ReportDoneAccident();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -1273,7 +1273,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
                 ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
                 .addHeader("content-type", "text/plain")
                 .build();
@@ -1284,17 +1284,17 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     }
 
-    private void ReportTrueAccident() throws IOException {
+    private void ReportDoneAccident() throws IOException {
         OkHttpClient client = new OkHttpClient();
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a", Locale.ENGLISH);
         String date = df.format(Calendar.getInstance().getTime());
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
-                "\",\n   \"id_action_type\":\"4\",\n  \"date\":\"" + date + "\" \n}");
+                "\",\n   \"id_action_type\":\"2\",\n  \"date\":\"" + date + "\" \n}");
         Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
                 ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl() + "accident/join")
+                .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
                 .addHeader("content-type", "text/plain")
                 .build();
