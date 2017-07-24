@@ -72,6 +72,8 @@ public class GetAllUser  extends AsyncTask<Void, Void, ArrayList<User>> {
                     user1.setLong_PI(jsonObj.getDouble("long_PI"));
                 if (jsonObj.has("lat_PI"))
                     user1.setLat_PI(jsonObj.getDouble("lat_PI"));
+                if (jsonObj.has("is_signup_volunteer"))
+                    user1.setId_signup_volumteer(jsonObj.getBoolean("is_signup_volunteer"));
                 if (jsonObj.has("id_user_type")) {
                     String user_type = jsonObj.getString("id_user_type");
                     User_Type user_type1 = new User_Type();

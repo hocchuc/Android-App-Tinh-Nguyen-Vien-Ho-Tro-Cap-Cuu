@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Accidents_List.AccidentActivity;
+import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Services.IRequestListener;
 
 import com.emc.emergency.Login.LoginActivity;
@@ -118,18 +119,18 @@ public class MainMenuActivity extends AppCompatActivity
         , ReturnDataAllAccident {
 
     MaterialDialog mProgressDialog;
-    
+
     Toolbar toolbar;
     private AccountHeader headerResult = null;
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
 
-    String idUser_UID;
+//    String idUser_UID;
     Long id_usertype;
     int id_user;
     //-----------------------------------------------------------------------
     GoogleMap mMap;
-    double viDo=-1, kinhDo=-1, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
+    double viDo = -1, kinhDo = -1, viDoAC, kinhDoAC, viDoUser, kinhDoUser;
     String description, address;
     Button btnVeDuong;
     ImageButton btnToGMap, imgbtnRefresh;
@@ -147,30 +148,21 @@ public class MainMenuActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
     Personal_Infomation pi;
+    User user1;
+    User_Type user_type;
     //------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        
-        progressDialog = ProgressDialog.show(this,getString(R.string.progress_dialog_loading),
-              getString(R.string.load_data_from_server));
-        
-        mProgressDialog = new MaterialDialog.Builder(this)
-                     .title(R.string.progress_dialog_chatbox)
-                     .content(R.string.please_wait)
-                     .progress(true, 0)
-                     .show();
-        
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+
         addControls();
         BuildDrawer(savedInstanceState);
-        
+
         BuildFragment();
-        setLoadImageLogic();
-        
+//        setLoadImageLogic();
+
         addEvents();
     }
 
@@ -188,20 +180,20 @@ public class MainMenuActivity extends AppCompatActivity
                 longitude = location.getLongitude();
 //                LatLng latLng = new LatLng(latitude, longitude);
 
-                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
-                mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                            idUser_UID = childSnapshot.getKey();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+//                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
+//                mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+//                            idUser_UID = childSnapshot.getKey();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -221,52 +213,52 @@ public class MainMenuActivity extends AppCompatActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
-    /**
-     * Load hinh cho drawer
-     */
-    private void setLoadImageLogic() {
-        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
-            @Override
-            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
-
-                RequestOptions options = new RequestOptions()
-                        .centerCrop()
-                        .placeholder(R.drawable.profile3)
-                        .error(R.drawable.material_drawer_circle_mask)
-                        .priority(Priority.HIGH);
-                Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
-            }
-
-            @Override
-            public void cancel(ImageView imageView) {
-
-            }
-
-            @Override
-            public Drawable placeholder(Context ctx, String tag) {
-                //define different placeholders for different imageView targets
-                //default tags are accessible via the DrawerImageLoader.Tags
-                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
-                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
-                    return DrawerUIUtils.getPlaceHolder(ctx);
-                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
-                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
-                } else if ("customUrlItem".equals(tag)) {
-                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
-                }
-
-                //we use the default one for
-                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
-
-                return super.placeholder(ctx, tag);
-            }
-        });
-
-    }
+//    /**
+//     * Load hinh cho drawer
+//     */
+//    private void setLoadImageLogic() {
+//        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+//            @Override
+//            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+//
+//                RequestOptions options = new RequestOptions()
+//                        .centerCrop()
+//                        .placeholder(R.drawable.profile3)
+//                        .error(R.drawable.material_drawer_circle_mask)
+//                        .priority(Priority.HIGH);
+//                Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
+//            }
+//
+//            @Override
+//            public void cancel(ImageView imageView) {
+//
+//            }
+//
+//            @Override
+//            public Drawable placeholder(Context ctx, String tag) {
+//                //define different placeholders for different imageView targets
+//                //default tags are accessible via the DrawerImageLoader.Tags
+//                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+//                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+//                    return DrawerUIUtils.getPlaceHolder(ctx);
+//                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+//                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+//                } else if ("customUrlItem".equals(tag)) {
+//                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+//                }
+//
+//                //we use the default one for
+//                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+//
+//                return super.placeholder(ctx, tag);
+//            }
+//        });
+//
+//    }
 
     private void addEvents() {
 //        Log.d("UID after put", idUser_UID);
-        
+
         btnVeDuong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -301,9 +293,9 @@ public class MainMenuActivity extends AppCompatActivity
                 }
             }
         });
-        
-       if(mProgressDialog.isShowing())mProgressDialog.dismiss();
-        if(progressDialog.isShowing())progressDialog.dismiss();
+
+        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+        if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
     private void addControls() {
@@ -311,7 +303,19 @@ public class MainMenuActivity extends AppCompatActivity
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
 
-        pi = new Personal_Infomation();
+
+
+        progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading),
+                getString(R.string.load_data_from_server));
+
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.progress_dialog_chatbox)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .show();
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
 //        if(isOnline()==false){
 //            Logout();
@@ -319,22 +323,24 @@ public class MainMenuActivity extends AppCompatActivity
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
-        Log.d("IDusertype",id_usertype.toString());
+//        Log.d("IDusertype", id_usertype.toString());
 
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
 
+        GetPersonalInfo();
+        GetUser();
 
-        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-        if (sharedPreferences3.contains(SystemUtils.PI)) {
-            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
-            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
-            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-        } else {
-            GetPersonalInfo();
-
-        }
+//        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+//        if (sharedPreferences3.contains(SystemUtils.PI)) {
+//            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+//            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
+//            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
+//            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
+//        } else {
+//            GetPersonalInfo();
+//
+//        }
 
 //        setSupportActionBar(toolbar);
         mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
@@ -349,12 +355,49 @@ public class MainMenuActivity extends AppCompatActivity
 
         LocationChange();
 
-
         if (id_usertype == 3) {
             new GetAllUser(MainMenuActivity.this).execute();
         } else {
             new GetAllUser(MainMenuActivity.this).execute();
             new GetAllAccident(MainMenuActivity.this).execute();
+
+        }
+    }
+
+    /**
+     * Lấy thông tin tài khoản 1 user
+     */
+    private void GetUser() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+                try {
+                    JSONObject jsonObj = new JSONObject(response.body().string());
+                    user1=new User();
+                    user_type=new User_Type();
+                    if (jsonObj.has("id_user_type")) {
+                        String user_Type=jsonObj.getString("id_user_type");
+                        JSONObject jsonObject=new JSONObject(user_Type);
+                        if(jsonObject.has("name_user_type"))
+                            user_type.setName_user_type(jsonObject.getString("name_user_type"));
+                        user1.setUser_type(user_type);
+//                        Log.d("user1",user1.toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }
@@ -403,17 +446,17 @@ public class MainMenuActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                // luu thong tin vua load duoc vao SharedPreferences
-                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-                SharedPreferences.Editor editor1 = preferences1.edit();
-                if(pi.getId_PI()!=null) {
-                    editor1.putLong(SystemUtils.ID_PI, pi.getId_PI());
-                    editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
-                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-                    editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
-                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
-                }
-                editor1.commit();
+//                // luu thong tin vua load duoc vao SharedPreferences
+//                SharedPreferences preferences1 = getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
+//                SharedPreferences.Editor editor1 = preferences1.edit();
+//                if (pi.getId_PI() != null) {
+//                    editor1.putLong(SystemUtils.ID_PI, pi.getId_PI());
+//                    editor1.putString(SystemUtils.NAME_PI, pi.getName_PI());
+//                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+//                    editor1.putString(SystemUtils.AVATAR_PI, pi.getAvatar());
+//                    editor1.putString(SystemUtils.EMAIL_PI, pi.getEmail_PI());
+//                }
+//                editor1.commit();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -421,13 +464,11 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void BuildFragment() {
-
         fragment_menu_page fragment_menu_page1 = new fragment_menu_page();
         fragment_menu_page1.setArguments((getIntent()).getExtras());
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_menu, fragment_menu_page1).commit();
-
     }
 
     private void BuildDrawer(Bundle savedInstanceState) {
@@ -439,14 +480,12 @@ public class MainMenuActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
-        IProfile profile = new ProfileDrawerItem();
+        IProfile profile;
+        profile = new ProfileDrawerItem()
+                .withName(pi.getName_PI())
+                .withEmail(user1.getUser_type().getName_user_type())
+                .withIcon(pi.getAvatar());
 
-        if (pi.getAvatar() != null) {
-            profile = new ProfileDrawerItem()
-                    .withName(pi.getName_PI())
-                    .withEmail(pi.getEmail_PI())
-                    .withIcon(pi.getAvatar());
-        }
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
@@ -480,7 +519,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 .withIcon(FontAwesome.Icon.faw_user_circle)
                                 .withIdentifier(3),
                         new SecondaryDrawerItem()
-                                .withName("Log Out")
+                                .withName(R.string.Logout)
                                 .withIcon(R.drawable.icon_shutdown)
                                 .withIdentifier(4)
                 )
@@ -498,7 +537,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 mProgressDialog.show();
-                                progressDialog.show(MainMenuActivity.this,getString(R.string.cleanning),getString(R.string.we_are_cleanning));
+                                progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -570,8 +609,8 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(mProgressDialog.isShowing())mProgressDialog.dismiss();
-        if(progressDialog.isShowing())progressDialog.dismiss();
+        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+        if (progressDialog.isShowing()) progressDialog.dismiss();
         Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
         intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
         finish();
@@ -583,9 +622,9 @@ public class MainMenuActivity extends AppCompatActivity
     private void removeSharedPreferences() {
         SharedPreferences preferences2 = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
         SharedPreferences.Editor editor2 = preferences2.edit();
-        
+
         editor2.putBoolean("isLogined", false);
-        
+
         editor2.putString("username", "");
         editor2.putString("password", "");
         editor2.putString("token", "");
@@ -747,10 +786,10 @@ public class MainMenuActivity extends AppCompatActivity
 //    }
 
     private void sendRequest() {
-        if(kinhDo==-1&&viDo==-1){
+        if (kinhDo == -1 && viDo == -1) {
             Toast.makeText(this, "Chưa chọn vị trí cần dẫn đường.", Toast.LENGTH_SHORT).show();
 
-        }else {
+        } else {
             String origin = latitude + "," + longitude;
             String destination = viDo + "," + kinhDo;
             try {
@@ -829,7 +868,7 @@ public class MainMenuActivity extends AppCompatActivity
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
 
         for (int i = 0; i < arrAccident.size(); i++) {
-            if(arrAccident.get(i).getStatus_AC().equals("Active")){
+            if (arrAccident.get(i).getStatus_AC().equals("Active")) {
                 viDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLat_AC()));
                 kinhDoAC = Double.parseDouble(String.valueOf(arrAccident.get(i).getLong_AC()));
                 LatLng loocation = new LatLng(viDoAC, kinhDoAC);

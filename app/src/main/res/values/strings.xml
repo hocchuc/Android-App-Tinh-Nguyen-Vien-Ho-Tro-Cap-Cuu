@@ -84,4 +84,5 @@
     <string name="we_are_cleanning">We are cleanning your information, please wait a moment</string>
     <string name="volunteer">Sign up volunteer</string>
     <string name="hello_blank_fragment">Hello</string>
+    <string name="Logout">Log Out</string>
 </resources>

@@ -11,8 +11,17 @@ public class Accident {
     private String address;
     private String firebaseKey;
     private Long id_admin_active;
+    private Boolean request_AC;
 
     public Accident() {
+    }
+
+    public Boolean getRequest_AC() {
+        return request_AC;
+    }
+
+    public void setRequest_AC(Boolean request_AC) {
+        this.request_AC = request_AC;
     }
 
     public String getAddress() {
@@ -95,7 +104,7 @@ public class Accident {
         this.id_admin_active = id_admin_active;
     }
 
-    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, String address) {
+    public Accident(Long id_AC, Long id_user, String description_AC, String date_AC, Double long_AC, Double lat_AC, String status_AC, String address, String firebaseKey, Long id_admin_active, Boolean request_AC) {
         this.id_AC = id_AC;
         this.id_user = id_user;
         this.description_AC = description_AC;
@@ -104,22 +113,25 @@ public class Accident {
         this.lat_AC = lat_AC;
         this.status_AC = status_AC;
         this.address = address;
-    }
-
-    public Accident(String address) {
-        this.address = address;
+        this.firebaseKey = firebaseKey;
+        this.id_admin_active = id_admin_active;
+        this.request_AC = request_AC;
     }
 
     @Override
     public String toString() {
         return "Accident{" +
                 "id_AC=" + id_AC +
+                ", id_user=" + id_user +
                 ", description_AC='" + description_AC + '\'' +
                 ", date_AC='" + date_AC + '\'' +
                 ", long_AC=" + long_AC +
                 ", lat_AC=" + lat_AC +
                 ", status_AC='" + status_AC + '\'' +
                 ", address='" + address + '\'' +
+                ", firebaseKey='" + firebaseKey + '\'' +
+                ", id_admin_active=" + id_admin_active +
+                ", request_AC=" + request_AC +
                 '}';
     }
 

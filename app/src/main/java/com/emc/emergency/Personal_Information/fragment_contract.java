@@ -17,13 +17,20 @@ import android.widget.Toast;
 
 import com.emc.emergency.Helper.AsyncTask.GetAllUser;
 import com.emc.emergency.Helper.AsyncTask.ReturnDataAllUser;
+import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.User;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -54,6 +61,8 @@ public class fragment_contract extends Fragment {
     private Button btnSend;
     int id_user;
     User user;
+    ArrayList<User> userList;
+    Boolean flag;
 
     SharedPreferences sharedPreferences;
 
@@ -96,53 +105,113 @@ public class fragment_contract extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_fragment_contract, container, false);
 
-        sharedPreferences = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
-        id_user = sharedPreferences.getInt("id_user", -1);
 //        Log.d("id_user_volunteer", String.valueOf(id_user));
-        GetAllUser getAllUser=new GetAllUser(new ReturnDataAllUser() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "users")
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void handleReturnDataAllUser(ArrayList<User> arrUser) {
-                Log.d("DS_USer",arrUser.toString());
-                for(int j=0;j<arrUser.size();j++){
-                    if(arrUser.get(j).getId_user()==id_user) {
-                        if (arrUser.get(j).getId_signup_volumteer() == false) {
-                            btnSend.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (ckbYes.isChecked()) {
-                                        OkHttpClient client = new OkHttpClient();
+            public void onFailure(Call call, IOException e) {
 
-                                        MediaType mediaType = MediaType.parse("application/json");
-                                        RequestBody body = RequestBody.create(mediaType,"{\n\t\"is_signup_volunteer\": "+String.valueOf(user.getId_signup_volumteer())+"\n}");
-                                        Request request = new Request.Builder()
-                                                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
-                                                .patch(body)
-                                                .addHeader("content-type", "application/json")
-                                                .build();
-                                        int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                                        if (SDK_INT > 8) {
-                                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                                    .permitAll().build();
-                                            StrictMode.setThreadPolicy(policy);
+            }
 
-                                            try {
-                                                Response response = client.newCall(request).execute();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                            getActivity().finish();
-                                        }
-                                    }else Toast.makeText(getActivity(), "Chưa chọn.!"+String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
-                                }
-                            });
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                userList = new ArrayList<>();
+                JSONArray usersJSONArray = null;
+
+                sharedPreferences = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
+                id_user = sharedPreferences.getInt("id_user", -1);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+                    JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
+                    usersJSONArray = _embeddedObject.getJSONArray("users");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Log.d("jsonObj", jsonObject.toString());
+                for (int i = 0; i < usersJSONArray.length(); i++) {
+                    User user1 = new User();
+                    try {
+                        JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+                        if (jsonObj.has("id_user"))
+                            user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
+                        if (jsonObj.has("username"))
+                            user1.setUser_name(jsonObj.getString("username"));
+                        if (jsonObj.has("token"))
+                            user1.setToken(jsonObj.getString("token"));
+                        if (jsonObj.has("password"))
+                            user1.setPassword(jsonObj.getString("password"));
+                        if (jsonObj.has("long_PI"))
+                            user1.setLong_PI(jsonObj.getDouble("long_PI"));
+                        if (jsonObj.has("lat_PI"))
+                            user1.setLat_PI(jsonObj.getDouble("lat_PI"));
+                        if (jsonObj.has("is_signup_volunteer"))
+                            user1.setId_signup_volumteer(jsonObj.getBoolean("is_signup_volunteer"));
+                        if (jsonObj.has("id_user_type")) {
+                            String user_type = jsonObj.getString("id_user_type");
+                            User_Type user_type1 = new User_Type();
+                            try {
+                                JSONObject jsonObject1 = new JSONObject(user_type);
+                                if (jsonObject1.has("id_user_type"))
+                                    user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
+                                if (jsonObject1.has("name_user_type"))
+                                    user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            user1.setUser_type(user_type1);
                         }
-                        else Toast.makeText(getActivity(), "Bạn đang đăng ký làm tình nguyện viên. Hãy chờ duyệt.", Toast.LENGTH_SHORT).show();
+//                    Log.d("User1", user1.toString());
+                        userList.add(user1);
+                        Log.d("DS_User", userList.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
+
+                btnSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        flag = true;
+                        for (int j = 0; j < userList.size(); j++) {
+                            if ((userList.get(j).getId_user() == id_user) && (!userList.get(j).getId_signup_volumteer())) {
+                                if (ckbYes.isChecked()) {
+                                    OkHttpClient client = new OkHttpClient();
+
+                                    MediaType mediaType = MediaType.parse("application/json");
+                                    RequestBody body = RequestBody.create(mediaType, "{\n\t\"is_signup_volunteer\": " + String.valueOf(user.getId_signup_volumteer()) + "\n}");
+                                    Request request = new Request.Builder()
+                                            .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
+                                            .patch(body)
+                                            .addHeader("content-type", "application/json")
+                                            .build();
+                                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                                    if (SDK_INT > 8) {
+                                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                .permitAll().build();
+                                        StrictMode.setThreadPolicy(policy);
+
+                                        try {
+                                            Response response = client.newCall(request).execute();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        getActivity().finish();
+                                    }
+                                } else
+                                    Toast.makeText(getActivity(), "Chưa chọn.!" + String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
+                            } else flag = false;
+                        }
+                        if(!flag) Toast.makeText(getActivity(), "Bạn đã đăng ký làm tình nguyện viên. Hãy đợi duyệt.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-        getAllUser.execute();
-//        new GetAllUser((ReturnDataAllUser) getActivity()).execute();
 
         String contract = "Tình nguyện viên không được trả lương và được hưởng những quyền lợi sau:\n"
                 + " - Trợ cấp ổn định nơi ở, tính theo thời gian thực hiện nhiệm vụ.\n"
@@ -155,7 +224,7 @@ public class fragment_contract extends Fragment {
         user = new User();
         user.setId_signup_volumteer(true);
 
-        btnSend= (Button) view.findViewById(R.id.btnSend);
+        btnSend = (Button) view.findViewById(R.id.btnSend);
         tvContract = (TextView) view.findViewById(R.id.tvContract);
         tvContract.setText(contract);
         ckbNo = (CheckBox) view.findViewById(R.id.ckbNo);
@@ -189,6 +258,7 @@ public class fragment_contract extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
