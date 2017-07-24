@@ -15,11 +15,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.emc.emergency.Helper.AsyncTask.GetAllUser;
+import com.emc.emergency.Helper.AsyncTask.ReturnDataAllUser;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.User;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -95,16 +98,59 @@ public class fragment_contract extends Fragment {
 
         sharedPreferences = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences.getInt("id_user", -1);
-        Log.d("id_user_volunteer", String.valueOf(id_user));
+//        Log.d("id_user_volunteer", String.valueOf(id_user));
+        GetAllUser getAllUser=new GetAllUser(new ReturnDataAllUser() {
+            @Override
+            public void handleReturnDataAllUser(ArrayList<User> arrUser) {
+                Log.d("DS_USer",arrUser.toString());
+                for(int j=0;j<arrUser.size();j++){
+                    if(arrUser.get(j).getId_user()==id_user) {
+                        if (arrUser.get(j).getId_signup_volumteer() == false) {
+                            btnSend.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (ckbYes.isChecked()) {
+                                        OkHttpClient client = new OkHttpClient();
 
-        String contract = "Tình nguyện viên Quốc tế UNV không được trả lương và được hưởng những quyền lợi sau: \n"
-                + "Trợ cấp ổn định nơi ở, tính theo thời gian thực hiện nhiệm vụ. \n"
-                + "Khoản trợ cấp này được trả ngay từ khi công việc bắt đầu.\n"
-                + "Nhận hỗ trợ sinh hoạt phí dành cho tình nguyện viên hàng tháng.\n"
-                + "Được công tác nước ngoài (khi được chỉ định và giai đoạn cuối của nhiệm vụ).\n"
-                + "Được hưởng bảo hiểm thương tật vĩnh viễn, bảo hiểm y tế và nhân thọ.\n"
-                + "Nghỉ phép hai ngày rưỡi trong một tháng.\n"
-                + "Nhận trợ cấp tái ổn định cuộc sống khi hoàn tất tốt nhiệm vụ.";
+                                        MediaType mediaType = MediaType.parse("application/json");
+                                        RequestBody body = RequestBody.create(mediaType,"{\n\t\"is_signup_volunteer\": "+String.valueOf(user.getId_signup_volumteer())+"\n}");
+                                        Request request = new Request.Builder()
+                                                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
+                                                .patch(body)
+                                                .addHeader("content-type", "application/json")
+                                                .build();
+                                        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                                        if (SDK_INT > 8) {
+                                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                    .permitAll().build();
+                                            StrictMode.setThreadPolicy(policy);
+
+                                            try {
+                                                Response response = client.newCall(request).execute();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            getActivity().finish();
+                                        }
+                                    }else Toast.makeText(getActivity(), "Chưa chọn.!"+String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        else Toast.makeText(getActivity(), "Bạn đang đăng ký làm tình nguyện viên. Hãy chờ duyệt.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        getAllUser.execute();
+//        new GetAllUser((ReturnDataAllUser) getActivity()).execute();
+
+        String contract = "Tình nguyện viên không được trả lương và được hưởng những quyền lợi sau:\n"
+                + " - Trợ cấp ổn định nơi ở, tính theo thời gian thực hiện nhiệm vụ.\n"
+                + " - Khoản trợ cấp này được trả ngay từ khi công việc bắt đầu.\n"
+                + " - Nhận hỗ trợ sinh hoạt phí dành cho tình nguyện viên hàng tháng.\n"
+                + " - Được hưởng bảo hiểm thương tật vĩnh viễn, bảo hiểm y tế và nhân thọ.\n"
+                + " - Nghỉ phép hai ngày rưỡi trong một tháng.\n"
+                + " - Nhận trợ cấp tái ổn định cuộc sống khi hoàn tất tốt nhiệm vụ.";
 
         user = new User();
         user.setId_signup_volumteer(true);
@@ -115,35 +161,6 @@ public class fragment_contract extends Fragment {
         ckbNo = (CheckBox) view.findViewById(R.id.ckbNo);
         ckbYes = (CheckBox) view.findViewById(R.id.ckbYes);
 
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ckbYes.isChecked()) {
-                    OkHttpClient client = new OkHttpClient();
-
-                    MediaType mediaType = MediaType.parse("application/json");
-                    RequestBody body = RequestBody.create(mediaType,"{\n\t\"is_signup_volunteer\": "+String.valueOf(user.getId_signup_volumteer())+"\n}");
-                    Request request = new Request.Builder()
-                            .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
-                            .patch(body)
-                            .addHeader("content-type", "application/json")
-                            .build();
-                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                    if (SDK_INT > 8) {
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                .permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-
-                        try {
-                            Response response = client.newCall(request).execute();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        getActivity().finish();
-                    }
-                }else Toast.makeText(getActivity(), "Chưa chọn.!"+String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
-            }
-        });
         return view;
     }
 
@@ -172,7 +189,6 @@ public class fragment_contract extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

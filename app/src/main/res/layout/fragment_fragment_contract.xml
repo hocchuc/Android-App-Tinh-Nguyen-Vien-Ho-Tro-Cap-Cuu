@@ -18,10 +18,11 @@
 
                 <TextView
                     android:id="@+id/tvContract"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/hello_blank_fragment"
-                    android:textSize="14dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="left"
+                    android:lines="20"
+                    android:textSize="16dp"
                     android:padding="5dp"
                     android:textStyle="bold" />
 
@@ -40,7 +41,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14dp"
+            android:textSize="18dp"
             android:textStyle="bold"
             android:text="Bạn có muốn đăng ký làm tình nguyện viên?" />
 
