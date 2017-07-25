@@ -34,16 +34,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="bottom">
+        android:gravity="bottom"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Bạn có muốn đăng ký làm tình nguyện viên?"
             android:textSize="18dp"
-            android:textStyle="bold"
-            android:text="Bạn có muốn đăng ký làm tình nguyện viên?" />
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/ckbYes"
@@ -61,7 +61,11 @@
             android:id="@+id/btnSend"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SEND" />
+            android:layout_marginTop="10dp"
+            android:background="@color/blue_normal"
+            android:text="SEND"
+            android:textColor="#FFFF"
+            android:textSize="20dp" />
     </LinearLayout>
 
     <!-- TODO: Update blank fragment layout -->

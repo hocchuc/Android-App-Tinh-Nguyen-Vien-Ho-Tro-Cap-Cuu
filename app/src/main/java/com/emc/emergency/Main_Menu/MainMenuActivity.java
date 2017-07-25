@@ -125,7 +125,7 @@ public class MainMenuActivity extends AppCompatActivity
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
 
-//    String idUser_UID;
+    //    String idUser_UID;
     Long id_usertype;
     int id_user;
     //-----------------------------------------------------------------------
@@ -302,8 +302,7 @@ public class MainMenuActivity extends AppCompatActivity
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
-
-
+        pi = new Personal_Infomation();
 
         progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading),
                 getString(R.string.load_data_from_server));
@@ -370,7 +369,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void GetUser() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
                 .get()
                 .build();
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
@@ -382,12 +381,12 @@ public class MainMenuActivity extends AppCompatActivity
                 Response response = client.newCall(request).execute();
                 try {
                     JSONObject jsonObj = new JSONObject(response.body().string());
-                    user1=new User();
-                    user_type=new User_Type();
+                    user1 = new User();
+                    user_type = new User_Type();
                     if (jsonObj.has("id_user_type")) {
-                        String user_Type=jsonObj.getString("id_user_type");
-                        JSONObject jsonObject=new JSONObject(user_Type);
-                        if(jsonObject.has("name_user_type"))
+                        String user_Type = jsonObj.getString("id_user_type");
+                        JSONObject jsonObject = new JSONObject(user_Type);
+                        if (jsonObject.has("name_user_type"))
                             user_type.setName_user_type(jsonObject.getString("name_user_type"));
                         user1.setUser_type(user_type);
                     }
@@ -479,11 +478,15 @@ public class MainMenuActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
-        IProfile profile;
-        profile = new ProfileDrawerItem()
-                .withName(pi.getName_PI())
-                .withEmail(user1.getUser_type().getName_user_type())
-                .withIcon(pi.getAvatar());
+        IProfile profile = null;
+        try {
+            profile = new ProfileDrawerItem()
+                    .withName(pi.getName_PI())
+                    .withEmail(user1.getUser_type().getName_user_type())
+                    .withIcon(pi.getAvatar());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         // Create the AccountHeader

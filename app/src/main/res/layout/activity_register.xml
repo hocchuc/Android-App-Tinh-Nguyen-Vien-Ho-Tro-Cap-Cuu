@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:layout_margin="25dp"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:layout_margin="25dp">
+    android:padding="10dp">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -61,8 +61,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Your birthday"
-            android:enabled="false" />
+            android:enabled="false"
+            android:hint="Your birthday" />
 
         <Button
             android:id="@+id/btnDate"
@@ -130,40 +130,33 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btnRegist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_marginTop="40dp">
+        android:background="#00CCFF"
+        android:text="@string/submit"
+        android:layout_marginTop="20dp"
+        android:textColor="#fff" />
 
-        <Button
-            android:id="@+id/btnRegist"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#00CCFF"
-            android:text="@string/submit"
-            android:textColor="#fff" />
+    <!-- Link to Login Screen -->
 
-        <!-- Link to Login Screen -->
+    <Button
+        android:id="@+id/btnRegistLogin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@null"
+        android:text="Login"
+        android:textColor="#228b22"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnRegistLogin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:text="Login"
-            android:textColor="#228b22"
-            android:textStyle="bold" />
-
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center|bottom"
-            android:layout_marginBottom="20dp"
-            android:visibility="gone" />
-
-    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone" />
 
 </LinearLayout>

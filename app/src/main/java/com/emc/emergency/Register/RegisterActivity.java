@@ -184,12 +184,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 id_user = Long.parseLong(flashMessage.getMessage());
                                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
-//                            String userId = auth.getCurrentUser().getUid();
-
-//                            SharedPreferences preferences = getSharedPreferences("UID", MODE_PRIVATE);
-//                            SharedPreferences.Editor editor1 = preferences.edit();
-//                            editor1.putString("iduser_uid", userId);
-//                            editor1.commit();
 
                                 // pushing user to 'users' node using the userId
                                 mDatabase.push().setValue(new User(email, pass, lat, lng, id_user));
