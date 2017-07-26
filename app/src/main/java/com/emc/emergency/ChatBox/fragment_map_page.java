@@ -12,8 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.StrictMode;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -50,7 +48,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -228,6 +225,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         arrUserJoineds = new ArrayList<>();
 
+        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
+        id_AC = sharedPreferences.getString("id_acc", "");
+
         sharedPreferences1 = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences1.getInt("id_user", -1);
 
@@ -338,6 +338,15 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         mMap.setMyLocationEnabled(false);
 
+//        LatLng myLocation = new LatLng(lat, lon);
+//        MarkerOptions markerOptions = new MarkerOptions()
+//                .position(myLocation)
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//                .title("Bạn đang ở đây !!")
+//                .snippet("You are here !!");
+//        Marker marker = mMap.addMarker(markerOptions);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+//
 //        /**
 //         * Tạo hiệu ứng nảy
 //         */
@@ -373,6 +382,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
                 if (dataSnapshot.exists()) {
                     LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(String.valueOf(userJoined1.getUser_id())))
