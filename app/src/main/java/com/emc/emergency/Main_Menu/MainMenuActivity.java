@@ -539,7 +539,7 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 mProgressDialog.show();
-                                progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                 if(!progressDialog.isShowing()) progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);

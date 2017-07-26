@@ -716,7 +716,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
-
+                    SendMessageJoinToServer(AccidentKey,mUsername);
 //                    SendtoActionOnFirebase();
                 }
             }
@@ -744,16 +744,16 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                .child(AccidentKey)
 //                .child("User joined").push().setValue(userJoined);
 //    }
-//// TODO: 24/7/2017  
-//    private void SendMessageJoinToServer(String type_user, String accidentKey, String mUsername) {
-//        // Tạo lop message chưa thong tin cơ ban
-//        Message Message = new Message(mUsername + " đã tham gia",
-//                mUsername,
-//                mPhotoUrl, null, mId_user);
-//        Log.d("messageImage", Message.toString());
-//
-//        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey).child(MESSAGES_CHILD).push().setValue(Message);
-//    }
+            // TODO: 24/7/2017
+    private void SendMessageJoinToServer( String accidentKey, String mUsername) {
+        // Tạo lop message chưa thong tin cơ ban
+        Message Message = new Message(mUsername + " đã tham gia",
+                mUsername,
+                mPhotoUrl, null, mId_user);
+        Log.d("messageImage", Message.toString());
+
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey).child(MESSAGES_CHILD).push().setValue(Message);
+    }
 
     private void SendtoActionOnServer() {
         Date date = new Date();

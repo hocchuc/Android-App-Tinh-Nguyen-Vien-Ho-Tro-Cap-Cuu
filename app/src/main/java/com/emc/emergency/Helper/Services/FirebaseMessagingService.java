@@ -28,6 +28,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private String location="";
     private String FirebaseKey="";
     private String id_AC="";
+    private String title="";
     final private String TYPE_HELPER = "helper";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -40,60 +41,74 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             // In this case the XMPP Server sends a payload data
             String message = remoteMessage.getData().get("message");
-            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
-            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
-            location = remoteMessage.getData().get("address");
-            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
-            id_AC = remoteMessage.getData().get("id_AC");
+            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT)){
+                Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+                Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+                location = remoteMessage.getData().get("address");
+                FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+                id_AC = remoteMessage.getData().get("id_AC");
+                if (remoteMessage.getNotification() != null) {
+                    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+                    showAccidentNotification(remoteMessage.getNotification().getBody());
+
+                }
+                showAccidentNotification(message);
+
+            }
+
             Log.d(TAG, "Message received: " + message);
-            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT))
+
+            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_MESSAGE))
             {
-                //showAccidentNotification(message);
+                title = remoteMessage.getData().get("title");
+                Log.d(TAG,"Message Notification title: "+ remoteMessage.getNotification().getTitle());
+                if (remoteMessage.getNotification() != null) {
+                    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+                    showBasicNotification(message);
+                }
+                showBasicNotification(message);
+
                 
             }
 
         }
         
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            
-            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
-            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
-            location = remoteMessage.getData().get("address");
-            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
-            id_AC = remoteMessage.getData().get("id_AC");
-            
-            showAccidentNotification(remoteMessage.getNotification().getBody());
-            
-            
-
-        }
+//        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//
+////            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+////            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+////            location = remoteMessage.getData().get("address");
+////            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+////            id_AC = remoteMessage.getData().get("id_AC");
+//
+//            showAccidentNotification(remoteMessage.getNotification().getBody());
+//
+//
+//
+//        }
 
     }
 
-//    private void showBasicNotification(String message) {
-//        Intent i = new Intent(this,ChatBoxActivity.class);
-//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//
-//        i.putExtra("type", TYPE_HELPER);
-//              Log.d("type",TYPE_HELPER);
-//
-//
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-//                .setAutoCancel(true)
-//                .setContentTitle("Basic Notification")
-//                .setContentText(message)
-//                .setSmallIcon(R.mipmap.ic_alert)
-//                .setContentIntent(pendingIntent);
-//
-//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//
-//        manager.notify(0,builder.build());
-//
-//    }
+    private void showBasicNotification(String message) {
+        Intent i = new Intent();
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(R.mipmap.ic_alert)
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(message));
+
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        manager.notify(0,builder.build());
+
+    }
 
     /**
      * Hiện thị noti tai nạn
@@ -147,7 +162,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                             getString(R.string.map), navmapPendingIntent)
                     .addAction(R.drawable.ic_accident_location
                             ,"Dẫn đường",mapPendingIntent)
-                    .extend(wearableExtender);
+                    .extend(wearableExtender)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                                                .bigText(message));;
 
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder.setSmallIcon(R.drawable.ic_accident_2);
