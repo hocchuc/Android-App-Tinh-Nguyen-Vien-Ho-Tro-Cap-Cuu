@@ -303,6 +303,7 @@ public class MainMenuActivity extends AppCompatActivity
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
         pi = new Personal_Infomation();
+        user1 = new User();
 
         progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading),
                 getString(R.string.load_data_from_server));
@@ -478,15 +479,11 @@ public class MainMenuActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
-        IProfile profile = null;
-        try {
-            profile = new ProfileDrawerItem()
-                    .withName(pi.getName_PI())
-                    .withEmail(user1.getUser_type().getName_user_type())
-                    .withIcon(pi.getAvatar());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        IProfile profile;
+        profile = new ProfileDrawerItem()
+                .withName(pi.getName_PI())
+                .withEmail(user1.getUser_type().getName_user_type())
+                .withIcon(pi.getAvatar());
 
 
         // Create the AccountHeader

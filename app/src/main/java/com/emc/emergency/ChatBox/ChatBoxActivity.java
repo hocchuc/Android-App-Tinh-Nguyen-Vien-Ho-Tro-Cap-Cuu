@@ -218,7 +218,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
 
-    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3;
 
 
     private RecordButton recordButton;
@@ -247,6 +247,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     ProgressDialog progressDialog;
     private String id_AC = "";
     private String AccidentKey = "";
+    private String AccidentKey_noti="";
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
 //    private DatabaseReference mDatabase1;
@@ -376,7 +377,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 Message Message = new Message(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl, null, mId_user);
-                Log.d("messageImage", Message.toString());
+//                Log.d("messageImage", Message.toString());
 
                 mFirebaseDatabaseReference.
                         child(ACCIDENTS_CHILD).
@@ -523,7 +524,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     }
 
     private void LoadMessage() {
-        Log.d("BeforeParseAccidentKey", AccidentKey);
+//        Log.d("BeforeParseAccidentKey", AccidentKey);
         //todo [bookmark] Load dữ liệu chat cũ đổ vào recycleview chat
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Message, MessageViewHolder>(
                 Message.class,
@@ -539,7 +540,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 Message Message = super.parseSnapshot(snapshot);
                 if (Message != null) {
                     Message.setId(snapshot.getKey());
-                    Log.d("parseSnapshot", Message.toString());
+//                    Log.d("parseSnapshot", Message.toString());
 
                 }
                 return Message;
@@ -702,11 +703,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 if (intent.getStringExtra("type").equals(TYPE_HELPER)) {
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
-                    AccidentKey = intent.getStringExtra("FirebaseKey");
+                    AccidentKey_noti = intent.getStringExtra("FirebaseKey");
 
-                    preferences1 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+                    preferences1 = getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences1.edit();
-                    editor1.putString("accident_key", AccidentKey);
+                    editor1.putString("accident_key_noti", AccidentKey_noti);
                     editor1.putString("Type_active","Active");
                     editor1.commit();
 //                    Log.d("AccidentKey", AccidentKey);
@@ -716,7 +717,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
-                    SendMessageJoinToServer(AccidentKey,mUsername);
+                    SendMessageJoinToServer(AccidentKey_noti,mUsername);
 //                    SendtoActionOnFirebase();
                 }
             }
@@ -775,7 +776,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             StrictMode.setThreadPolicy(policy);
             try {
                 Response response = client.newCall(request).execute();
-                Log.d("Reponse_1",response.body().string());
+//                Log.d("Reponse_1",response.body().string());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -871,12 +872,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
         AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
         accident.setFirebaseKey(AccidentKey);
 
+        preferences3 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+        SharedPreferences.Editor editor3 = preferences3.edit();
+        editor3.putString("accident_key", AccidentKey);
+
+        editor3.commit();
+
+
         // Bỏ accident mới vào key vừa tạo trên firebase
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
         // cập nhập firebasekey cho accident vừa tạo
 //        Log.d("AccidentKey",AccidentKey);
     }
-
 
     @Override
     public void onPause() {
@@ -1062,11 +1069,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
         accident.setLat_AC(latitude);
 
         accident.setLong_AC(longitude);
-        Log.d("createAccidentOnServer", accident.toString());
+//        Log.d("createAccidentOnServer", accident.toString());
 
         createAccidentOnFirebase();
         // convert object to json
-        Log.d("afterOnFirebase", accident.toString());
+//        Log.d("afterOnFirebase", accident.toString());
 
         Gson gson = new Gson();
         String json = gson.toJson(accident);

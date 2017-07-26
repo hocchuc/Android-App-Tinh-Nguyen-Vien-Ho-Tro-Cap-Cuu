@@ -104,7 +104,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private final Handler mHandler;
     private Runnable mAnimation;
     String AccidentKey = "";
-    String UserJoinedKey="";
+    String AccidentKey_noti = "";
+    String UserJoinedKey = "";
     int id_user;
     ArrayList<UserJoined> arrUserJoineds;
     String Active = "";
@@ -149,7 +150,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private double mParam2;
     String mprovider;
     MapView mapView;
-    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
+    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
     String id_AC = "";
     ArrayList<Accident_Detail> accident_details;
     // XU LY NUT VE DUONG
@@ -230,9 +231,15 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         sharedPreferences1 = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences1.getInt("id_user", -1);
 
-        sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
-        AccidentKey = sharedPreferences2.getString("accident_key", "");
+        sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
+        AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
         Active = sharedPreferences2.getString("Type_active", "");
+
+        sharedPreferences3 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+        AccidentKey = sharedPreferences3.getString("accident_key", "");
+
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
 
         return view;
     }
@@ -272,46 +279,86 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        addValueEventListener();
 
+
+//        LatLng myLocation = new LatLng(lat, lon);
+//        MarkerOptions markerOptions = new MarkerOptions()
+//                .position(myLocation)
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//                .title("Bạn đang ở đây !!")
+//                .snippet("You are here !!");
+//        Marker marker = mMap.addMarker(markerOptions);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+//
+//        /**
+//         * Tạo hiệu ứng nảy
+//         */
+//        // This causes the marker at Perth to bounce into position when it is clicked.
+//        final long start = SystemClock.uptimeMillis();
+//        final long duration = 1500L;
+//
+//        // Cancels the previous animation
+//        mHandler.removeCallbacks(mAnimation);
+//
+//        // Starts the bounce animation
+//        mAnimation = new BounceAnimation(start, duration, marker, mHandler);
+//        mHandler.post(mAnimation);
+//        // for the default behavior to occur (which is for the camera to move such that the
+//        // marker is centered and for the marker's info window to open, if it has one).
+
+        if (Active.equals("Active"))
+            SendtoActionOnFirebase();
+
+    }
+
+    private void addValueEventListener() {
+        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").push().getKey();
+        if (mMap == null) return;
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").child(UserJoinedKey);
+        ref1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        LatLng myLocation = new LatLng(lat, lon);
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(myLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                .title("Bạn đang ở đây !!")
-                .snippet("You are here !!");
-        Marker marker = mMap.addMarker(markerOptions);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
 
-//        /**
-//         * Tạo các user xung qunah
-//         */
-////        accidentList = new ArrayList<>();
-////        new GetAccidents(getActivity(), accidentList).execute();
-//        new GetAllUsers(getContext()).execute();
-        if (Active.equals("Active"))
-            SendtoActionOnFirebase();
+                if (dataSnapshot.exists()) {
+//                    viDo = userJoined1.getLat_userjoined();
+//                    kinhDo = userJoined1.getLong_userjoined();
+                    LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(String.valueOf(userJoined1.getUser_id())))
+                            .setIcon(icon);
+                } else {
+                    LatLng myLocation = new LatLng(lat, lon);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(myLocation)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                            .title("Bạn đang ở đây !!")
+                            .snippet("You are here !!");
+                    Marker marker = mMap.addMarker(markerOptions);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         mMap.setMyLocationEnabled(true);
-        /**
-         * Tạo hiệu ứng nảy
-         */
-        // This causes the marker at Perth to bounce into position when it is clicked.
-        final long start = SystemClock.uptimeMillis();
-        final long duration = 1500L;
-
-        // Cancels the previous animation
-        mHandler.removeCallbacks(mAnimation);
-
-        // Starts the bounce animation
-        mAnimation = new BounceAnimation(start, duration, marker, mHandler);
-        mHandler.post(mAnimation);
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
-
     }
 
     @Override
@@ -460,38 +507,34 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         userJoined.setLat_userjoined(lat);
         userJoined.setLong_userjoined(lon);
 
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        UserJoinedKey=mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
-                .child("User joined").push().getKey();
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
+                .child(AccidentKey_noti)
                 .child("User joined").child(UserJoinedKey).setValue(userJoined);
-        // Get a reference to our posts
-        DatabaseReference ref = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
-                .child("User joined").child(UserJoinedKey);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
-
-                viDo = userJoined1.getLat_userjoined();
-                kinhDo = userJoined1.getLong_userjoined();
-                LatLng loocation = new LatLng(viDo, kinhDo);
-                mMap.addMarker(new MarkerOptions()
-                        .position(loocation)
-                        .title(String.valueOf(userJoined1.getUser_id())))
-                        .setIcon(icon);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        // Get a reference to our posts
+//        DatabaseReference ref = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+//                .child(AccidentKey_noti)
+//                .child("User joined").child(UserJoinedKey);
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+//                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+//
+//                viDo = userJoined1.getLat_userjoined();
+//                kinhDo = userJoined1.getLong_userjoined();
+//                LatLng loocation = new LatLng(viDo, kinhDo);
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(loocation)
+//                        .title(String.valueOf(userJoined1.getUser_id())))
+//                        .setIcon(icon);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 //    class GetAllUsers extends AsyncTask<Void, String, List<User>> {
