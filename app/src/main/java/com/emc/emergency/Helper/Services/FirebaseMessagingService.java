@@ -47,11 +47,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 location = remoteMessage.getData().get("address");
                 FirebaseKey = remoteMessage.getData().get("FirebaseKey");
                 id_AC = remoteMessage.getData().get("id_AC");
-                if (remoteMessage.getNotification() != null) {
-                    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-                    showAccidentNotification(remoteMessage.getNotification().getBody());
-
-                }
+                if(id_AC!=null&&!id_AC.equals("")) Log.d("On_Mess_Rec_id_AC",id_AC);
                 showAccidentNotification(message);
 
             }

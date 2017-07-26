@@ -335,6 +335,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //                    viDo = userJoined1.getLat_userjoined();
 //                    kinhDo = userJoined1.getLong_userjoined();
                     LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(String.valueOf(userJoined1.getUser_id())))
@@ -347,6 +348,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                             .title("Bạn đang ở đây !!")
                             .snippet("You are here !!");
                     Marker marker = mMap.addMarker(markerOptions);
+
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
                 }
 

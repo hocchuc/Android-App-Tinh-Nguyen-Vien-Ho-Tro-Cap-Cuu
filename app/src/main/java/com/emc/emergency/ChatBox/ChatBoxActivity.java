@@ -290,7 +290,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         //Đổ fragment (map) vào activity
         buildFragment();
 
-        //Đổ tin nhăn vào recycleview
+        //Đổ tin nhăn vào recycleview, xử lý sự kiện khi có message
         LoadMessage();
 
         //Khởi tạo các thành phần của firebase
@@ -377,7 +377,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 Message Message = new Message(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl, null, mId_user);
-//                Log.d("messageImage", Message.toString());
+                Log.d("onSendAccidentKey", AccidentKey);
 
                 mFirebaseDatabaseReference.
                         child(ACCIDENTS_CHILD).
@@ -704,14 +704,15 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
                     AccidentKey_noti = intent.getStringExtra("FirebaseKey");
+                    Log.d("onSendAccidentKey", AccidentKey_noti);
 
                     preferences1 = getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences1.edit();
-                    editor1.putString("accident_key_noti", AccidentKey_noti);
+                    editor1.putString("prepare_accident_key_noti", AccidentKey_noti);
                     editor1.putString("Type_active","Active");
                     editor1.commit();
 //                    Log.d("AccidentKey", AccidentKey);
-                    id_AC = intent.getStringExtra("id_AC");
+                     id_AC = intent.getStringExtra("id_AC");
 //                    Longtitude = intent.getDoubleExtra("lon_AC",Longtitude);
 //                    Latitude = Double.valueOf(intent.getStringExtra("lat_AC"));
 //                    Log.d("id_AC_chat",id_AC.toString());
