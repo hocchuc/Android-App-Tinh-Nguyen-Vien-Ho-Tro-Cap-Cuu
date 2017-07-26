@@ -218,7 +218,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
 
-    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3,preferences4;
 
 
     private RecordButton recordButton;
@@ -247,7 +247,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     ProgressDialog progressDialog;
     private String id_AC = "";
     private String AccidentKey = "";
-    private String AccidentKey_noti="";
+//    private String AccidentKey_noti="";
     public static final String ACCIDENTS_CHILD = "accidents";
     private String response;
 //    private DatabaseReference mDatabase1;
@@ -703,21 +703,26 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 if (intent.getStringExtra("type").equals(TYPE_HELPER)) {
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
-                    AccidentKey_noti = intent.getStringExtra("FirebaseKey");
+                    AccidentKey = intent.getStringExtra("FirebaseKey");
 
                     preferences1 = getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences1.edit();
-                    editor1.putString("accident_key_noti", AccidentKey_noti);
+                    editor1.putString("accident_key_noti", AccidentKey);
                     editor1.putString("Type_active","Active");
-                    editor1.commit();
+                    editor1.apply();
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
+
+                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
+                    SharedPreferences.Editor editor4 = preferences4.edit();
+                    editor4.putString("id_acc",id_AC);
+                    editor4.apply();
 //                    Longtitude = intent.getDoubleExtra("lon_AC",Longtitude);
 //                    Latitude = Double.valueOf(intent.getStringExtra("lat_AC"));
 //                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
-                    SendMessageJoinToServer(AccidentKey_noti,mUsername);
+                    SendMessageJoinToServer(AccidentKey,mUsername);
 //                    SendtoActionOnFirebase();
                 }
             }
@@ -751,7 +756,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         Message Message = new Message(mUsername + " đã tham gia",
                 mUsername,
                 mPhotoUrl, null, mId_user);
-        Log.d("messageImage", Message.toString());
+//        Log.d("messageImage", Message.toString());
 
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(accidentKey).child(MESSAGES_CHILD).push().setValue(Message);
     }
@@ -1026,7 +1031,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                             .child(MESSAGES_CHILD)
                                             .child(key)
                                             .setValue(Message);
-                                    Log.d("putImageInStorage", Message.toString());
+//                                    Log.d("putImageInStorage", Message.toString());
 
                                 } else {
                                     Log.w(TAG, "Image upload task was not successful.",
@@ -1086,7 +1091,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             StrictMode.setThreadPolicy(policy);
             try {
                 response = example.post(SystemUtils.getServerBaseUrl() + "accidents", json);
-                Log.d("response", response);
+//                Log.d("response", response);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -1277,8 +1282,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
                 "\",\n   \"id_action_type\":\"3\",\n  \"date\":\"" + date + "\" \n}");
 
-        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
-                ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
+//        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+//                ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
                 .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
@@ -1298,8 +1303,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
                 "\",\n   \"id_action_type\":\"2\",\n  \"date\":\"" + date + "\" \n}");
-        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
-                ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
+//        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+//                ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
                 .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)

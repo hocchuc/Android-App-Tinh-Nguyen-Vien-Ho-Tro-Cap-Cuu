@@ -12,6 +12,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -48,6 +50,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -101,6 +104,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     double viDo = 0;
     double kinhDo = 0;
     //    String moTa, diaChi;
+    Accident accident;
     private final Handler mHandler;
     private Runnable mAnimation;
     String AccidentKey = "";
@@ -152,7 +156,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     MapView mapView;
     private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
     String id_AC = "";
-    ArrayList<Accident_Detail> accident_details;
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
 //    private EditText etDestination;
@@ -225,11 +228,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         arrUserJoineds = new ArrayList<>();
 
-        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
-        id_AC = sharedPreferences.getString("id_acc", "");
-
         sharedPreferences1 = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences1.getInt("id_user", -1);
+
 
         sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
         AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
@@ -240,8 +241,53 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
+        GetAccient();
 
+        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").push().getKey();
+        if (Active.equals("Active"))
+            SendtoActionOnFirebase();
         return view;
+    }
+
+    private void GetAccient() {
+        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
+        id_AC = sharedPreferences.getString("id_acc", "");
+        Log.d("key_AC", id_AC);
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "accidents/" + id_AC)
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+                    accident = new Accident();
+                    if (jsonObject.has("long_AC"))
+                        accident.setLong_AC(jsonObject.getDouble("long_AC"));
+                    if (jsonObject.has("lat_AC"))
+                        accident.setLat_AC(jsonObject.getDouble("lat_AC"));
+                    if (jsonObject.has("address"))
+                        accident.setAddress(jsonObject.getString("address"));
+                    Log.d("ds_1AC", accident.toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override
@@ -279,18 +325,19 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        addValueEventListener();
+        if (Active.equals("Active"))
+            addValueEventListener();
 
+        BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
+        LatLng myLocation = new LatLng(lat, lon);
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(myLocation)
+                .icon(icon1)
+                .title(accident.getAddress());
+        Marker marker = mMap.addMarker(markerOptions);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+        mMap.setMyLocationEnabled(false);
 
-//        LatLng myLocation = new LatLng(lat, lon);
-//        MarkerOptions markerOptions = new MarkerOptions()
-//                .position(myLocation)
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//                .title("Bạn đang ở đây !!")
-//                .snippet("You are here !!");
-//        Marker marker = mMap.addMarker(markerOptions);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-//
 //        /**
 //         * Tạo hiệu ứng nảy
 //         */
@@ -307,15 +354,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //        // for the default behavior to occur (which is for the camera to move such that the
 //        // marker is centered and for the marker's info window to open, if it has one).
 
-        if (Active.equals("Active"))
-            SendtoActionOnFirebase();
-
     }
 
     private void addValueEventListener() {
-        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
-                .child("User joined").push().getKey();
         if (mMap == null) return;
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -323,32 +364,33 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         }
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey)
-                .child("User joined").child(UserJoinedKey);
-        ref1.addValueEventListener(new ValueEventListener() {
+                .child("User joined");
+        ref1.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
                 BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
 
                 if (dataSnapshot.exists()) {
-//                    viDo = userJoined1.getLat_userjoined();
-//                    kinhDo = userJoined1.getLong_userjoined();
                     LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
                             .title(String.valueOf(userJoined1.getUser_id())))
                             .setIcon(icon);
-                } else {
-                    LatLng myLocation = new LatLng(lat, lon);
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(myLocation)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                            .title("Bạn đang ở đây !!")
-                            .snippet("You are here !!");
-                    Marker marker = mMap.addMarker(markerOptions);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
                 }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 
@@ -463,35 +505,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         public void onFragmentMapInteraction(Uri uri);
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING, priority = 1)
-    public void MapListerner(MessageEvent event) {
-        if (event.type.equals(SystemUtils.TAG_LOAD_MAP)) {
-
-        }
-
-        if (event.type.equals(SystemUtils.TAG_GO_MAP)) {
-
-            Accident accident = new Gson().fromJson(event.message, Accident.class);
-            LatLng lat_1 = new LatLng(accident.getLong_AC(), accident.getLat_AC());
-            Toast.makeText(this.getContext(), accident.getDescription_AC(), Toast.LENGTH_SHORT).show();
-
-            try {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(lat_1));
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                builder.include(lat_1);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lat_1, 15);
-                mMap.moveCamera(cameraUpdate);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -510,163 +526,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey_noti)
                 .child("User joined").child(UserJoinedKey).setValue(userJoined);
-//        // Get a reference to our posts
-//        DatabaseReference ref = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-//                .child(AccidentKey_noti)
-//                .child("User joined").child(UserJoinedKey);
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
-//                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
-//
-//                viDo = userJoined1.getLat_userjoined();
-//                kinhDo = userJoined1.getLong_userjoined();
-//                LatLng loocation = new LatLng(viDo, kinhDo);
-//                mMap.addMarker(new MarkerOptions()
-//                        .position(loocation)
-//                        .title(String.valueOf(userJoined1.getUser_id())))
-//                        .setIcon(icon);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
     }
-//    class GetAllUsers extends AsyncTask<Void, String, List<User>> {
-//        Context context;
-//
-//        public GetAllUsers(Context context) {
-//            this.context = context;
-//
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<User> userList) {
-//            super.onPostExecute(userList);
-//            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
-//            accident_details=new ArrayList<>();
-//
-//            OkHttpClient client = new OkHttpClient();
-//
-//            RequestBody body = RequestBody.create(null, new byte[0]);
-//            Request request = new Request.Builder()
-//                    .url(SystemUtils.getServerBaseUrl()+"accident/GetAllUserJoined/"+id_AC)
-//                    .post(body)
-//                    .build();
-//
-//            try {
-//                Response response = client.newCall(request).execute();
-//                JSONArray jsonArray=new JSONArray(response.body().string());
-//                for(int i=0;i<jsonArray.length();i++){
-//                    Accident_Detail accident_detail=new Accident_Detail();
-//                    User user=new User();
-//                    JSONObject jsonObject=jsonArray.getJSONObject(i);
-//                    if (jsonObject.has("id_user")) {
-//                        user.setId_user(Long.parseLong(jsonObject.getString("id_user")));
-//                        accident_detail.setUser_id(user);
-//                    }
-//                    if(jsonObject.has("date"))
-//                        accident_detail.setDate_create(jsonObject.getString("date"));
-//                    accident_details.add(accident_detail);
-////                    Log.d("ds_chitiet_tainan",accident_details.toString());
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//            for (int i = 0; i < userList.size(); i++) {
-//                User user = userList.get(i);
-////                if(user.getId_user_type().equals("2"))
-//                viDo = user.getLat_PI();
-//                kinhDo = user.getLong_PI();
-//                LatLng loocation = new LatLng(viDo, kinhDo);
-//               for(int j=0;j<accident_details.size();j++){
-//                   if(userList.get(i).getId_user()==accident_details.get(j).getUser_id().getId_user()){
-//                       try {
-//
-//                           mMap.addMarker(new MarkerOptions()
-//                                   .position(loocation)
-//                                   .title(user.getUser_name())
-//                                   .snippet(String.valueOf(user.getUser_type().getId_user_type())))
-//                                   .setIcon(icon);
-//                       } catch (Exception e) {
-//                           e.printStackTrace();
-//                           Toast.makeText(getActivity(), "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
-//                       }
-//                   }
-//               }
-//            }
-//
-//        }
-//
-//        @Override
-//        protected List<User> doInBackground(Void... params) {
-//            List<User> userList = new ArrayList<>();
-//            try {
-//
-//                URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
-//                HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-//                InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-//                BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-//                StringBuilder builder = new StringBuilder();
-//                String line = bufferedReader.readLine();
-//                while (line != null) {
-//                    builder.append(line);
-//                    line = bufferedReader.readLine();
-//                }
-//                JSONObject jsonObject = new JSONObject(builder.toString());
-//                JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
-//                JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
-////                Log.d("jsonObj", jsonObject.toString());
-//                for (int i = 0; i < usersJSONArray.length(); i++) {
-//                    User user1 = new User();
-//                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
-//                    if (jsonObj.has("id_user"))
-//                        user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
-//                    if (jsonObj.has("username"))
-//                        user1.setUser_name(jsonObj.getString("username"));
-//                    if (jsonObj.has("token"))
-//                        user1.setToken(jsonObj.getString("token"));
-//                    if (jsonObj.has("password"))
-//                        user1.setPassword(jsonObj.getString("password"));
-//                    if (jsonObj.has("long_PI"))
-//                        user1.setLong_PI(jsonObj.getDouble("long_PI"));
-//                    if (jsonObj.has("lat_PI"))
-//                        user1.setLat_PI(jsonObj.getDouble("lat_PI"));
-//                    if (jsonObj.has("id_user_type")) {
-//                        String user_type = jsonObj.getString("id_user_type");
-//                        User_Type user_type1 = new User_Type();
-//                        try {
-//                            JSONObject jsonObject1 = new JSONObject(user_type);
-//                            if (jsonObject1.has("id_user_type"))
-//                                user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
-//                            if (jsonObject1.has("name_user_type"))
-//                                user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                        user1.setUser_type(user_type1);
-//                    }
-//                    Log.d("User1", user1.toString());
-//                    userList.add(user1);
-//                }
-//            } catch (Exception ex) {
-//                Log.e("LOI ", ex.toString());
-//            }
-//            return userList;
-//        }
-//    }
 
 }
