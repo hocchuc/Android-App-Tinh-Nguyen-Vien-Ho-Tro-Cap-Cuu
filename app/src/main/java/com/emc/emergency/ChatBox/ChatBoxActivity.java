@@ -15,6 +15,8 @@ package com.emc.emergency.ChatBox; /**
  */
 
 
+
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +29,9 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -217,7 +222,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mId_user;
     private String mUsername;
     private String mPhotoUrl;
-
+    private String id_victim;
     private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3,preferences4;
 
 
@@ -675,6 +680,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
                     AccidentKey = intent.getStringExtra("FirebaseKey");
+                    id_victim  = intent.getStringExtra(SystemUtils.id_victim);
 
                     preferences1 = getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences1.edit();
@@ -1239,8 +1245,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
                 "\",\n   \"id_action_type\":\"3\",\n  \"date\":\"" + date + "\" \n}");
 
-//        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
-//                ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
+        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+                ",\n   \"id_action_type\":\"3\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
                 .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
@@ -1260,8 +1266,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "{\n  \"id_user\":\"" + mId_user + "\",\n  \"id_AC\":\"" + id_AC +
                 "\",\n   \"id_action_type\":\"2\",\n  \"date\":\"" + date + "\" \n}");
-//        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
-//                ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
+        Log.d("Body", "{\n  \"id_user\":" + mId_user + ",\n  \"id_AC\":" + id_AC +
+                ",\n   \"id_action_type\":\"4\",\n  \"date\":" + date + "\n \n}");
         Request request = new Request.Builder()
                 .url(SystemUtils.getServerBaseUrl() + "accident/action")
                 .post(body)
@@ -1274,6 +1280,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
     }
 
     private void ShowMedicalInfo() {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+           if (prev != null) {
+               ft.remove(prev);
+           }
+           ft.addToBackStack(null);
+
+           // Create and show the dialog.
+           fragment_dialog_medical_info newFragment = fragment_dialog_medical_info.newInstance(Long.parseLong(id_victim));
+           newFragment.show(fm,"dialog");
+
     }
 
 }

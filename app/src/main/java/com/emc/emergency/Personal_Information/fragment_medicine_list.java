@@ -44,6 +44,8 @@ public class fragment_medicine_list extends Fragment {
     EditText edtNameMI, edtDesMI;
     MaterialDialog dialog;
     RecyclerView recyclerView;
+    boolean helper;
+    Long id_victim=-99L;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,10 +56,11 @@ public class fragment_medicine_list extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static fragment_medicine_list newInstance(int columnCount) {
+    public static fragment_medicine_list newInstance(boolean helper,Long id_victim) {
         fragment_medicine_list fragment = new fragment_medicine_list();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putBoolean("helper", helper);
+        args.putLong("id_victim",id_victim);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,9 +68,12 @@ public class fragment_medicine_list extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            helper = getArguments().getBoolean(getString(R.string.helper));
+            id_victim = getArguments().getLong(getString(R.string.id_victim));
+        } else {
+            helper = false;
         }
     }
 
@@ -88,26 +94,33 @@ public class fragment_medicine_list extends Fragment {
         mlayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mlayoutManager);
         recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI));
-        getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,3,recyclerView.getAdapter());
+        if(helper)
+        {
+            getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,3,recyclerView.getAdapter(),id_victim);
+            floatingActionButton.hide();
+        }
+        else getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,3,recyclerView.getAdapter());
+
         getMedicalInfo.execute();
-        dialog=  new MaterialDialog.Builder(getContext())
+        dialog = new MaterialDialog.Builder(getContext())
                 .title("Nhập thông tin thuốc")
-                .inputType(InputType.TYPE_CLASS_TEXT )
+                .inputType(InputType.TYPE_CLASS_TEXT)
                 .customView(R.layout.dialog_medical_info, true)
                 .negativeText(android.R.string.cancel)
                 .positiveText(android.R.string.ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        nameMI=edtNameMI.getText().toString();
+                        nameMI = edtNameMI.getText().toString();
                         descriptionMI = edtDesMI.getText().toString();
-                        if(nameMI.matches("")) Toast.makeText(getContext(), "Bạn phải điền tên thuốc", Toast.LENGTH_SHORT).show();
-                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"3",descriptionMI,recyclerView.getAdapter());
+                        if (nameMI.matches(""))
+                            Toast.makeText(getContext(), "Bạn phải điền tên thuốc", Toast.LENGTH_SHORT).show();
+                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(), nameMI, "3", descriptionMI, recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
 
-                        Medical_Information medical_information = new Medical_Information(nameMI,3,descriptionMI);
+                        Medical_Information medical_information = new Medical_Information(nameMI, 3, descriptionMI);
                         arrMI.add(medical_information);
-                        recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
+                        recyclerView.getAdapter().notifyItemInserted(arrMI.size() - 1);
 
 
                     }

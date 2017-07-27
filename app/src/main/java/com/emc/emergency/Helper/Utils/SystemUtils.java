@@ -5,6 +5,14 @@ import android.content.res.Resources;
 import java.util.Random;
 
 public class SystemUtils {
+    // For the app common payload message attributes (android - xmpp server)
+   	public static final String PAYLOAD_ATTRIBUTE_MESSAGE = "message";
+   	public static final String PAYLOAD_ATTRIBUTE_ACTION = "action";
+   	public static final String PAYLOAD_ATTRIBUTE_RECIPIENT = "recipient";
+   	public static final String PAYLOAD_ATTRIBUTE_ACCOUNT = "account";
+
+       	public static final String BACKEND_FAKE_ACCIDENT = "fake_accident";
+   	public static final String BACKEND_DONE_ACCIDENT = "done_accident";
     public static final String FCM_PROJECT_SENDER_ID = "728085231482";
     public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
     public static final String BACKEND_ACTION_MESSAGE = "MESSAGE";
@@ -13,7 +21,7 @@ public class SystemUtils {
     public static final Random RANDOM = new Random();
     public static final String API_MODE="LOCAL";//"HEROKU" hoặc "LOCAL"
     public static final String HEROKU_API="https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/";
-    public static final String LOCAL_API="http://192.168.1.15:8080/api/";
+    public static final String LOCAL_API="http://192.168.1.110:8080/api/";
 
     public static final String PUT_USER_TO_ACCIDENT = "http://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/";
 
@@ -44,6 +52,9 @@ public class SystemUtils {
     public static final String LOADING_IMAGE_URL = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif";
     public static final String TYPE_VICTIM = "victim";
     public static String VideoUrl = "VIDEO_URL";
+
+    public static String id_victim = "id_victim";
+    public static String helper = "helper";
 
     public static int getScreenOrientation() {
         return Resources.getSystem().getConfiguration().orientation;

@@ -78,23 +78,25 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
             public void onClick(View v) {
                 Toast.makeText(context, mValues.get(position).getDescription_AC(), Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
-                                       i.putExtra("type", SystemUtils.TYPE_HELPER);
-                                       Log.d("type",SystemUtils.TYPE_HELPER);
-                               
-                                       i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
-                                       Log.d("FirebaseKey",holder.mItem.getFirebaseKey());
-                                       i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.putExtra("type", SystemUtils.TYPE_HELPER);
+                Log.d("type", SystemUtils.TYPE_HELPER);
+                i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
+                Log.d("FirebaseKey", holder.mItem.getFirebaseKey());
+                i.putExtra("id_AC", holder.mItem.getId_AC()+"");
+                i.putExtra("id_victim", holder.mItem.getId_user()+"");
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             }
         });
         holder.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
-                       i.setAction(SystemUtils.TYPE_HELPER);
-                       i.putExtra("type", SystemUtils.TYPE_HELPER);
-//                       Log.d("type",SystemUtils.TYPE_HELPER);
-                       i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
-                    v.getContext().startActivity(i);
+                i.setAction(SystemUtils.TYPE_HELPER);
+                i.putExtra("type", SystemUtils.TYPE_HELPER);
+                i.putExtra("id_AC", holder.mItem.getId_AC()+"");
+                i.putExtra("id_victim", holder.mItem.getId_user()+"");
+                i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
+                v.getContext().startActivity(i);
             }
         });
         // request cho glide

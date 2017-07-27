@@ -29,6 +29,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private String FirebaseKey="";
     private String id_AC="";
     private String title="";
+    private String id_victim;
     final private String TYPE_HELPER = "helper";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -41,12 +42,16 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             // In this case the XMPP Server sends a payload data
             String message = remoteMessage.getData().get("message");
+            if(message!=null && !message.equals("")) Log.d(TAG,"message : "+message);
+
+
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT)){
                 Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
                 Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
                 location = remoteMessage.getData().get("address");
                 FirebaseKey = remoteMessage.getData().get("FirebaseKey");
                 id_AC = remoteMessage.getData().get("id_AC");
+                id_victim = remoteMessage.getData().get("id_victim");
                 if(id_AC!=null&&!id_AC.equals("")) Log.d("On_Mess_Rec_id_AC",id_AC);
                 showAccidentNotification(message);
 
@@ -58,13 +63,18 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             {
                 title = remoteMessage.getData().get("title");
                 Log.d(TAG,"Message Notification title: "+ remoteMessage.getNotification().getTitle());
-                if (remoteMessage.getNotification() != null) {
-                    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-                    showBasicNotification(message);
-                }
+
                 showBasicNotification(message);
 
                 
+            }
+            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_DONE_ACCIDENT)) {
+                title = remoteMessage.getData().get("title");
+                Log.d(TAG, "Message Notification title: " + remoteMessage.getNotification().getTitle());
+
+                showBasicNotification(message);
+
+
             }
 
         }

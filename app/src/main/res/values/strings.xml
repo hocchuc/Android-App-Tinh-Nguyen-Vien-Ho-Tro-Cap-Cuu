@@ -85,4 +85,6 @@
     <string name="volunteer">Sign up volunteer</string>
     <string name="hello_blank_fragment">Hello</string>
     <string name="Logout">Log Out</string>
+    <string name="id_victim">id_victim</string>
+    <string name="helper">helper</string>
 </resources>

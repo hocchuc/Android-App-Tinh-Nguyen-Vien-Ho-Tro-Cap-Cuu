@@ -14,32 +14,38 @@ import com.emc.emergency.Personal_Information.fragment_medicine_list;
  */
 
 public class PagerAdapterMI extends FragmentStatePagerAdapter {
+    boolean helper = false;
+    Long id_victim = -99L;
+
     public PagerAdapterMI(FragmentManager fm) {
         super(fm);
     }
 
+    public PagerAdapterMI(FragmentManager fm, boolean helper, Long id_victim) {
+        super(fm);
+        this.helper = helper;
+        this.id_victim = id_victim;
+    }
+
     @Override
     public Fragment getItem(int position) {
-        Fragment frag=null;
-        switch (position){
-            case 0:{
-                frag=new fragment_disease_list();
-                break;}
+        Fragment frag = null;
+        switch (position) {
+            case 0: {
+                frag = new fragment_disease_list().newInstance(helper,id_victim);
+                break;
+            }
             case 1:
-                frag=new fragment_allergic_list();
+                frag = new fragment_allergic_list().newInstance(helper,id_victim);
                 break;
             case 2:
-                frag=new fragment_medicine_list();
+                frag = new fragment_medicine_list().newInstance(helper,id_victim);
                 break;
 
         }
         return frag;
     }
 
-    @Override
-    public Object instantiateItem(View container, int position) {
-        return super.instantiateItem(container, position);
-    }
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
@@ -54,15 +60,15 @@ public class PagerAdapterMI extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         String title = "";
-        switch (position){
+        switch (position) {
             case 0:
-                title="Disease";
+                title = "Disease";
                 break;
             case 1:
-                title="Allergic";
+                title = "Allergic";
                 break;
             case 2:
-                title="Medicine";
+                title = "Medicine";
                 break;
         }
 

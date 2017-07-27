@@ -164,7 +164,7 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         protected ArrayList<Accident> doInBackground(Void... params) {
             ArrayList<Accident> ds = new ArrayList<>();
             try {
-                URL url = new URL(SystemUtils.getServerBaseUrl() + "accidents");
+                URL url = new URL(SystemUtils.getServerBaseUrl() + "accident/GetAllAccident");
                 HttpURLConnection connect = (HttpURLConnection) url.openConnection();
                 InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
                 BufferedReader bufferedReader = new BufferedReader(inStreamReader);
@@ -174,11 +174,8 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                     builder.append(line);
                     line = bufferedReader.readLine();
                 }
-                JSONObject jsonObj = new JSONObject(builder.toString());
-                JSONObject _embeddedObject = jsonObj.getJSONObject("_embedded");
-                JSONArray accidentsSONArray = _embeddedObject.getJSONArray("accidents");
 
-                Log.d("JsonObject", _embeddedObject.toString());
+                JSONArray accidentsSONArray = new JSONArray(builder.toString());
                 Log.d("JsonArray", accidentsSONArray.toString());
 
                 for (int i = 0; i < accidentsSONArray.length(); i++) {
@@ -202,7 +199,8 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                         accident.setAddress(jsonObject.getString("address"));
                     if (jsonObject.has("firebaseKey"))
                        accident.setFirebaseKey(jsonObject.getString("firebaseKey"));
-                    
+                    if(jsonObject.has("id_victim"))
+                        accident.setId_user(jsonObject.getLong("id_victim"));
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
 //                     Log.d("DS", ds.toString());

@@ -39,10 +39,13 @@ public class fragment_allergic_list extends Fragment {
     ArrayList<Medical_Information> arrMI;
     GetMedicalInfo getMedicalInfo;
     FloatingActionButton floatingActionButton;
-    String nameMI,descriptionMI ="";
+    String nameMI, descriptionMI = "";
     EditText edtNameMI, edtDesMI;
     MaterialDialog dialog;
     RecyclerView recyclerView;
+    boolean helper;
+    Long id_victim;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -52,16 +55,25 @@ public class fragment_allergic_list extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static fragment_allergic_list newInstance(int columnCount) {
+    public static fragment_allergic_list newInstance(boolean helper, Long id_victim) {
         fragment_allergic_list fragment = new fragment_allergic_list();
         Bundle args = new Bundle();
-
+        args.putBoolean("helper", helper);
+        args.putLong("id_victim", id_victim);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            helper = getArguments().getBoolean("helper");
+            id_victim = getArguments().getLong(getString(R.string.id_victim));
+
+        } else {
+            helper = false;
+        }
 
     }
 
@@ -80,27 +92,32 @@ public class fragment_allergic_list extends Fragment {
         mlayoutManager.setReverseLayout(true);
         mlayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mlayoutManager);
-        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI));
-        getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,2,recyclerView.getAdapter());
+        recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(), arrMI));
+        if (helper) {
+            getMedicalInfo = new GetMedicalInfo(this.getActivity(), arrMI, 2, recyclerView.getAdapter(), id_victim);
+            floatingActionButton.hide();
+        } else
+            getMedicalInfo = new GetMedicalInfo(this.getActivity(), arrMI, 2, recyclerView.getAdapter());
         getMedicalInfo.execute();
-        dialog=  new MaterialDialog.Builder(getContext())
+        dialog = new MaterialDialog.Builder(getContext())
                 .title("Nhập thông tin dị ứng")
-                .inputType(InputType.TYPE_CLASS_TEXT )
+                .inputType(InputType.TYPE_CLASS_TEXT)
                 .customView(R.layout.dialog_medical_info, true)
                 .negativeText(android.R.string.cancel)
                 .positiveText(android.R.string.ok)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        nameMI=edtNameMI.getText().toString();
+                        nameMI = edtNameMI.getText().toString();
                         descriptionMI = edtDesMI.getText().toString();
-                        if(nameMI.matches("")) Toast.makeText(getContext(), "Bạn phải điền tên dị ứng", Toast.LENGTH_SHORT).show();
-                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(),nameMI,"2",descriptionMI,recyclerView.getAdapter());
+                        if (nameMI.matches(""))
+                            Toast.makeText(getContext(), "Bạn phải điền tên dị ứng", Toast.LENGTH_SHORT).show();
+                        InsertMedicalInfo medicalInfo = new InsertMedicalInfo(getActivity(), nameMI, "2", descriptionMI, recyclerView.getAdapter());
                         medicalInfo.excuteInsert();
 
-                        Medical_Information medical_information = new Medical_Information(nameMI,2,descriptionMI);
+                        Medical_Information medical_information = new Medical_Information(nameMI, 2, descriptionMI);
                         arrMI.add(medical_information);
-                        recyclerView.getAdapter().notifyItemInserted(arrMI.size()-1);
+                        recyclerView.getAdapter().notifyItemInserted(arrMI.size() - 1);
 
                     }
                 }).build();

@@ -41,7 +41,8 @@ public class fragment_disease_list extends Fragment {
     MaterialDialog dialog;
     RecyclerView recyclerView;
     TextView tbTitle;
-
+    Long id_victim;
+    boolean helper;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -51,10 +52,11 @@ public class fragment_disease_list extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static fragment_disease_list newInstance(int columnCount) {
+    public static fragment_disease_list newInstance(boolean helper,Long id_victim) {
         fragment_disease_list fragment = new fragment_disease_list();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putBoolean("helper",helper);
+        args.putLong("id_victim",id_victim);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,7 +65,10 @@ public class fragment_disease_list extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            helper = getArguments().getBoolean(getString(R.string.helper));
+            id_victim = getArguments().getLong(getString(R.string.id_victim));
+        } else {
+            helper = false;
         }
     }
 
@@ -82,8 +87,12 @@ public class fragment_disease_list extends Fragment {
         mlayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mlayoutManager);
         recyclerView.setAdapter(new MyMedicalInfoRecyclerViewAdapter(getContext(),arrMI));
-
-        getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,1,recyclerView.getAdapter());
+        if(helper)
+        {
+            getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,1,recyclerView.getAdapter(),id_victim);
+            floatingActionButton.hide();
+        }
+        else getMedicalInfo = new GetMedicalInfo(this.getActivity(),arrMI,1,recyclerView.getAdapter());
         getMedicalInfo.execute();
         dialog=  new MaterialDialog.Builder(getContext())
                 .title("Nhập thông tin bệnh")
