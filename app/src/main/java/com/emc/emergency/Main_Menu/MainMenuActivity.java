@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,10 +25,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Accidents_List.AccidentActivity;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Services.IRequestListener;
@@ -70,6 +75,7 @@ import com.google.firebase.storage.StorageReference;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -81,6 +87,8 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
@@ -145,10 +153,10 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_menu);
 
         addControls();
+        setLoadImageLogic();
         BuildDrawer(savedInstanceState);
 
         BuildFragment();
-//        setLoadImageLogic();
 
         addEvents();
     }
@@ -200,48 +208,48 @@ public class MainMenuActivity extends AppCompatActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
-//    /**
-//     * Load hinh cho drawer
-//     */
-//    private void setLoadImageLogic() {
-//        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
-//            @Override
-//            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
-//
-//                RequestOptions options = new RequestOptions()
-//                        .centerCrop()
-//                        .placeholder(R.drawable.profile3)
-//                        .error(R.drawable.material_drawer_circle_mask)
-//                        .priority(Priority.HIGH);
-//                Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
-//            }
-//
-//            @Override
-//            public void cancel(ImageView imageView) {
-//
-//            }
-//
-//            @Override
-//            public Drawable placeholder(Context ctx, String tag) {
-//                //define different placeholders for different imageView targets
-//                //default tags are accessible via the DrawerImageLoader.Tags
-//                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
-//                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
-//                    return DrawerUIUtils.getPlaceHolder(ctx);
-//                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
-//                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
-//                } else if ("customUrlItem".equals(tag)) {
-//                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
-//                }
-//
-//                //we use the default one for
-//                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
-//
-//                return super.placeholder(ctx, tag);
-//            }
-//        });
-//
-//    }
+    /**
+     * Load hinh cho drawer
+     */
+    private void setLoadImageLogic() {
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+
+                RequestOptions options = new RequestOptions()
+                        .centerCrop()
+                        .placeholder(R.drawable.profile3)
+                        .error(R.drawable.material_drawer_circle_mask)
+                        .priority(Priority.HIGH);
+                Glide.with(imageView.getContext()).load(uri).apply(options).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+                    return DrawerUIUtils.getPlaceHolder(ctx);
+                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+                } else if ("customUrlItem".equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+                }
+
+                //we use the default one for
+                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+
+                return super.placeholder(ctx, tag);
+            }
+        });
+
+    }
 
     private void addEvents() {
 //        Log.d("UID after put", idUser_UID);

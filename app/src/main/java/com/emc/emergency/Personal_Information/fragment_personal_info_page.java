@@ -243,6 +243,7 @@ public class fragment_personal_info_page extends Fragment {
 
                                         try {
                                             Response response = client.newCall(request).execute();
+                                            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
                                             txtChangePassPI.setText(txtNhapMK_DialogPI.getText().toString());
                                         } catch (IOException e) {
                                             e.printStackTrace();
