@@ -6,7 +6,7 @@ public class Medical_Information {
 	public Medical_Information() {
 	}
 	private Long id_MI;
-	private Personal_Infomation id_PI;
+	private Personal_Information id_PI;
 	private String name_MI;
 	private Integer type_MI;
 	private String descriptionMI;
@@ -19,11 +19,11 @@ public class Medical_Information {
 		this.id_MI = id_MI;
 	}
 
-	public Personal_Infomation getId_PI() {
+	public Personal_Information getId_PI() {
 		return id_PI;
 	}
 
-	public void setId_PI(Personal_Infomation id_PI) {
+	public void setId_PI(Personal_Information id_PI) {
 		this.id_PI = id_PI;
 	}
 

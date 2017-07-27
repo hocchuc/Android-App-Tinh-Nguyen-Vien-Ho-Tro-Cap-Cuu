@@ -717,13 +717,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     SharedPreferences.Editor editor4 = preferences4.edit();
                     editor4.putString("id_acc",id_AC);
                     editor4.apply();
-//                    Longtitude = intent.getDoubleExtra("lon_AC",Longtitude);
-//                    Latitude = Double.valueOf(intent.getStringExtra("lat_AC"));
-//                    Log.d("id_AC_chat",id_AC.toString());
 
                     SendtoActionOnServer();
                     SendMessageJoinToServer(AccidentKey,mUsername);
-//                    SendtoActionOnFirebase();
                 }
             }
 //            if(intent.getAction()!=null) {
@@ -738,18 +734,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         }
 
     }
-//    private void SendtoActionOnFirebase() {
-//        UserJoined userJoined = new UserJoined();
-//
-//        userJoined.setUser_id(Long.valueOf(mId_user));
-//        userJoined.setLat_userjoined(latitude);
-//        userJoined.setLong_userjoined(longitude);
-//
-////        mDatabase1 = FirebaseDatabase.getInstance().getReference(ACCIDENTS_CHILD);
-//        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-//                .child(AccidentKey)
-//                .child("User joined").push().setValue(userJoined);
-//    }
+
             // TODO: 24/7/2017
     private void SendMessageJoinToServer( String accidentKey, String mUsername) {
         // Tạo lop message chưa thong tin cơ ban

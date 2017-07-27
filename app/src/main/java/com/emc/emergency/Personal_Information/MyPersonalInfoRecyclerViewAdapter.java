@@ -12,7 +12,7 @@ import android.widget.RadioButton;
 
 
 import com.emc.emergency.R;
-import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.Personal_Information;
 import java.util.ArrayList;
 
 /**
@@ -22,10 +22,10 @@ import java.util.ArrayList;
  */
 public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPersonalInfoRecyclerViewAdapter.ViewHolder> {
     private final Context context;
-    private final ArrayList<Personal_Infomation> mValues;
+    private final ArrayList<Personal_Information> mValues;
     private final fragment_personal_info_page.OnListFragmentInteractionListener mListener;
 
-    public MyPersonalInfoRecyclerViewAdapter(Context context, ArrayList<Personal_Infomation> items, fragment_personal_info_page.OnListFragmentInteractionListener listener) {
+    public MyPersonalInfoRecyclerViewAdapter(Context context, ArrayList<Personal_Information> items, fragment_personal_info_page.OnListFragmentInteractionListener listener) {
         this.context = context;
         mValues = items;
         mListener = listener;
@@ -84,7 +84,7 @@ public class MyPersonalInfoRecyclerViewAdapter extends RecyclerView.Adapter<MyPe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public Personal_Infomation mItem;
+        public Personal_Information mItem;
 
         public final EditText txtNamePI;
         public final EditText txtEmailPI;

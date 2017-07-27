@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.FlashMessage;
-import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.Personal_Information;
 import com.emc.emergency.Helper.Model.User;
 
 import com.emc.emergency.Helper.Utils.SystemUtils;
@@ -58,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
     private int mYear, mMonth, mDay;
     String date;
     public Long id_user;
-    Personal_Infomation pi;
+    Personal_Information pi;
 
 
     FlashMessage flashMessage;
@@ -82,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
         radMale = (RadioButton) findViewById(R.id.radMaleRegist);
         btnDate = (Button) findViewById(R.id.btnDate);
 
-        pi = new Personal_Infomation();
+        pi = new Personal_Information();
 
         btnDate.setOnClickListener(new View.OnClickListener() {
             @Override

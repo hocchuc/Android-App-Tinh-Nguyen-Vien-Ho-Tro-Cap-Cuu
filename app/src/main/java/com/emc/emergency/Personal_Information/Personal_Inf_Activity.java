@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.emc.emergency.Main_Menu.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Medical_Information;
-import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.Personal_Information;
 
 public class Personal_Inf_Activity extends AppCompatActivity implements fragment_personal_info_page.OnListFragmentInteractionListener
    ,fragment_medical_info_page.OnListFragmentInteractionListener,fragment_contract.OnFragmentInteractionListener {
@@ -95,7 +95,7 @@ public class Personal_Inf_Activity extends AppCompatActivity implements fragment
 
 
     @Override
-    public void onListFragmentInteraction(Personal_Infomation mItem) {
+    public void onListFragmentInteraction(Personal_Information mItem) {
 
     }
 

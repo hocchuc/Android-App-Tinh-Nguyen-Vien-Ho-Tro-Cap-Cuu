@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Model cho quản lý thông tin cá nhân
  *
  */
-public class Personal_Infomation implements Serializable  {
+public class Personal_Information implements Serializable  {
 	private Long id_PI;
 	private String name_PI;
 	private Boolean sex__PI;
@@ -118,10 +118,10 @@ public class Personal_Infomation implements Serializable  {
 		this.medical_Information = medical_Information;
 	}
 
-	public Personal_Infomation() {
+	public Personal_Information() {
 	}
 
-	public Personal_Infomation(Long id_PI, String name_PI, Boolean sex__PI, String birthday, String personal_id, String work_location, String phone_PI, String address_PI, String email_PI, User id_user, String avatar) {
+	public Personal_Information(Long id_PI, String name_PI, Boolean sex__PI, String birthday, String personal_id, String work_location, String phone_PI, String address_PI, String email_PI, User id_user, String avatar) {
 		this.id_PI = id_PI;
 		this.name_PI = name_PI;
 		this.sex__PI = sex__PI;

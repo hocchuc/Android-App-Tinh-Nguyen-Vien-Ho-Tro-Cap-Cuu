@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,14 +24,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Accidents_List.AccidentActivity;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Services.IRequestListener;
@@ -41,7 +36,7 @@ import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.Personal_Information.Personal_Inf_Activity;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Accident;
-import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.Personal_Information;
 import com.emc.emergency.Helper.Model.Route;
 
 import com.emc.emergency.Helper.Model.User;
@@ -70,17 +65,11 @@ import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.Actions;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikepenz.crossfadedrawerlayout.view.CrossfadeDrawerLayout;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -92,8 +81,6 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
-import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.mikepenz.materialize.util.UIUtils;
 
@@ -147,7 +134,7 @@ public class MainMenuActivity extends AppCompatActivity
     private List<Polyline> polylinePaths = new ArrayList<>();
     private ProgressDialog progressDialog;
     private SupportMapFragment mapFragment;
-    Personal_Infomation pi;
+    Personal_Information pi;
     User user1;
     User_Type user_type;
     //------------------------
@@ -302,7 +289,7 @@ public class MainMenuActivity extends AppCompatActivity
         btnVeDuong = (Button) findViewById(R.id.btnVeDuong);
         btnToGMap = (ImageButton) findViewById(R.id.btnDirectionToGmap);
         imgbtnRefresh = (ImageButton) findViewById(R.id.imgBtnRefresh);
-        pi = new Personal_Infomation();
+        pi = new Personal_Information();
         user1 = new User();
 
         progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading),
@@ -420,7 +407,7 @@ public class MainMenuActivity extends AppCompatActivity
                 JSONObject jsonObj = null;
                 try {
                     jsonObj = new JSONObject(response.body().string());
-                    pi = new Personal_Infomation();
+                    pi = new Personal_Information();
                     if (jsonObj.has("work_location"))
                         pi.setWork_location(jsonObj.getString("work_location"));
                     if (jsonObj.has("birthday"))

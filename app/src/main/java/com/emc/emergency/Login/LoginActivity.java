@@ -25,7 +25,7 @@ import com.emc.emergency.Main_Menu.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.Register.RegisterActivity;
 import com.emc.emergency.Helper.Model.FlashMessage;
-import com.emc.emergency.Helper.Model.Personal_Infomation;
+import com.emc.emergency.Helper.Model.Personal_Information;
 import com.emc.emergency.Helper.Model.User;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Utils.GPSTracker;
@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
     Button btnSignUp;
     EditText txtUsername;
     EditText txtPassword;
-    Personal_Infomation pi;
+    Personal_Information pi;
     MaterialDialog progressDialog;
     SharedPreferences preferences, preferences1, preferences2;
     String userState = "StoreUserState";
@@ -447,7 +447,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 JSONObject jsonObj = null;
                 try {
                     jsonObj = new JSONObject(response.body().string());
-                    pi = new Personal_Infomation();
+                    pi = new Personal_Information();
                     if (jsonObj.has("work_location"))
                         pi.setWork_location(jsonObj.getString("work_location"));
                     if (jsonObj.has("birthday"))
