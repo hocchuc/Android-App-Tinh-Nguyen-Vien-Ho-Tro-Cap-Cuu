@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -54,28 +56,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -100,13 +95,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //    ArrayList<Accident> accidentList;
     double lat = 0;
     double lon = 0;
-    double viDo = 0;
-    double kinhDo = 0;
     //    String moTa, diaChi;
     Accident accident;
     private final Handler mHandler;
     private Runnable mAnimation;
-    String AccidentKey = "";
     String AccidentKey_noti = "";
     String UserJoinedKey = "";
     int id_user;
@@ -153,7 +145,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private double mParam2;
     String mprovider;
     MapView mapView;
-    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
+    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
     String id_AC = "";
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
@@ -233,20 +225,16 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         sharedPreferences1 = getActivity().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences1.getInt("id_user", -1);
 
-
         sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
-        AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
         Active = sharedPreferences2.getString("Type_active", "");
-
-        sharedPreferences3 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
-        AccidentKey = sharedPreferences3.getString("accident_key", "");
+        AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         GetAccient();
 
         UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
+                .child(AccidentKey_noti)
                 .child("User joined").push().getKey();
         if (Active.equals("Active"))
             SendtoActionOnFirebase();
@@ -254,9 +242,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void GetAccient() {
-        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
-        id_AC = sharedPreferences.getString("id_acc", "");
-        Log.d("key_AC", id_AC);
+//        sharedPreferences = getActivity().getSharedPreferences("ID_ACC", MODE_PRIVATE);
+//        id_AC = sharedPreferences.getString("id_acc", "");
+//        Log.d("key_AC", id_AC);
 
         OkHttpClient client = new OkHttpClient();
 
@@ -327,8 +315,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        if (Active.equals("Active"))
-            addValueEventListener();
 
         BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
         LatLng myLocation = new LatLng(lat, lon);
@@ -364,36 +350,58 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //        mHandler.post(mAnimation);
 //        // for the default behavior to occur (which is for the camera to move such that the
 //        // marker is centered and for the marker's info window to open, if it has one).
-
+        if (Active.equals("Active"))
+            addValueEventListener();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+//        mMap.setMyLocationEnabled(true);
     }
 
     private void addValueEventListener() {
         if (mMap == null) return;
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey)
+                .child(AccidentKey_noti)
                 .child("User joined");
         ref1.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
                 UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
                 BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
-
-                if (dataSnapshot.exists()) {
+                if (userJoined1 != null) {
                     LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
 
                     mMap.addMarker(new MarkerOptions()
                             .position(loocation)
-                            .title(String.valueOf(userJoined1.getUser_id())))
+                            .title(String.valueOf(userJoined1.getName())))
+//                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
                             .setIcon(icon);
                 }
+//                if (userJoined1 != null) {
+//                    try {
+//                        URL url = new URL(userJoined1.getAvatar());
+//                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//                        Bitmap b = Bitmap.createScaledBitmap(bmp, 48, 48, true);
+//                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+//
+//                        mMap.addMarker(new MarkerOptions()
+//                                .position(loocation)
+//                                .title(String.valueOf(userJoined1.getName())))
+//                                .setIcon(BitmapDescriptorFactory.fromBitmap(b));
+////                        .setIcon(icon);
+//                    } catch (MalformedURLException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -412,7 +420,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             }
         });
 
-        mMap.setMyLocationEnabled(true);
+//        mMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -524,20 +532,55 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
     @Override
     public void onStop() {
-        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
     private void SendtoActionOnFirebase() {
-        final UserJoined userJoined = new UserJoined();
 
-        userJoined.setUser_id(Long.valueOf(id_user));
-        userJoined.setLat_userjoined(lat);
-        userJoined.setLong_userjoined(lon);
+        OkHttpClient client = new OkHttpClient();
 
-        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey_noti)
-                .child("User joined").child(UserJoinedKey).setValue(userJoined);
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "accident/GetAllUserJoined/" + id_AC)
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+//                Log.d("responeUserJoined",response.body().string());
+                try {
+                    JSONArray jsonArray = new JSONArray(response.body().string());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        UserJoined userJoined = new UserJoined();
+                        if (jsonObject.has("date"))
+                            userJoined.setDate(jsonObject.getString("date"));
+                        if (jsonObject.has("name"))
+                            userJoined.setName(jsonObject.getString("name"));
+                        if (jsonObject.has("id_user"))
+                            userJoined.setUser_id(jsonObject.getLong("id_user"));
+                        if (jsonObject.has("avatar"))
+                            userJoined.setAvatar(jsonObject.getString("avatar"));
+                        if (jsonObject.has("lat"))
+                            userJoined.setLat_userjoined(jsonObject.getDouble("lat"));
+                        if (jsonObject.has("long"))
+                            userJoined.setLong_userjoined(jsonObject.getDouble("long"));
+
+                        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                                .child(AccidentKey_noti)
+                                .child("User joined").child(UserJoinedKey).setValue(userJoined);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

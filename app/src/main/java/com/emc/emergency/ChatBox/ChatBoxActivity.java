@@ -492,35 +492,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
             longitude = gps.getLongitude();
 //            Longtitude=gps.getLongitude();
         }
-
-//        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        LocationListener locationListener = new LocationListener(){
-//            @Override
-//            public void onLocationChanged(Location location) {
-//                Latitude=location.getLatitude();
-//                Longtitude=location.getLongitude();
-//            }
-//
-//            @Override
-//            public void onStatusChanged(String provider, int status, Bundle extras) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderEnabled(String provider) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderDisabled(String provider) {
-//
-//            }
-//        };
-//        // Register the listener with the Location Manager to receive location updates
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
     private void LoadMessage() {
@@ -859,8 +830,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
      */
     private void createAccidentOnFirebase() {
         // Chuẩn bị folder cho accident và lấy key về
-        AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
-        accident.setFirebaseKey(AccidentKey);
+        accident2.setFirebaseKey(AccidentKey);
 
         preferences3 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
         SharedPreferences.Editor editor3 = preferences3.edit();
@@ -870,7 +840,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
 
         // Bỏ accident mới vào key vừa tạo trên firebase
-        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident);
+        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).child(AccidentKey).setValue(accident2);
         // cập nhập firebasekey cho accident vừa tạo
 //        Log.d("AccidentKey",AccidentKey);
     }
@@ -1046,6 +1016,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
      */
     private void createAccidentOnServer() {
         accident = new Accident();
+        accident2 = new Accident();
+        AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
+
         accident.setDescription_AC("Tai nạn");
 
 
@@ -1059,9 +1032,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
         accident.setLat_AC(latitude);
 
         accident.setLong_AC(longitude);
+        accident.setFirebaseKey(AccidentKey);
 //        Log.d("createAccidentOnServer", accident.toString());
 
-        createAccidentOnFirebase();
         // convert object to json
 //        Log.d("afterOnFirebase", accident.toString());
 
@@ -1082,7 +1055,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
             }
 
         }
-        accident2 = new Accident();
 
         JSONObject jsonObject = null;
         try {
@@ -1106,12 +1078,12 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 if (jsonObject.has("adress"))
                     accident2.setAddress(jsonObject.getString("adress"));
             }
-
+            createAccidentOnFirebase();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.d("accident2", accident2.toString());
+//        Log.d("accident2", accident2.toString());
 
         /**
          * tiếp tục gởi put lên  server để xác định user nào tạo tai nạn nào
