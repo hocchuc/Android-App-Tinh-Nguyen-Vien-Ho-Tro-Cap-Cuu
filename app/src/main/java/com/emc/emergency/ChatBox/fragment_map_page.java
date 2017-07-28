@@ -7,6 +7,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -16,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.emc.emergency.Helper.Model.UserJoined;
@@ -320,7 +326,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         mMap = googleMap;
 
-
         BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
         LatLng myLocation = new LatLng(lat, lon);
         MarkerOptions markerOptions = new MarkerOptions()
@@ -377,34 +382,25 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+//                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
-                    LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+                    try {
+                        URL url = new URL(userJoined1.getAvatar());
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        Bitmap b = Bitmap.createBitmap(bmp, 32, 48, 0,0);
+                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
 
-                    mMap.addMarker(new MarkerOptions()
-                            .position(loocation)
-                            .title(String.valueOf(userJoined1.getName())))
-//                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                            .setIcon(icon);
+                        mMap.addMarker(new MarkerOptions()
+                                .position(loocation)
+                                .title(String.valueOf(userJoined1.getName())))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
+//                        .setIcon(icon);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-//                if (userJoined1 != null) {
-//                    try {
-//                        URL url = new URL(userJoined1.getAvatar());
-//                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//                        Bitmap b = Bitmap.createScaledBitmap(bmp, 48, 48, true);
-//                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
-//
-//                        mMap.addMarker(new MarkerOptions()
-//                                .position(loocation)
-//                                .title(String.valueOf(userJoined1.getName())))
-//                                .setIcon(BitmapDescriptorFactory.fromBitmap(b));
-////                        .setIcon(icon);
-//                    } catch (MalformedURLException e) {
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
             }
 
             @Override
@@ -444,32 +440,23 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                 UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
                 BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
-                    LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+                    try {
+                        URL url = new URL(userJoined1.getAvatar());
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48, true);
+                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
 
-                    mMap.addMarker(new MarkerOptions()
-                            .position(loocation)
-                            .title(String.valueOf(userJoined1.getName())))
-//                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                            .setIcon(icon);
+                        mMap.addMarker(new MarkerOptions()
+                                .position(loocation)
+                                .title(String.valueOf(userJoined1.getName())))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
+//                        .setIcon(icon);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-//                if (userJoined1 != null) {
-//                    try {
-//                        URL url = new URL(userJoined1.getAvatar());
-//                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//                        Bitmap b = Bitmap.createScaledBitmap(bmp, 48, 48, true);
-//                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
-//
-//                        mMap.addMarker(new MarkerOptions()
-//                                .position(loocation)
-//                                .title(String.valueOf(userJoined1.getName())))
-//                                .setIcon(BitmapDescriptorFactory.fromBitmap(b));
-////                        .setIcon(icon);
-//                    } catch (MalformedURLException e) {
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
             }
 
             @Override
@@ -607,5 +594,45 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     public void onStop() {
         super.onStop();
     }
+
+
+
+//    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
+//
+//            View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+//            ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+//            markerImageView.setImageResource(resId);
+//            customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//            customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+//            customMarkerView.buildDrawingCache();
+//            Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            Canvas canvas = new Canvas(returnedBitmap);
+//            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+//            Drawable drawable = customMarkerView.getBackground();
+//            if (drawable != null)
+//                drawable.draw(canvas);
+//            customMarkerView.draw(canvas);
+//            return returnedBitmap;
+//        }
+
+    private Bitmap getMarkerBitmapFromBitmap( Bitmap bitmap) {
+
+                View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+                ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+                markerImageView.setImageBitmap(bitmap);
+                customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+                customMarkerView.buildDrawingCache();
+                Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                        Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(returnedBitmap);
+                canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                Drawable drawable = customMarkerView.getBackground();
+                if (drawable != null)
+                    drawable.draw(canvas);
+                customMarkerView.draw(canvas);
+                return returnedBitmap;
+            }
 
 }
