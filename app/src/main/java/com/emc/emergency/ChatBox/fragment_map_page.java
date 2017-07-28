@@ -387,7 +387,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     try {
                         URL url = new URL(userJoined1.getAvatar());
                         Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        Bitmap b = Bitmap.createBitmap(bmp, 32, 48, 0,0);
+                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48,true);
                         LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
 
                         mMap.addMarker(new MarkerOptions()
@@ -438,7 +438,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+//                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
                     try {
                         URL url = new URL(userJoined1.getAvatar());

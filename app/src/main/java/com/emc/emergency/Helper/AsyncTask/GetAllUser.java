@@ -3,6 +3,7 @@ package com.emc.emergency.Helper.AsyncTask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.emc.emergency.Helper.Model.Personal_Information;
 import com.emc.emergency.Helper.Model.User;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Utils.SystemUtils;
@@ -17,17 +18,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * Created by Admin on 13/7/2017.
  */
 
-public class GetAllUser  extends AsyncTask<Void, Void, ArrayList<User>> {
-    ArrayList<User> arrUser=new ArrayList<>();
-    private ReturnDataAllUser returnDataAllUser=null;
+public class GetAllUser extends AsyncTask<Void, Void, ArrayList<User>> {
+    ArrayList<User> arrUser = new ArrayList<>();
+    private ReturnDataAllUser returnDataAllUser = null;
 
-    public GetAllUser(ReturnDataAllUser returnDataAllUser){
-        this.returnDataAllUser=returnDataAllUser;
+    public GetAllUser(ReturnDataAllUser returnDataAllUser) {
+        this.returnDataAllUser = returnDataAllUser;
     }
+
     @Override
     protected void onPostExecute(ArrayList<User> users) {
         returnDataAllUser.handleReturnDataAllUser(users);
@@ -38,54 +44,44 @@ public class GetAllUser  extends AsyncTask<Void, Void, ArrayList<User>> {
         super.onPreExecute();
         arrUser.clear();
     }
+
     @Override
     protected ArrayList<User> doInBackground(Void... params) {
         ArrayList<User> userList = new ArrayList<>();
         try {
 
-            URL url = new URL(SystemUtils.getServerBaseUrl() + "users");
-            HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-            InputStreamReader inStreamReader = new InputStreamReader(connect.getInputStream(), "UTF-8");
-            BufferedReader bufferedReader = new BufferedReader(inStreamReader);
-            StringBuilder builder = new StringBuilder();
-            String line = bufferedReader.readLine();
-            while (line != null) {
-                builder.append(line);
-                line = bufferedReader.readLine();
-            }
-            JSONObject jsonObject = new JSONObject(builder.toString());
-            JSONObject _embeddedObject = jsonObject.getJSONObject("_embedded");
-            JSONArray usersJSONArray = _embeddedObject.getJSONArray("users");
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(SystemUtils.getServerBaseUrl() + "GetAllUser")
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            JSONArray usersJSONArray = new JSONArray(response.body().string());
 //                Log.d("jsonObj", jsonObject.toString());
             for (int i = 0; i < usersJSONArray.length(); i++) {
                 User user1 = new User();
                 JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+                if (jsonObj.has("name")) {
+                    Personal_Information pi = new Personal_Information();
+                    pi.setName_PI(jsonObj.getString("name"));
+                    user1.setUser_name(pi.getName_PI());
+                }
                 if (jsonObj.has("id_user"))
-                    user1.setId_user(Long.parseLong((jsonObj.getString("id_user"))));
-                if (jsonObj.has("username"))
-                    user1.setUser_name(jsonObj.getString("username"));
-                if (jsonObj.has("token"))
-                    user1.setToken(jsonObj.getString("token"));
-                if (jsonObj.has("password"))
-                    user1.setPassword(jsonObj.getString("password"));
-                if (jsonObj.has("long_PI"))
-                    user1.setLong_PI(jsonObj.getDouble("long_PI"));
-                if (jsonObj.has("lat_PI"))
-                    user1.setLat_PI(jsonObj.getDouble("lat_PI"));
-                if (jsonObj.has("is_signup_volunteer"))
-                    user1.setId_signup_volumteer(jsonObj.getBoolean("is_signup_volunteer"));
-                if (jsonObj.has("id_user_type")) {
-                    String user_type = jsonObj.getString("id_user_type");
+                    user1.setId_user(jsonObj.getLong("id_user"));
+                if (jsonObj.has("avatar")) {
+                    Personal_Information pi1 = new Personal_Information();
+                    pi1.setAvatar(jsonObj.getString("avatar"));
+                    user1.setToken(pi1.getAvatar());
+                }
+                if (jsonObj.has("long"))
+                    user1.setLong_PI(jsonObj.getDouble("long"));
+                if (jsonObj.has("lat"))
+                    user1.setLat_PI(jsonObj.getDouble("lat"));
+                if (jsonObj.has("name_user_type")) {
                     User_Type user_type1 = new User_Type();
-                    try {
-                        JSONObject jsonObject1 = new JSONObject(user_type);
-                        if (jsonObject1.has("id_user_type"))
-                            user_type1.setId_user_type(jsonObject1.getLong("id_user_type"));
-                        if (jsonObject1.has("name_user_type"))
-                            user_type1.setName_user_type(jsonObject1.getString("name_user_type"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    user_type1.setName_user_type(jsonObj.getString("name_user_type"));
                     user1.setUser_type(user_type1);
                 }
 //                    Log.d("User1", user1.toString());

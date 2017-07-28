@@ -15,8 +15,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.emc.emergency.Helper.AsyncTask.GetAllUser;
-import com.emc.emergency.Helper.AsyncTask.ReturnDataAllUser;
+
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.User;

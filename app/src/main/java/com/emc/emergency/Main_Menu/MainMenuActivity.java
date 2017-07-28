@@ -6,7 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -98,6 +103,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,7 +182,7 @@ public class MainMenuActivity extends AppCompatActivity
                 longitude = location.getLongitude();
 
 
-                SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this,id_user,longitude,latitude);
+                SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this, id_user, longitude, latitude);
                 SendLocationToServer.excute();
 
 //                LatLng latLng = new LatLng(latitude, longitude);
@@ -537,7 +543,8 @@ public class MainMenuActivity extends AppCompatActivity
                                 intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 mProgressDialog.show();
-                                 if(!progressDialog.isShowing()) progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                if (!progressDialog.isShowing())
+                                    progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -844,23 +851,53 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void handleReturnDataAllUser(ArrayList<User> arrUser) {
         for (int i = 0; i < arrUser.size(); i++) {
-            if (arrUser.get(i).getUser_type().getId_user_type() == 2) {
+            if (arrUser.get(i).getUser_type().getName_user_type().equals("volunteer")||arrUser.get(i).getUser_type().getName_user_type().equals("admin")) {
                 viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
                 kinhDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
                 LatLng loocation = new LatLng(viDoUser, kinhDoUser);
                 try {
-
-                    mMap.addMarker(new MarkerOptions()
-                            .position(loocation)
-                            .title(arrUser.get(i).getUser_name())
-                            .snippet(String.valueOf(arrUser.get(i).getId_user())))
+                    if (arrUser.get(i).getToken() != null) {
+                        URL url = new URL(arrUser.get(i).getToken());
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48, true);
+                        mMap.addMarker(new MarkerOptions()
+                                .position(loocation)
+                                .title(arrUser.get(i).getUser_name())
+                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
+//                            .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
+                    }else{
+                        mMap.addMarker(new MarkerOptions()
+                                .position(loocation)
+                                .title(arrUser.get(i).getUser_name())
+                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
                             .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(MainMenuActivity.this, "Xin hãy cập nhập Google Play Services", Toast.LENGTH_SHORT).show();
                 }
             }
         }
+    }
+
+    private Bitmap getMarkerBitmapFromBitmap(Bitmap bitmap) {
+
+        View customMarkerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        markerImageView.setImageBitmap(bitmap);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
     }
 
     @Override
