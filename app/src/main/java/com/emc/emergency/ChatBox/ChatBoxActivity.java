@@ -15,8 +15,6 @@ package com.emc.emergency.ChatBox; /**
  */
 
 
-
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -113,6 +111,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -223,7 +222,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
     private String id_victim;
-    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3,preferences4;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2, preferences1, preferences3, preferences4;
 
 
     private RecordButton recordButton;
@@ -250,11 +249,12 @@ public class ChatBoxActivity extends AppCompatActivity implements
     Response postResponse, putResponse;
     MaterialDialog dialog;
     ProgressDialog progressDialog;
-    private String id_AC = "";
-    private String AccidentKey = "";
-//    private String AccidentKey_noti="";
+    String id_AC = "";
+    String AccidentKey = "";
+    String UserJoinedKey = "";
+    //    private String AccidentKey_noti="";
     public static final String ACCIDENTS_CHILD = "accidents";
-    private String response;
+    String response;
 //    private DatabaseReference mDatabase1;
 
     @Override
@@ -680,23 +680,20 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     Type_User = TYPE_HELPER;
 //                    Log.d("Type_User", Type_User);
                     AccidentKey = intent.getStringExtra("FirebaseKey");
-                    id_victim  = intent.getStringExtra(SystemUtils.id_victim);
+                    id_victim = intent.getStringExtra(SystemUtils.id_victim);
 
                     preferences1 = getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
                     SharedPreferences.Editor editor1 = preferences1.edit();
                     editor1.putString("accident_key_noti", AccidentKey);
-                    editor1.putString("Type_active","Active");
+                    editor1.putString("Type_active", "Active");
                     editor1.apply();
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
 
-                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
-                    SharedPreferences.Editor editor4 = preferences4.edit();
-                    editor4.putString("id_acc",id_AC);
-                    editor4.apply();
 
                     SendtoActionOnServer();
-                    SendMessageJoinToServer(AccidentKey,mUsername);
+                    SendtoActionOnFirebase();
+                    SendMessageJoinToServer(AccidentKey, mUsername);
                 }
             }
 //            if(intent.getAction()!=null) {
@@ -712,8 +709,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     }
 
-            // TODO: 24/7/2017
-    private void SendMessageJoinToServer( String accidentKey, String mUsername) {
+    // TODO: 24/7/2017
+    private void SendMessageJoinToServer(String accidentKey, String mUsername) {
         // Tạo lop message chưa thong tin cơ ban
         Message Message = new Message(mUsername + " đã tham gia",
                 mUsername,
@@ -725,7 +722,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private void SendtoActionOnServer() {
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a",Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss a", Locale.US);
         String currentDateTime = dateFormat.format(date);
 //        Log.d("currentDateTime",currentDateTime);
         OkHttpClient client = new OkHttpClient();
@@ -1002,6 +999,57 @@ public class ChatBoxActivity extends AppCompatActivity implements
                         });
     }
 
+    private void SendtoActionOnFirebase() {
+        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined").push().getKey();
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "accident/GetAllUserJoined/" + id_AC)
+                .get()
+                .build();
+
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+//                Log.d("responeUserJoined",response.body().string());
+                try {
+                    JSONArray jsonArray = new JSONArray(response.body().string());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        UserJoined userJoined = new UserJoined();
+                        if (jsonObject.has("date"))
+                            userJoined.setDate(jsonObject.getString("date"));
+                        if (jsonObject.has("name"))
+                            userJoined.setName(jsonObject.getString("name"));
+                        if (jsonObject.has("id_user"))
+                            userJoined.setUser_id(jsonObject.getLong("id_user"));
+                        if (jsonObject.has("avatar"))
+                            userJoined.setAvatar(jsonObject.getString("avatar"));
+                        if (jsonObject.has("lat"))
+                            userJoined.setLat_userjoined(jsonObject.getDouble("lat"));
+                        if (jsonObject.has("long"))
+                            userJoined.setLong_userjoined(jsonObject.getDouble("long"));
+
+                        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                                .child(AccidentKey)
+                                .child("User joined").child(UserJoinedKey).setValue(userJoined);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Apply retrieved length limit to edit text field. This result may be fresh from the server or it may be from
      * cached values.
@@ -1069,8 +1117,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
             for (int i = 0; i < jsonObject.length(); i++) {
                 if (jsonObject == null) continue;
-                if (jsonObject.has("id_AC"))
+                if (jsonObject.has("id_AC")) {
                     accident2.setId_AC(Long.parseLong(jsonObject.getString("id_AC")));
+                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
+                    SharedPreferences.Editor editor4 = preferences4.edit();
+                    editor4.putString("id_acc", String.valueOf(accident2.getId_AC()));
+                    editor4.apply();
+
+                }
                 if (jsonObject.has("description_AC"))
                     accident2.setDescription_AC(jsonObject.getString("description_AC"));
                 if (jsonObject.has("date_AC"))
@@ -1283,14 +1337,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-           if (prev != null) {
-               ft.remove(prev);
-           }
-           ft.addToBackStack(null);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
 
-           // Create and show the dialog.
-           fragment_dialog_medical_info newFragment = fragment_dialog_medical_info.newInstance(Long.parseLong(id_victim));
-           newFragment.show(fm,"dialog");
+        // Create and show the dialog.
+        fragment_dialog_medical_info newFragment = fragment_dialog_medical_info.newInstance(Long.parseLong(id_victim));
+        newFragment.show(fm, "dialog");
 
     }
 

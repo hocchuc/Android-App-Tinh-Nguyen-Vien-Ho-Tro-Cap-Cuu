@@ -100,7 +100,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private final Handler mHandler;
     private Runnable mAnimation;
     String AccidentKey_noti = "";
-    String UserJoinedKey = "";
+    String AccidentKey = "";
+    //    String UserJoinedKey = "";
     int id_user;
     ArrayList<UserJoined> arrUserJoineds;
     String Active = "";
@@ -145,7 +146,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     private double mParam2;
     String mprovider;
     MapView mapView;
-    private SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2;
+    SharedPreferences sharedPreferences, sharedPreferences1, sharedPreferences2, sharedPreferences3;
     String id_AC = "";
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
@@ -229,15 +230,18 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         Active = sharedPreferences2.getString("Type_active", "");
         AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
 
+        sharedPreferences3 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+        AccidentKey = sharedPreferences3.getString("accident_key", "");
+
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         GetAccient();
 
-        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                .child(AccidentKey_noti)
-                .child("User joined").push().getKey();
-        if (Active.equals("Active"))
-            SendtoActionOnFirebase();
+//        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+//                .child(AccidentKey_noti)
+//                .child("User joined").push().getKey();
+//        if (Active.equals("Active"))
+//            SendtoActionOnFirebase();
         return view;
     }
 
@@ -316,6 +320,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         mMap = googleMap;
 
+
         BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
         LatLng myLocation = new LatLng(lat, lon);
         MarkerOptions markerOptions = new MarkerOptions()
@@ -326,6 +331,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         mMap.setMyLocationEnabled(false);
 
+        if (Active.equals("Active"))
+            addValueEventListener_noti();
+        else addValueEventListener();
 //        LatLng myLocation = new LatLng(lat, lon);
 //        MarkerOptions markerOptions = new MarkerOptions()
 //                .position(myLocation)
@@ -335,23 +343,23 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //        Marker marker = mMap.addMarker(markerOptions);
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
 //
-//        /**
-//         * Tạo hiệu ứng nảy
-//         */
-//        // This causes the marker at Perth to bounce into position when it is clicked.
-//        final long start = SystemClock.uptimeMillis();
-//        final long duration = 1500L;
-//
-//        // Cancels the previous animation
-//        mHandler.removeCallbacks(mAnimation);
-//
-//        // Starts the bounce animation
-//        mAnimation = new BounceAnimation(start, duration, marker, mHandler);
-//        mHandler.post(mAnimation);
-//        // for the default behavior to occur (which is for the camera to move such that the
-//        // marker is centered and for the marker's info window to open, if it has one).
-        if (Active.equals("Active"))
-            addValueEventListener();
+        /**
+         * Tạo hiệu ứng nảy
+         */
+        // This causes the marker at Perth to bounce into position when it is clicked.
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500L;
+
+        // Cancels the previous animation
+        mHandler.removeCallbacks(mAnimation);
+
+        // Starts the bounce animation
+        mAnimation = new BounceAnimation(start, duration, marker, mHandler);
+        mHandler.post(mAnimation);
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+//        if (Active.equals("Active"))
+//            addValueEventListener();
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -359,6 +367,71 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void addValueEventListener() {
+        if (mMap == null) return;
+
+        DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
+                .child(AccidentKey)
+                .child("User joined");
+        ref1.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
+                if (userJoined1 != null) {
+                    LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(loocation)
+                            .title(String.valueOf(userJoined1.getName())))
+//                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                            .setIcon(icon);
+                }
+//                if (userJoined1 != null) {
+//                    try {
+//                        URL url = new URL(userJoined1.getAvatar());
+//                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//                        Bitmap b = Bitmap.createScaledBitmap(bmp, 48, 48, true);
+//                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+//
+//                        mMap.addMarker(new MarkerOptions()
+//                                .position(loocation)
+//                                .title(String.valueOf(userJoined1.getName())))
+//                                .setIcon(BitmapDescriptorFactory.fromBitmap(b));
+////                        .setIcon(icon);
+//                    } catch (MalformedURLException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+//        mMap.setMyLocationEnabled(true);
+    }
+
+    private void addValueEventListener_noti() {
         if (mMap == null) return;
 
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
@@ -533,55 +606,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    private void SendtoActionOnFirebase() {
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl() + "accident/GetAllUserJoined/" + id_AC)
-                .get()
-                .build();
-
-        int SDK_INT = android.os.Build.VERSION.SDK_INT;
-        if (SDK_INT > 8) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                    .permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            try {
-                Response response = client.newCall(request).execute();
-//                Log.d("responeUserJoined",response.body().string());
-                try {
-                    JSONArray jsonArray = new JSONArray(response.body().string());
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                        UserJoined userJoined = new UserJoined();
-                        if (jsonObject.has("date"))
-                            userJoined.setDate(jsonObject.getString("date"));
-                        if (jsonObject.has("name"))
-                            userJoined.setName(jsonObject.getString("name"));
-                        if (jsonObject.has("id_user"))
-                            userJoined.setUser_id(jsonObject.getLong("id_user"));
-                        if (jsonObject.has("avatar"))
-                            userJoined.setAvatar(jsonObject.getString("avatar"));
-                        if (jsonObject.has("lat"))
-                            userJoined.setLat_userjoined(jsonObject.getDouble("lat"));
-                        if (jsonObject.has("long"))
-                            userJoined.setLong_userjoined(jsonObject.getDouble("long"));
-
-                        mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
-                                .child(AccidentKey_noti)
-                                .child("User joined").child(UserJoinedKey).setValue(userJoined);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
