@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.Accidents_List.AccidentActivity;
+import com.emc.emergency.Helper.AsyncTask.SendLocationToServer;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Services.IRequestListener;
 
@@ -173,6 +174,11 @@ public class MainMenuActivity extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
+
+
+                SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this,id_user,longitude,latitude);
+                SendLocationToServer.excute();
+
 //                LatLng latLng = new LatLng(latitude, longitude);
 
 //                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");

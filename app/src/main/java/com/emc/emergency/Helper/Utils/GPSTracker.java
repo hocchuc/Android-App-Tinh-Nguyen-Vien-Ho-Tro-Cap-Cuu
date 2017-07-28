@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,6 +17,8 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.emc.emergency.Helper.AsyncTask.SendLocationToServer;
 
 /**
  * Created by kietnhi on 11/13/2016.
@@ -141,6 +144,7 @@ public class GPSTracker extends Service implements LocationListener {
     }
     @Override
     public void onLocationChanged(Location location) {
+
     }
 
     @Override
