@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="25dp"
     android:orientation="vertical"
     android:padding="10dp">
@@ -100,9 +101,12 @@
             android:layout_weight="1"
             android:enabled="false"
             android:padding="5dp"
-            android:textStyle="bold">
-
-            <EditText
+            android:textStyle="bold"
+            app:passwordToggleContentDescription="@string/description"
+            app:passwordToggleDrawable="@drawable/ic_view_password"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/colorPrimary">
+        <EditText
                 android:id="@+id/txtRegisPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
