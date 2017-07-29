@@ -1,5 +1,11 @@
 package com.emc.emergency.Helper.Utils;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -34,5 +40,20 @@ public class Utility {
 	 */
 	public static boolean isNotNull(String txt){
 		return txt!=null && txt.trim().length()>0 ? true: false;
+	}
+
+	public static void dumpIntent(Intent i, String LOG_TAG){
+
+	    Bundle bundle = i.getExtras();
+	    if (bundle != null) {
+	        Set<String> keys = bundle.keySet();
+	        Iterator<String> it = keys.iterator();
+	        Log.e(LOG_TAG,"Dumping Intent start");
+	        while (it.hasNext()) {
+	            String key = it.next();
+	            Log.e(LOG_TAG,"[" + key + "=" + bundle.get(key)+"]");
+	        }
+	        Log.e(LOG_TAG,"Dumping Intent end");
+	    }
 	}
 }

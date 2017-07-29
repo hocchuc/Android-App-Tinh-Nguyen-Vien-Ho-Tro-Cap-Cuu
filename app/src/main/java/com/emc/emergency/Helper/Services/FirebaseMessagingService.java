@@ -127,6 +127,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         i.putExtra("FirebaseKey", FirebaseKey);
         if(FirebaseKey!=null&&!FirebaseKey.equals(""))Log.d("FirebaseKey",FirebaseKey);
+        i.putExtra("id_victim",id_victim);
         i.putExtra("id_AC", id_AC);
 //        i.putExtra("lon_AC",Longtitude);
 //        i.putExtra("lat_AC",Latitude);
