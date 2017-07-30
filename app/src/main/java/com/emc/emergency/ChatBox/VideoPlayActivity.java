@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -45,7 +46,13 @@ public class VideoPlayActivity extends AppCompatActivity {
         
         videoView.setVideoURI(uri);
         videoView.requestFocus();
-        videoView.start();
+        try {
+            videoView.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Some thing went wrong ,please try later", Toast.LENGTH_SHORT).show();
+            this.finish();
+        }
         progressBar.setVisibility(View.GONE);
         dialog.dismiss();
        

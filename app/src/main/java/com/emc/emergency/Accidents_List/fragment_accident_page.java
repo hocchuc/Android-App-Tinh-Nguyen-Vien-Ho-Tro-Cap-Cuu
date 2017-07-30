@@ -153,7 +153,6 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
 //        arrAccidents.clear();
             for(Accident accident:accidents){
                 if(accident.getStatus_AC().equals("Active")){
-//                    displayAccidentList(accidents);
                     accidentList.add(accident);
                 }
             }
@@ -212,8 +211,5 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
             return ds;
         }
     }
-    public void displayAccidentList(ArrayList<Accident> accidents) {
-        accidentList.addAll(accidents);
-        recyclerView.getAdapter().notifyDataSetChanged();
-    }
+
 }

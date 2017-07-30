@@ -134,13 +134,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Intent i = new Intent(this, ChatBoxActivity.class);
         i.putExtra("type", TYPE_HELPER);
         Log.d("type",TYPE_HELPER);
-
         i.putExtra("FirebaseKey", FirebaseKey);
         if(FirebaseKey!=null&&!FirebaseKey.equals(""))Log.d("FirebaseKey",FirebaseKey);
         i.putExtra("id_victim",id_victim);
         i.putExtra("id_AC", id_AC);
-//        i.putExtra("lon_AC",Longtitude);
-//        i.putExtra("lat_AC",Latitude);
         
         i.setAction("TYPE_HELPER");
 

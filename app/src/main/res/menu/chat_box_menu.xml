@@ -3,8 +3,10 @@
 <group>
     <item android:title="Show Medical Infomation"
         android:id="@+id/ShowMedi">Show Medical Infomation</item>
-    <item android:title="Report True"
-        android:id="@+id/ReportTrue">Report Done</item>
+    <item
+        android:id="@+id/ReportDone"
+        android:title="Report Done">Report Done
+    </item>
     <item android:title="Report Fake"
           android:id="@+id/ReportFake">Report Fake</item>
     <item android:title="Exit"

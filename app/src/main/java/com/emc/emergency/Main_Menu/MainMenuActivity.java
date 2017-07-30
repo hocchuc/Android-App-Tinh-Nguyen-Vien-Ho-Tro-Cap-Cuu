@@ -187,22 +187,7 @@ public class MainMenuActivity extends AppCompatActivity
                 SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this, id_user, longitude, latitude);
                 SendLocationToServer.excute();
 
-//                LatLng latLng = new LatLng(latitude, longitude);
 
-//                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
-//                mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                            idUser_UID = childSnapshot.getKey();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -544,9 +529,13 @@ public class MainMenuActivity extends AppCompatActivity
                             } else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                mProgressDialog.show();
-                                if (!progressDialog.isShowing())
-                                    progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                try {
+                                    mProgressDialog.show();
+                                    if (!progressDialog.isShowing())
+                                        progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 Logout();
                                 intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                                 intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
@@ -618,8 +607,14 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
-        if (progressDialog.isShowing()) progressDialog.dismiss();
+
+        try {
+            if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+            if (progressDialog.isShowing()) progressDialog.dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
         intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
         finish();

@@ -160,8 +160,14 @@ public class ChatBoxActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onStart()  {
+        try {
+            super.onStart();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error, please access chatbox through 'Accident Near You'", Toast.LENGTH_SHORT).show();
+            this.finish();
+        }
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -296,7 +302,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         //Khởi tạo từng control trong activity
         prepareControl();
 
-        //Đổ fragment (map) vào activity
+        /* Đổ fragment (map + camera) vào activity */
         buildFragment();
 
         //Đổ tin nhăn vào recycleview
@@ -404,7 +410,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
             public void onClick(View v) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    onClickedCameraButton();
+                    try {
+                        onClickedCameraButton();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                     if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
@@ -801,7 +811,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
             Configuration.Builder builder = new Configuration.Builder();
             builder .setCamera(Configuration.CAMERA_FACE_REAR)
                     .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
-                    .setMediaQuality(Configuration.MEDIA_QUALITY_LOW);
+                    .setMediaQuality(Configuration.MEDIA_QUALITY_LOW)
+                    .setFlashMode(Configuration.FLASH_MODE_OFF);
 
             final CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
 
@@ -840,7 +851,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
                 @Override
                 public void onStopVideoRecord() {
-                    super.onStopVideoRecord();
+                    try {
+                        super.onStopVideoRecord();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             cameraFragment.setControlsListener(new CameraFragmentControlsAdapter() {
@@ -1320,7 +1335,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
                 }
                 break;
             }
-            case R.id.ReportTrue: {
+            case R.id.ReportDone: {
                 try {
                     ReportDoneAccident();
                 } catch (IOException e) {
