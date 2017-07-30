@@ -864,15 +864,15 @@ public class MainMenuActivity extends AppCompatActivity
                         Glide.with(getApplicationContext())
                                 .asBitmap()
                                 .load(arrUser.get(i).getToken())
-                                .into(new SimpleTarget<Bitmap>() {
+                                .into(new SimpleTarget<Bitmap>(48,48) {
                                     @Override
                                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                        Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+//                                        Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
                                         mMap.addMarker(new MarkerOptions()
                                                 .position(loocation)
                                                 .title(arrUser.get(j).getUser_name())
                                                 .snippet(String.valueOf(arrUser.get(j).getId_user())))
-                                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
+                                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
                                     }
                                 });
                     } else {

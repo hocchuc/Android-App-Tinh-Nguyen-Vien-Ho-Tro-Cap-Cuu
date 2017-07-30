@@ -37,6 +37,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.emc.emergency.Helper.Model.UserJoined;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Accident;
@@ -381,25 +384,27 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+                final UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
 //                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
-                    try {
-                        URL url = new URL(userJoined1.getAvatar());
-                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48,true);
-                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+                    //                        URL url = new URL(userJoined1.getAvatar());
+//                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48,true);
+                    final LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
 
-                        mMap.addMarker(new MarkerOptions()
-                                .position(loocation)
-                                .title(String.valueOf(userJoined1.getName())))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
-//                        .setIcon(icon);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Glide.with(getContext())
+                            .asBitmap()
+                            .load(userJoined1.getAvatar())
+                            .into(new SimpleTarget<Bitmap>(48,48) {
+                                @Override
+                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+//                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(loocation)
+                                            .title(String.valueOf(userJoined1.getName())))
+                                            .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
+                                }
+                            });
                 }
             }
 
@@ -437,25 +442,23 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
+                final UserJoined userJoined1 = dataSnapshot.getValue(UserJoined.class);
 //                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
-                    try {
-                        URL url = new URL(userJoined1.getAvatar());
-                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48, true);
-                        LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
-
-                        mMap.addMarker(new MarkerOptions()
-                                .position(loocation)
-                                .title(String.valueOf(userJoined1.getName())))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
-//                        .setIcon(icon);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    final LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
+                    Glide.with(getContext())
+                            .asBitmap()
+                            .load(userJoined1.getAvatar())
+                            .into(new SimpleTarget<Bitmap>(48,48) {
+                                @Override
+                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+//                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(loocation)
+                                            .title(String.valueOf(userJoined1.getName())))
+                                            .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
+                                }
+                            });
                 }
             }
 
