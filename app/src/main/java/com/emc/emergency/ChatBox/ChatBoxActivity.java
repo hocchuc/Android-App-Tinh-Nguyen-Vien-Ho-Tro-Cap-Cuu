@@ -65,6 +65,7 @@ import com.ebanx.swipebtn.OnStateChangeListener;
 import com.ebanx.swipebtn.SwipeButton;
 import com.emc.emergency.Helper.Model.UserJoined;
 
+import com.emc.emergency.Helper.Utils.Utility;
 import com.emc.emergency.Main_Menu.MainMenuActivity;
 import com.emc.emergency.R;
 
@@ -222,7 +223,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
     private String id_victim;
-    private SharedPreferences mSharedPreferences, mSharedPreferences2, preferences1, preferences3, preferences4;
+    private SharedPreferences mSharedPreferences, mSharedPreferences2,preferences1,preferences3,preferences4;
 
 
     private RecordButton recordButton;
@@ -673,6 +674,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
             mPhotoUrl = SystemUtils.DefaultAvatar;
 
         Intent intent = getIntent();
+        Utility.dumpIntent(intent,"CHATBOXACTIVITY");
         if (intent != null) {
             //nếu intent gửi tới có kiểu user là type_helper
             if (intent.hasExtra("type") || intent.getAction() != null) {
@@ -690,6 +692,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
 
+                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
+                    SharedPreferences.Editor editor4 = preferences4.edit();
+                    editor4.putString("id_acc",id_AC);
+                    editor4.apply();
 
                     SendtoActionOnServer();
                     SendtoActionOnFirebase();
@@ -1337,14 +1343,18 @@ public class ChatBoxActivity extends AppCompatActivity implements
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
+           if (prev != null) {
+               ft.remove(prev);
+           }
+           ft.addToBackStack(null);
+            if(id_victim!=null||!id_victim.equals("")) {
+                // Create and show the dialog.
+                fragment_dialog_medical_info newFragment = fragment_dialog_medical_info.newInstance(Long.parseLong(id_victim));
+                newFragment.show(fm, "dialog");
+            }
+            else {
 
-        // Create and show the dialog.
-        fragment_dialog_medical_info newFragment = fragment_dialog_medical_info.newInstance(Long.parseLong(id_victim));
-        newFragment.show(fm, "dialog");
+            }
 
     }
 

@@ -618,21 +618,21 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
     private Bitmap getMarkerBitmapFromBitmap( Bitmap bitmap) {
 
-                View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
-                ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-                markerImageView.setImageBitmap(bitmap);
-                customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-                customMarkerView.buildDrawingCache();
-                Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                        Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(returnedBitmap);
-                canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-                Drawable drawable = customMarkerView.getBackground();
-                if (drawable != null)
-                    drawable.draw(canvas);
-                customMarkerView.draw(canvas);
-                return returnedBitmap;
-            }
+            View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+            ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+            markerImageView.setImageBitmap(bitmap);
+            customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+            customMarkerView.buildDrawingCache();
+            Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                    Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(returnedBitmap);
+            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            Drawable drawable = customMarkerView.getBackground();
+            if (drawable != null)
+                drawable.draw(canvas);
+            customMarkerView.draw(canvas);
+            return returnedBitmap;
+        }
 
 }
