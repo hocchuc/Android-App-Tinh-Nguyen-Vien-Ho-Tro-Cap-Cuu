@@ -1093,6 +1093,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
         accident.setLong_AC(longitude);
         accident.setFirebaseKey(AccidentKey);
+        accident.setRequest_AC(true);
 //        Log.d("createAccidentOnServer", accident.toString());
 
         // convert object to json
@@ -1129,7 +1130,6 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     SharedPreferences.Editor editor4 = preferences4.edit();
                     editor4.putString("id_acc", String.valueOf(accident2.getId_AC()));
                     editor4.apply();
-
                 }
                 if (jsonObject.has("description_AC"))
                     accident2.setDescription_AC(jsonObject.getString("description_AC"));

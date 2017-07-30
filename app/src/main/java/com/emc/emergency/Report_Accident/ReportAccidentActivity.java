@@ -163,6 +163,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
         accident.setLat_AC(latitude);
         accident.setLong_AC(longitude);
         accident.setFirebaseKey(AccidentKey);
+        accident.setRequest_AC(false);
 
         // convert object to json
         Gson gson = new Gson();

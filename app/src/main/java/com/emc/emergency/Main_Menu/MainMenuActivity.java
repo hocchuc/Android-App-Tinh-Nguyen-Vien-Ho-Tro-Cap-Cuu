@@ -38,6 +38,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.emc.emergency.Accidents_List.AccidentActivity;
 import com.emc.emergency.Helper.AsyncTask.SendLocationToServer;
 import com.emc.emergency.Helper.Model.User_Type;
@@ -848,30 +850,37 @@ public class MainMenuActivity extends AppCompatActivity
         super.onStop();
     }
 
+
     @Override
-    public void handleReturnDataAllUser(ArrayList<User> arrUser) {
+    public void handleReturnDataAllUser(final ArrayList<User> arrUser) {
         for (int i = 0; i < arrUser.size(); i++) {
-            if (arrUser.get(i).getUser_type().getName_user_type().equals("volunteer")||arrUser.get(i).getUser_type().getName_user_type().equals("admin")) {
+            if (arrUser.get(i).getUser_type().getName_user_type().equals("volunteer") || arrUser.get(i).getUser_type().getName_user_type().equals("admin")) {
                 viDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLat_PI()));
                 kinhDoUser = Double.parseDouble(String.valueOf(arrUser.get(i).getLong_PI()));
-                LatLng loocation = new LatLng(viDoUser, kinhDoUser);
+                final LatLng loocation = new LatLng(viDoUser, kinhDoUser);
                 try {
                     if (arrUser.get(i).getToken() != null) {
-                        URL url = new URL(arrUser.get(i).getToken());
-                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        Bitmap b = Bitmap.createScaledBitmap(bmp, 32, 48, true);
+                        final int j=i;
+                        Glide.with(getApplicationContext())
+                                .asBitmap()
+                                .load(arrUser.get(i).getToken())
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                        Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(loocation)
+                                                .title(arrUser.get(j).getUser_name())
+                                                .snippet(String.valueOf(arrUser.get(j).getId_user())))
+                                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
+                                    }
+                                });
+                    } else {
                         mMap.addMarker(new MarkerOptions()
                                 .position(loocation)
                                 .title(arrUser.get(i).getUser_name())
                                 .snippet(String.valueOf(arrUser.get(i).getId_user())))
-//                            .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(b)));
-                    }else{
-                        mMap.addMarker(new MarkerOptions()
-                                .position(loocation)
-                                .title(arrUser.get(i).getUser_name())
-                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
-                            .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
+                                .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
