@@ -3,6 +3,7 @@ package com.emc.emergency.Helper.Services;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -79,20 +80,24 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         }
         
-//        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+//            if (remoteMessage.getData().size() > 0) {
 //
-////            Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
-////            Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
-////            location = remoteMessage.getData().get("address");
-////            FirebaseKey = remoteMessage.getData().get("FirebaseKey");
-////            id_AC = remoteMessage.getData().get("id_AC");
-//
-//            showAccidentNotification(remoteMessage.getNotification().getBody());
-//
-//
-//
-//        }
+//                if ((remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_MESSAGE))
+//                        ) {
+//                    Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
+//                    Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
+//                    location = remoteMessage.getData().get("address");
+//                    FirebaseKey = remoteMessage.getData().get("FirebaseKey");
+//                    id_AC = remoteMessage.getData().get("id_AC");
+//                }
+//            }
+            showBasicNotification(remoteMessage.getNotification().getBody());
+
+
+
+        }
 
     }
 
@@ -100,16 +105,21 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Intent i = new Intent();
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,i,0);
-
+        Uri alarmSound  = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setAutoCancel(true)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setSmallIcon(R.mipmap.ic_alert)
                 .setContentIntent(pendingIntent)
+                .setSound(alarmSound)
+                .setColor(Color.RED)
                 .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(message));
-
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                      builder.setSmallIcon(R.drawable.ic_announcement_white_24dp);
+       } else {
+                      builder.setSmallIcon(R.drawable.ic_announcement_red_900_24dp);
+        }
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         manager.notify(0,builder.build());
@@ -163,6 +173,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     .setContentTitle("Tai nạn " + location)
                     .setContentText(message)
                     .setSound(alarmSound)
+                    .setColor(Color.RED)
                     .setContentIntent(pendingIntent)
                     .addAction(R.drawable.ic_accident_2,"Vào tai nạn", pendingIntent)
                     .addAction(R.drawable.ic_map,

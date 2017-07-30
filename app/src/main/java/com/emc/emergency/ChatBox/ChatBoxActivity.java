@@ -79,7 +79,9 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.github.florent37.camerafragment.CameraFragment;
 import com.github.florent37.camerafragment.CameraFragmentApi;
 
+import com.github.florent37.camerafragment.PreviewActivity;
 import com.github.florent37.camerafragment.configuration.Configuration;
+import com.github.florent37.camerafragment.listeners.CameraFragmentControlsAdapter;
 import com.github.florent37.camerafragment.listeners.CameraFragmentResultAdapter;
 
 import com.github.florent37.camerafragment.listeners.CameraFragmentStateAdapter;
@@ -137,6 +139,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
     private static final String FRAGMENT_TAG = "fragment_tag";
     private static final String FRIENDLY_MSG_LENGTH = "100";
+    private static final int REQUEST_PREVIEW_CODE = 1001;
 
     @Override
     public void onFragmentMapInteraction(Uri uri) {
@@ -600,6 +603,8 @@ public class ChatBoxActivity extends AppCompatActivity implements
                                         Intent intent = new Intent(ChatBoxActivity.this, VideoPlayActivity.class);
                                         intent.putExtra(SystemUtils.VideoUrl, downloadUrl);
                                         startActivity(intent);
+
+
                                     }
                                 });
                             }
@@ -793,29 +798,39 @@ public class ChatBoxActivity extends AppCompatActivity implements
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            final Configuration.Builder builder = new Configuration.Builder();
-            builder
-                    .setCamera(Configuration.CAMERA_FACE_REAR)
+            Configuration.Builder builder = new Configuration.Builder();
+            builder .setCamera(Configuration.CAMERA_FACE_REAR)
                     .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
                     .setMediaQuality(Configuration.MEDIA_QUALITY_LOW);
 
-            CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
+            final CameraFragment cameraFragment = CameraFragment.newInstance(builder.build());
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frameCamera, cameraFragment, FRAGMENT_TAG)
-                    .commit();
+                    .commitAllowingStateLoss();
 
             cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
+                @Override
+                public void onCameraSetupForVideo() {
+                    super.onCameraSetupForVideo();
+                    recordButton.displayVideoRecordStateReady();
+
+                }
+
                 @Override
                 public void onRecordStateVideoReadyForRecord() {
                     super.onRecordStateVideoReadyForRecord();
                     recordButton.setActivated(true);
+                    recordButton.displayVideoRecordStateReady();
 
                 }
 
                 @Override
                 public void onRecordStateVideoInProgress() {
                     super.onRecordStateVideoInProgress();
+                    recordButton.displayVideoRecordStateInProgress();
+
+
                 }
 
                 @Override
@@ -828,6 +843,28 @@ public class ChatBoxActivity extends AppCompatActivity implements
                     super.onStopVideoRecord();
                 }
             });
+            cameraFragment.setControlsListener(new CameraFragmentControlsAdapter() {
+                            @Override
+                            public void lockControls() {
+                                recordButton.setEnabled(false);
+
+                            }
+
+                            @Override
+                            public void unLockControls() {
+                                recordButton.setEnabled(true);
+
+                            }
+
+                            @Override
+                            public void allowRecord(boolean allow) {
+                                recordButton.setEnabled(allow);
+                            }
+
+                            @Override
+                            public void setMediaActionSwitchVisible(boolean visible) {
+                            }
+                        });
 
 
         }
@@ -934,27 +971,27 @@ public class ChatBoxActivity extends AppCompatActivity implements
                             .child(MESSAGES_CHILD)
                             .push()
                             .setValue(tempMessage,
-                                    new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(DatabaseError databaseError,
-                                                               DatabaseReference databaseReference) {
-                                            // nêu database không có lỗi
-                                            if (databaseError == null) {
-                                                // getkey mới
-                                                String key = databaseReference.getKey();
-                                                StorageReference storageReference =
-                                                        FirebaseStorage.getInstance()
-                                                                .getReference()
-                                                                .child(IMAGE_STORE)
-                                                                .child(key)
-                                                                .child(uri.getLastPathSegment());
-                                                putImageInStorage(storageReference, uri, key);
-                                            } else {
-                                                Log.w(TAG, "Unable to write message to database.",
-                                                        databaseError.toException());
-                                            }
-                                        }
-                                    });
+                            new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError,
+                                                       DatabaseReference databaseReference) {
+                                    // nêu database không có lỗi
+                                    if (databaseError == null) {
+                                        // getkey mới
+                                        String key = databaseReference.getKey();
+                                        StorageReference storageReference =
+                                                FirebaseStorage.getInstance()
+                                                        .getReference()
+                                                        .child(IMAGE_STORE)
+                                                        .child(key)
+                                                        .child(uri.getLastPathSegment());
+                                        putImageInStorage(storageReference, uri, key);
+                                    } else {
+                                        Log.w(TAG, "Unable to write message to database.",
+                                                databaseError.toException());
+                                    }
+                                }
+                            });
                 }
             }
         }
