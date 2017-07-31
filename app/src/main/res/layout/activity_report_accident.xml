@@ -47,7 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_weight="0.1"
+        android:layout_weight="0.2"
+        android:layout_marginBottom="10dp"
         card_view:cardCornerRadius="4dp"
         card_view:cardElevation="2dp">
 
@@ -55,13 +56,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:textStyle="bold">
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp">
 
             <EditText
                 android:id="@+id/txtRB_Details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:ems="10"
                 android:hint="Details"
                 android:inputType="textMultiLine"

@@ -247,8 +247,12 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                                     btnLogin.setProgress(0);
                                     btnLogin.setText("Done");
 
-                                    token = FirebaseInstanceId.getInstance().getToken();
-                                    tokenService.registerTokenInDB(token, id + "");
+                                    try {
+                                        token = FirebaseInstanceId.getInstance().getToken();
+                                        tokenService.registerTokenInDB(token, id + "");
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
                                     OkHttpClient client = new OkHttpClient();
                                     Request request = new Request.Builder()

@@ -102,8 +102,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     GoogleMap mMap;
     //    OnMapReadyCallback onMapReadyCallback;
 //    ArrayList<Accident> accidentList;
-    double lat = 0;
-    double lon = 0;
+//    double lat = 0;
+//    double lon = 0;
     //    String moTa, diaChi;
     Accident accident;
     private final Handler mHandler;
@@ -198,11 +198,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onCreate(savedInstanceState);
      /*   SupportMapFragment supportMapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map_pager);
         supportMapFragment.getMapAsync(this);*/
-        GPSTracker gps = new GPSTracker(this.getActivity());
-        if (gps.canGetLocation()) {
-            lat = gps.getLatitude();
-            lon = gps.getLongitude();
-        }
+//        GPSTracker gps = new GPSTracker(this.getActivity());
+//        if (gps.canGetLocation()) {
+//            lat = gps.getLatitude();
+//            lon = gps.getLongitude();
+//        }
         if (getArguments() != null) {
             mParam1 = getArguments().getDouble(ARG_PARAM1);
             mParam2 = getArguments().getDouble(ARG_PARAM2);
@@ -330,7 +330,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap = googleMap;
 
         BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
-        LatLng myLocation = new LatLng(lat, lon);
+        LatLng myLocation = new LatLng(accident.getLat_AC(), accident.getLong_AC());
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(myLocation)
                 .icon(icon1)
@@ -375,8 +375,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void addValueEventListener() {
-        if (mMap == null) return;
-
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey)
                 .child("User joined");
@@ -395,7 +393,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     Glide.with(getContext())
                             .asBitmap()
                             .load(userJoined1.getAvatar())
-                            .into(new SimpleTarget<Bitmap>(48,48) {
+                            .into(new SimpleTarget<Bitmap>(48, 48) {
                                 @Override
                                 public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
@@ -433,8 +431,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void addValueEventListener_noti() {
-        if (mMap == null) return;
-
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey_noti)
                 .child("User joined");
@@ -449,7 +445,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     Glide.with(getContext())
                             .asBitmap()
                             .load(userJoined1.getAvatar())
-                            .into(new SimpleTarget<Bitmap>(48,48) {
+                            .into(new SimpleTarget<Bitmap>(48, 48) {
                                 @Override
                                 public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
@@ -599,7 +595,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
 
-
 //    private Bitmap getMarkerBitmapFromView(@DrawableRes int resId) {
 //
 //            View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
@@ -619,23 +614,23 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //            return returnedBitmap;
 //        }
 
-    private Bitmap getMarkerBitmapFromBitmap( Bitmap bitmap) {
+    private Bitmap getMarkerBitmapFromBitmap(Bitmap bitmap) {
 
-            View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
-            ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
-            markerImageView.setImageBitmap(bitmap);
-            customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
-            customMarkerView.buildDrawingCache();
-            Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(returnedBitmap);
-            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            Drawable drawable = customMarkerView.getBackground();
-            if (drawable != null)
-                drawable.draw(canvas);
-            customMarkerView.draw(canvas);
-            return returnedBitmap;
-        }
+        View customMarkerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.profile_image);
+        markerImageView.setImageBitmap(bitmap);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
 
 }

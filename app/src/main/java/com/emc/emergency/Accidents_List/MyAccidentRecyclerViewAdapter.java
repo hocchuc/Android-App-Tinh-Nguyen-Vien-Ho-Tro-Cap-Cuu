@@ -2,6 +2,7 @@ package com.emc.emergency.Accidents_List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
  * specified {@link fragment_accident_page.OnListFragmentInteractionListener}.
@@ -45,6 +48,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     private final fragment_accident_page.OnListFragmentInteractionListener mListener;
     public double latitude = 0;
     public double longitude = 0;
+    public SharedPreferences sharedPreferences1;
+    long id_usertype;
 
     public MyAccidentRecyclerViewAdapter(Context context, List<Accident> items, fragment_accident_page.OnListFragmentInteractionListener listener) {
         this.context = context;
@@ -61,19 +66,22 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
         }
+        sharedPreferences1 = view.getContext().getSharedPreferences("User", MODE_PRIVATE);
+        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
         return new ViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.txtDes.setText(mValues.get(position).getDescription_AC());
         holder.txtStatus.setText(mValues.get(position).getStatus_AC());
 
-        LatLng latLng1=new LatLng(latitude,longitude);
-        LatLng latLng2=new LatLng(Double.valueOf(mValues.get(position).getLat_AC().toString()), Double.valueOf(mValues.get(position).getLong_AC().toString()));
-        double results= SphericalUtil.computeDistanceBetween(latLng1,latLng2)/1000;
+        LatLng latLng1 = new LatLng(latitude, longitude);
+        LatLng latLng2 = new LatLng(Double.valueOf(mValues.get(position).getLat_AC().toString()), Double.valueOf(mValues.get(position).getLong_AC().toString()));
+        double results = SphericalUtil.computeDistanceBetween(latLng1, latLng2) / 1000;
 
-        holder.txtDistance.setText(String.format("%.2f", results)+" km");
+        holder.txtDistance.setText(String.format("%.2f", results) + " km");
 
         if (mValues.get(position).getRequest_AC())
             holder.txtRequest.setText("Request");
@@ -114,13 +122,15 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         holder.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
-                i.setAction(SystemUtils.TYPE_HELPER);
-                i.putExtra("type", SystemUtils.TYPE_HELPER);
-                i.putExtra("id_AC", holder.mItem.getId_AC() + "");
-                i.putExtra("id_victim", holder.mItem.getId_user() + "");
-                i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
-                v.getContext().startActivity(i);
+                if (id_usertype != 3) {
+                    Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
+                    i.setAction(SystemUtils.TYPE_HELPER);
+                    i.putExtra("type", SystemUtils.TYPE_HELPER);
+                    i.putExtra("id_AC", holder.mItem.getId_AC() + "");
+                    i.putExtra("id_victim", holder.mItem.getId_user() + "");
+                    i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
+                    v.getContext().startActivity(i);
+                } else holder.floatingActionButton.setEnabled(false);
             }
         });
         // request cho glide
