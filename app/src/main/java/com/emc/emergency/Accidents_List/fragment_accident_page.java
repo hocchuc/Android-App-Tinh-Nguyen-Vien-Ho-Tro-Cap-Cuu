@@ -28,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -80,9 +79,6 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
         accidentList = new ArrayList<>();
-
-        sharedPreferences1 = getContext().getSharedPreferences("User", MODE_PRIVATE);
-        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
 
         new GetAccidents(getActivity(),accidentList).execute();
 

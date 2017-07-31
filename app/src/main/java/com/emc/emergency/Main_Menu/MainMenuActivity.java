@@ -636,8 +636,14 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
-        if (progressDialog.isShowing()) progressDialog.dismiss();
+
+        try {
+            if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+            if (progressDialog.isShowing()) progressDialog.dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
         intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
         finish();
