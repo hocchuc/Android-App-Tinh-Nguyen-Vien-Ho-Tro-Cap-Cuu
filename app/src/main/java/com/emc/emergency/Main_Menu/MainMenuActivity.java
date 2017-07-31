@@ -1,21 +1,27 @@
 package com.emc.emergency.Main_Menu;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +33,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 
 import android.widget.ImageButton;
@@ -110,6 +119,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -121,7 +132,7 @@ public class MainMenuActivity extends AppCompatActivity
         , OnMapReadyCallback, DirectionFinderListener
         , fragment_countdown.OnFragmentInteractionListener, IRequestListener
         , ReturnDataAllUser
-        , ReturnDataAllAccident {
+        , ReturnDataAllAccident{
 
     MaterialDialog mProgressDialog;
 
@@ -162,7 +173,7 @@ public class MainMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_menu);
-        processIntent();
+        processOnline();
         addControls();
         setLoadImageLogic();
         BuildDrawer(savedInstanceState);
@@ -172,18 +183,18 @@ public class MainMenuActivity extends AppCompatActivity
         addEvents();
     }
 
-    private void processIntent() {
-        // kiem tra intent goi toi co phai la cua lock-user
-        Utility.dumpIntent(getIntent(),"MainMenu");
-       Intent intent =  getIntent();
-        if(intent.hasExtra("action")) {
-            if(intent.getStringExtra("action").equals(SystemUtils.BACKEND_ACTION_LOCK_USER))
-            Logout();
-        }
-
+    private void processOnline() {
+        //todo is online chuă hoạt động
         if(isOnline()){
             Toast.makeText(this, "You are offline, please turn on connection to make app work correctly", Toast.LENGTH_SHORT).show();
 
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAndRemoveTask();
+            }else {
+                this.finishAffinity();
+
+            }
         }
     }
 
@@ -632,6 +643,9 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void Logout() {
+        if(!progressDialog.isShowing()&&progressDialog!=null)
+            progressDialog = ProgressDialog.show(this, getString(R.string.progress_dialog_loading),
+                        getString(R.string.we_are_cleanning));
         removeSharedPreferences();
 
         try {
@@ -691,8 +705,18 @@ public class MainMenuActivity extends AppCompatActivity
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) Log.d("removeTokenResponge", "SUCCESS");
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.isSuccessful()) Log.d("MainmenuSignout","Success");
+                }
+            });
+
         }
     }
 
@@ -814,7 +838,7 @@ public class MainMenuActivity extends AppCompatActivity
             Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int returnVal = p1.waitFor();
             boolean reachable = (returnVal == 0);
-            if(!reachable&&!Utility.isNetworkAvailable(MainMenuActivity.this)&&Utility.isInternetAvailable())
+            if(!reachable&&!Utility.isNetworkAvailable(MainMenuActivity.this)&&!Utility.isInternetAvailable())
                 return false;
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -861,9 +885,12 @@ public class MainMenuActivity extends AppCompatActivity
         return Actions.newView("MainMenu", "http://[ENTER-YOUR-URL-HERE]");
     }
 
+
+
     @Override
     public void onStart() {
         super.onStart();
+
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -974,5 +1001,22 @@ public class MainMenuActivity extends AppCompatActivity
                 }
             }
         }
+    }
+
+
+
+    private class MyBroadcastReceiver extends BroadcastReceiver {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+            Logout();
+      }
+    }
+    @Override
+      protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.emc.emergency.onLockUser");
+        MyBroadcastReceiver receiver = new MyBroadcastReceiver();
+        registerReceiver(receiver, intentFilter);
     }
 }

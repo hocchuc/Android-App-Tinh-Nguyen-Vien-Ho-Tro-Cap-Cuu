@@ -234,7 +234,51 @@ public class fragment_personal_info_page extends Fragment {
 
             }
         });
+        materialDialog = new MaterialDialog.Builder(getContext())
+        .title("Change Password")
+        .inputType(InputType.TYPE_CLASS_TEXT)
+        .customView(R.layout.custom_dialog_pi, true)
+        .negativeText(android.R.string.cancel)
+        .positiveText(android.R.string.ok)
+        .onPositive(new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                EditText txtNhapMK_DialogPI = (TextInputEditText) materialDialog.getCustomView().findViewById(R.id.txtNhapMK_DialogPI);
+                EditText txtXacNhapMK_DialogPI = (TextInputEditText) materialDialog.getCustomView().findViewById(R.id.txtXacNhanMK_DialogPI);
 
+                if (TextUtils.isEmpty(txtNhapMK_DialogPI.toString()) || TextUtils.isEmpty(txtXacNhapMK_DialogPI.toString()))
+                    Toast.makeText(getContext(), "Vui lòng nhập mật khẩu.", Toast.LENGTH_SHORT).show();
+                else if (txtNhapMK_DialogPI.length() < 6 || txtXacNhapMK_DialogPI.length() < 6)
+                    Toast.makeText(getContext(), "Phải nhập mật khẩu từ 6 ký tự trở lên.", Toast.LENGTH_SHORT).show();
+                else if (txtNhapMK_DialogPI.getText().toString().equals(txtXacNhapMK_DialogPI.getText().toString())) {
+                    OkHttpClient client = new OkHttpClient();
+
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, "{\n\t\"password\":\""+txtNhapMK_DialogPI.getText().toString()+"\"\n}");
+                    Request request = new Request.Builder()
+                            .url(SystemUtils.getServerBaseUrl() + "users/" + id)
+                            .patch(body)
+                            .addHeader("content-type", "application/json")
+                            .build();
+
+                    try {
+                        Response response = client.newCall(request).execute();
+                        txtChangePassPI.setText(txtNhapMK_DialogPI.getText().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else
+                    Toast.makeText(getContext(), "Mật khẩu không trùng khớp.!", Toast.LENGTH_SHORT).show();
+            }
+        }).build();
+
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                materialDialog.show();
+
+            }
+        });
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,54 +296,15 @@ public class fragment_personal_info_page extends Fragment {
                     radMale.setVisibility(View.VISIBLE);
                     btnChange.setEnabled(true);
 
-                    materialDialog = new MaterialDialog.Builder(getContext())
-                            .title("Change Password")
-                            .inputType(InputType.TYPE_CLASS_TEXT)
-                            .customView(R.layout.custom_dialog_pi, true)
-                            .negativeText(android.R.string.cancel)
-                            .positiveText(android.R.string.ok)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    EditText txtNhapMK_DialogPI = (TextInputEditText) materialDialog.getCustomView().findViewById(R.id.txtNhapMK_DialogPI);
-                                    EditText txtXacNhapMK_DialogPI = (TextInputEditText) materialDialog.getCustomView().findViewById(R.id.txtXacNhanMK_DialogPI);
 
-                                    if (TextUtils.isEmpty(txtNhapMK_DialogPI.toString()) || TextUtils.isEmpty(txtXacNhapMK_DialogPI.toString()))
-                                        Toast.makeText(getContext(), "Vui lòng nhập mật khẩu.", Toast.LENGTH_SHORT).show();
-                                    else if (txtNhapMK_DialogPI.length() < 6 || txtXacNhapMK_DialogPI.length() < 6)
-                                        Toast.makeText(getContext(), "Phải nhập mật khẩu từ 6 ký tự trở lên.", Toast.LENGTH_SHORT).show();
-                                    else if (txtNhapMK_DialogPI.getText().toString().equals(txtXacNhapMK_DialogPI.getText().toString())) {
-                                        OkHttpClient client = new OkHttpClient();
-
-                                        MediaType mediaType = MediaType.parse("application/json");
-                                        RequestBody body = RequestBody.create(mediaType, "{\n\t\"password\":\""+txtNhapMK_DialogPI.getText().toString()+"\"\n}");
-                                        Request request = new Request.Builder()
-                                                .url(SystemUtils.getServerBaseUrl() + "users/" + id)
-                                                .patch(body)
-                                                .addHeader("content-type", "application/json")
-                                                .build();
-
-                                        try {
-                                            Response response = client.newCall(request).execute();
-                                            txtChangePassPI.setText(txtNhapMK_DialogPI.getText().toString());
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    } else
-                                        Toast.makeText(getContext(), "Mật khẩu không trùng khớp.!", Toast.LENGTH_SHORT).show();
-                                }
-                            }).build();
-
-                    btnChange.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            materialDialog.show();
-
-                        }
-                    });
 
                 } else {
                     progressDialog.show();
+                    if(bitmap!=null)sendImageToFirebase(bitmap);
+                    else {
+                        bitmap = ((BitmapDrawable)imgV.getDrawable()).getBitmap();
+                        if(bitmap!=null)sendImageToFirebase(bitmap);
+                    }
 
                     Personal_Information pi1 = new Personal_Information();
                     pi1.setName_PI(txtNamePI.getText().toString());
@@ -312,7 +317,16 @@ public class fragment_personal_info_page extends Fragment {
                     if (radMale.isChecked()) {
                         pi1.setSex__PI(true);
                     } else pi1.setSex__PI(false);
+                    try {
+                      if (pi1.getSex__PI()) {
+                          mImageSex.setImageResource(R.drawable.icon_boy);
 
+                      } else {
+                          mImageSex.setImageResource(R.drawable.icon_girl);
+                      }
+                  } catch (Exception e) {
+                      e.printStackTrace();
+                  }
                     txtEmailPI.setEnabled(false);
                     txtBirthdayPI.setEnabled(false);
                     txtPID.setEnabled(false);
@@ -363,8 +377,8 @@ public class fragment_personal_info_page extends Fragment {
                                  try {
                                      getActivity().runOnUiThread(new Runnable() {
                                        public void run() {
-                                         Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
-                                           if (progressDialog.isShowing()) progressDialog.dismiss();
+                                         Toast.makeText(getActivity(), "Saving", Toast.LENGTH_SHORT).show();
+
 
                                        }
                                      });
@@ -460,7 +474,6 @@ public class fragment_personal_info_page extends Fragment {
                         InputStream is = getActivity().getContentResolver().openInputStream(imageUri);
                         bitmap = BitmapFactory.decodeStream(is);
                         imgV.setImageBitmap(bitmap);
-                        sendImageToFirebase(bitmap);
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -468,7 +481,6 @@ public class fragment_personal_info_page extends Fragment {
                 } else if (requestCode == RESQUEST_TAKE_PHOTO) {
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     imgV.setImageBitmap(bitmap);
-                    sendImageToFirebase(bitmap);
                 }
             }
         } catch (Exception e) {
@@ -477,8 +489,6 @@ public class fragment_personal_info_page extends Fragment {
     }
 
     private void sendImageToFirebase(Bitmap image) {
-
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
@@ -494,6 +504,7 @@ public class fragment_personal_info_page extends Fragment {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 downloadURL = taskSnapshot.getDownloadUrl();
                 sendPatchAvatarToPI(downloadURL);
+
 
             }
         });
@@ -523,7 +534,14 @@ public class fragment_personal_info_page extends Fragment {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    getActivity().runOnUiThread(new Runnable() {
+                   public void run() {
+                       Toast.makeText(getActivity(), "Saving", Toast.LENGTH_SHORT).show();
+                       if (progressDialog.isShowing()) progressDialog.dismiss();
 
+
+                   }
+               });
                 }
             });
 

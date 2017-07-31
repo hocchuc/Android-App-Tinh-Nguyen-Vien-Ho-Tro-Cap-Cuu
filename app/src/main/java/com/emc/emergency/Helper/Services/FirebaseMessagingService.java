@@ -5,14 +5,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.support.v4.app.NotificationCompat;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.emc.emergency.ChatBox.ChatBoxActivity;
 import com.emc.emergency.Main_Menu.MainMenuActivity;
@@ -24,7 +29,6 @@ import com.google.firebase.messaging.RemoteMessage;
  * Firebase Messaging Service to handle push notifications
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
-
     private static final String TAG = "FCMMessagingService";
     private TokenService tokenService;
     private int notificationId = 001;
@@ -48,7 +52,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             // In this case the XMPP Server sends a payload data
             String message = remoteMessage.getData().get("message");
             if(message!=null && !message.equals("")) Log.d(TAG,"message : "+message);
-
 
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT)){
                 Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
@@ -81,25 +84,17 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
             }
-            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT)){
-                title = remoteMessage.getData().get("title");
-                Log.d(TAG, "Message Notification title: " + remoteMessage.getNotification().getTitle());
-                AlertDialog alertDialog = new AlertDialog.Builder(this)
-                                    .setTitle("Your account was locked")
-                                    .setMessage("Your account was locked due to our administrator"+
-                                            " detect that you had spamming. Your account will be lock."+
-                                    " If we have mistake, please contact find support by email emergencysos@gmail.com")
-                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getApplicationContext(), MainMenuActivity.class);
-                                intent.putExtra("action",SystemUtils.BACKEND_ACTION_LOCK_USER);
-                            }
-                        })
-                        .create();
+            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_LOCK_USER)){
+                SharedPreferences preferences2 = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
+                 SharedPreferences.Editor editor2 = preferences2.edit();
+                 editor2.putBoolean("isLogined", false);
 
-                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                alertDialog.show();
+                Intent intent = new Intent();
+                intent.setAction("com.emc.emergency.onLockUser");
+                sendBroadcast(intent);
+
+
+
             }
 
 
@@ -107,21 +102,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-//            if (remoteMessage.getData().size() > 0) {
-//
-//                if ((remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_MESSAGE))
-//                        ) {
-//                    Latitude = Double.parseDouble(remoteMessage.getData().get("latitude"));
-//                    Longtitude = Double.parseDouble(remoteMessage.getData().get("longtitude"));
-//                    location = remoteMessage.getData().get("address");
-//                    FirebaseKey = remoteMessage.getData().get("FirebaseKey");
-//                    id_AC = remoteMessage.getData().get("id_AC");
-//                }
-//            }
+
             showBasicNotification(remoteMessage.getNotification().getBody());
-
-
-
         }
 
     }
