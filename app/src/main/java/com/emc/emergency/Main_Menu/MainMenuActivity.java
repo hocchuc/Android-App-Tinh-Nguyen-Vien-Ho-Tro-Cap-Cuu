@@ -296,8 +296,9 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 mMap.clear();
-                if (id_usertype == 2) {
-                    new GetAllAccident(MainMenuActivity.this).execute();
+                if (id_usertype == 3) {
+                    GetAllUser getAllUser = new GetAllUser(MainMenuActivity.this);
+                    getAllUser.execute();
                 } else {
                     GetAllUser getAllUser = new GetAllUser(MainMenuActivity.this);
                     getAllUser.execute();
@@ -763,11 +764,12 @@ public class MainMenuActivity extends AppCompatActivity
             ((TextView) findViewById(R.id.tvDistance)).setText(route1.distance.text);
 
             originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_start))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos))
                     .title(route1.startAddress)
                     .position(route1.startLocation)));
+
             destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_end))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_sos))
                     .title(description)
                     .snippet(address)
                     .position(route1.endLocation)));
