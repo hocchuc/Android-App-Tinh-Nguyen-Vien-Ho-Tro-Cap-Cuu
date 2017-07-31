@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/imgVAC"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -24,14 +24,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="0dp"
         android:layout_toEndOf="@+id/imgVAC"
         android:layout_toRightOf="@+id/imgVAC"
         android:lines="2"
-        android:gravity="left"
+        android:layout_marginLeft="8dp"
         android:text="TextView"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold"
         card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
         card_view:layout_constraintTop_toTopOf="parent" />
@@ -44,9 +43,7 @@
         android:layout_alignStart="@+id/txtAddess_Ac"
         android:layout_below="@+id/txtAddess_Ac"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:breakStrategy="balanced"
-        android:inputType="textMultiLine"
+        android:layout_marginTop="6dp"
         android:text="TextView"
         card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
         card_view:layout_constraintTop_toBottomOf="@+id/txtAddess_Ac" />
@@ -56,15 +53,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/floatingActionButton"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/txtDes_AC"
         android:layout_toRightOf="@+id/txtDes_AC"
         android:text="TextView"
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
-        card_view:layout_constraintTop_toBottomOf="@+id/txtDes_AC" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
+        card_view:layout_constraintTop_toBottomOf="@+id/txtRequest_NearYou" />
 
     <TextView
         android:id="@+id/txtDes_AC"
@@ -74,7 +71,7 @@
         android:layout_alignStart="@+id/txtDate_AC"
         android:layout_alignTop="@+id/txtStatus"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:text="TextView"
         card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
         card_view:layout_constraintTop_toBottomOf="@+id/txtDate_AC" />
@@ -88,14 +85,37 @@
         android:layout_below="@+id/txtDate_AC"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="0dp"
         android:clickable="true"
         card_view:fabSize="mini"
         card_view:layout_constraintBottom_toBottomOf="parent"
-        card_view:layout_constraintHorizontal_bias="0.993"
+        card_view:layout_constraintHorizontal_bias="0.933"
         card_view:layout_constraintLeft_toRightOf="@+id/txtStatus"
         card_view:layout_constraintRight_toRightOf="parent"
         card_view:srcCompat="@drawable/ic_menu_send" />
+
+    <TextView
+        android:id="@+id/txtRequest_NearYou"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        card_view:layout_constraintLeft_toRightOf="@+id/imgVAC"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
+        card_view:layout_constraintTop_toBottomOf="@+id/txtDes_AC" />
+
+    <TextView
+        android:id="@+id/txtDistance_NearYou"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/blue_pressed"
+        card_view:layout_constraintLeft_toRightOf="@+id/txtDes_AC"
+        android:layout_marginLeft="110dp"
+        card_view:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="62dp"
+        android:layout_marginRight="0dp"
+        card_view:layout_constraintRight_toRightOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

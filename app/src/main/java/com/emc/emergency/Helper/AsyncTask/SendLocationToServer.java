@@ -45,7 +45,11 @@ public class SendLocationToServer {
          client.newCall(request).enqueue(new Callback() {
              @Override
              public void onFailure(Call call, IOException e) {
-                 Toast.makeText(context, "Lỗi kết nối tới server", Toast.LENGTH_SHORT).show();
+                 try {
+                     Toast.makeText(context, "Lỗi kết nối tới server", Toast.LENGTH_SHORT).show();
+                 } catch (Exception e1) {
+                     e1.printStackTrace();
+                 }
              }
 
              @Override

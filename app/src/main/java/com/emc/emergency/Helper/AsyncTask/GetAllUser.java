@@ -59,7 +59,7 @@ public class GetAllUser extends AsyncTask<Void, Void, ArrayList<User>> {
 
             Response response = client.newCall(request).execute();
             JSONArray usersJSONArray = new JSONArray(response.body().string());
-//                Log.d("jsonObj", jsonObject.toString());
+                Log.d("usersJSONArray", usersJSONArray.toString());
             for (int i = 0; i < usersJSONArray.length(); i++) {
                 User user1 = new User();
                 JSONObject jsonObj = usersJSONArray.getJSONObject(i);
@@ -70,11 +70,8 @@ public class GetAllUser extends AsyncTask<Void, Void, ArrayList<User>> {
                 }
                 if (jsonObj.has("id_user"))
                     user1.setId_user(jsonObj.getLong("id_user"));
-                if (jsonObj.has("avatar")) {
-                    Personal_Information pi1 = new Personal_Information();
-                    pi1.setAvatar(jsonObj.getString("avatar"));
-                    user1.setToken(pi1.getAvatar());
-                }
+                if (jsonObj.has("avatar"))
+                    user1.setAvatar_User(jsonObj.getString("avatar"));
                 if (jsonObj.has("long"))
                     user1.setLong_PI(jsonObj.getDouble("long"));
                 if (jsonObj.has("lat"))
@@ -84,7 +81,9 @@ public class GetAllUser extends AsyncTask<Void, Void, ArrayList<User>> {
                     user_type1.setName_user_type(jsonObj.getString("name_user_type"));
                     user1.setUser_type(user_type1);
                 }
-//                    Log.d("User1", user1.toString());
+                if (jsonObj.has("token"))
+                    user1.setToken(jsonObj.getString("token"));
+                    Log.d("User1", user1.toString());
                 userList.add(user1);
             }
             Log.d("DSUser1", userList.toString());

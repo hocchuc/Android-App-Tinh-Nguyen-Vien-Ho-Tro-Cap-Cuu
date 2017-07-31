@@ -20,6 +20,7 @@ public class User implements Serializable {
     private User_Type user_type;
     private String token;
     private Double lat_PI;
+    private String avatar_User;
     private Double long_PI;
     private Long id_user;
     private boolean id_signup_volumteer;
@@ -88,6 +89,14 @@ public class User implements Serializable {
         this.id_signup_volumteer = id_signup_volumteer;
     }
 
+    public String getAvatar_User() {
+        return avatar_User;
+    }
+
+    public void setAvatar_User(String avatar_User) {
+        this.avatar_User = avatar_User;
+    }
+
     public User(String user_name, String password) {
         this.user_name = user_name;
         this.password = password;
@@ -106,14 +115,16 @@ public class User implements Serializable {
         this.long_PI = long_PI;
     }
 
-    public User(String user_name, String password, User_Type user_type, String token, Double lat_PI, Double long_PI, long id_user) {
+    public User(String user_name, String password, User_Type user_type, String token, Double lat_PI, String avatar_User, Double long_PI, Long id_user, boolean id_signup_volumteer) {
         this.user_name = user_name;
         this.password = password;
         this.user_type = user_type;
         this.token = token;
         this.lat_PI = lat_PI;
+        this.avatar_User = avatar_User;
         this.long_PI = long_PI;
         this.id_user = id_user;
+        this.id_signup_volumteer = id_signup_volumteer;
     }
 
     public User() {
@@ -127,8 +138,10 @@ public class User implements Serializable {
                 ", user_type=" + user_type +
                 ", token='" + token + '\'' +
                 ", lat_PI=" + lat_PI +
+                ", avatar_User='" + avatar_User + '\'' +
                 ", long_PI=" + long_PI +
                 ", id_user=" + id_user +
+                ", id_signup_volumteer=" + id_signup_volumteer +
                 '}';
     }
 }

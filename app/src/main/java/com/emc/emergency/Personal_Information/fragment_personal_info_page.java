@@ -243,7 +243,6 @@ public class fragment_personal_info_page extends Fragment {
 
                                         try {
                                             Response response = client.newCall(request).execute();
-                                            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
                                             txtChangePassPI.setText(txtNhapMK_DialogPI.getText().toString());
                                         } catch (IOException e) {
                                             e.printStackTrace();
@@ -463,16 +462,16 @@ public class fragment_personal_info_page extends Fragment {
         }
     }
 
-    private byte[] getByteArrayFromImageView(ImageView imgv) {
-        // ham xu ly anh tu imageView sang BitmapDrawble => byte[]
-        BitmapDrawable drawable = (BitmapDrawable) imgv.getDrawable();
-        Bitmap bmp = drawable.getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        // COMPRESS to JPEG LOW QUALITY
-        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
-        byte[] byteArray = stream.toByteArray();
-        return byteArray;
-    }
+//    private byte[] getByteArrayFromImageView(ImageView imgv) {
+//        // ham xu ly anh tu imageView sang BitmapDrawble => byte[]
+//        BitmapDrawable drawable = (BitmapDrawable) imgv.getDrawable();
+//        Bitmap bmp = drawable.getBitmap();
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        // COMPRESS to JPEG LOW QUALITY
+//        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
+//        byte[] byteArray = stream.toByteArray();
+//        return byteArray;
+//    }
 
 
     /**

@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -45,8 +46,8 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
     private OnListFragmentInteractionListener mListener;
     ArrayList<Accident> accidentList;
     RecyclerView recyclerView;
-    SharedPreferences sharedPreferences;
-    String id_user = "ID_USER";
+    public SharedPreferences sharedPreferences1;
+    long id_usertype;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -79,6 +80,9 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
         accidentList = new ArrayList<>();
+
+        sharedPreferences1 = getContext().getSharedPreferences("User", MODE_PRIVATE);
+        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
 
         new GetAccidents(getActivity(),accidentList).execute();
 
@@ -152,7 +156,9 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
             for(Accident accident:accidents){
-                if(accident.getStatus_AC().equals("Active")){
+                if(id_usertype==3 && accident.getStatus_AC().equals("Done"))
+                    accidentList.add(accident);
+                else if(id_usertype!=3 && accident.getStatus_AC().equals("Active")){
 //                    displayAccidentList(accidents);
                     accidentList.add(accident);
                 }
@@ -201,6 +207,8 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                        accident.setFirebaseKey(jsonObject.getString("firebaseKey"));
                     if(jsonObject.has("id_victim"))
                         accident.setId_user(jsonObject.getLong("id_victim"));
+                    if(jsonObject.has("request_AC"))
+                        accident.setRequest_AC(jsonObject.getBoolean("request_AC"));
                     // Log.d("Accident", accident.toString());
                     ds.add(accident);
 //                     Log.d("DS", ds.toString());

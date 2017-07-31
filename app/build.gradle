@@ -89,8 +89,10 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.4.5'
     compile 'com.afollestad.material-dialogs:commons:0.9.4.5'
     compile 'com.github.florent37:camerafragment:1.0.8'
+    compile 'com.google.maps.android:android-maps-utils:0.5+'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+
 }
 android {
     defaultConfig {

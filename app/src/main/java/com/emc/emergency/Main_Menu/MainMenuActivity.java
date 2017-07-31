@@ -184,8 +184,12 @@ public class MainMenuActivity extends AppCompatActivity
                 longitude = location.getLongitude();
 
 
-                SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this, id_user, longitude, latitude);
-                SendLocationToServer.excute();
+                try {
+                    SendLocationToServer SendLocationToServer = new SendLocationToServer(MainMenuActivity.this, id_user, longitude, latitude);
+                    SendLocationToServer.excute();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 //                LatLng latLng = new LatLng(latitude, longitude);
 
@@ -326,9 +330,9 @@ public class MainMenuActivity extends AppCompatActivity
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
-//        if(isOnline()==false){
-//            Logout();
-//        }
+        if (isOnline() == false) {
+            Logout();
+        }
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
@@ -400,6 +404,8 @@ public class MainMenuActivity extends AppCompatActivity
                             user_type.setName_user_type(jsonObject.getString("name_user_type"));
                         user1.setUser_type(user_type);
                     }
+                    if (jsonObj.has("token"))
+                        user1.setToken(jsonObj.getString("token"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -488,78 +494,90 @@ public class MainMenuActivity extends AppCompatActivity
         getSupportActionBar().setTitle(R.string.Emergency_SOS);
 
         // Create a few sample profile
-        IProfile profile;
-        profile = new ProfileDrawerItem()
-                .withName(pi.getName_PI())
-                .withEmail(user1.getUser_type().getName_user_type())
-                .withIcon(pi.getAvatar());
+        IProfile profile=null;
+        try {
+            profile = new ProfileDrawerItem()
+                    .withName(pi.getName_PI())
+                    .withEmail(user1.getUser_type().getName_user_type())
+                    .withIcon(pi.getAvatar());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         // Create the AccountHeader
-        headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
-//                .withProfileImagesVisible(true)
-                .withOnlySmallProfileImagesVisible(true)
-                .addProfiles(
-                        profile
-                )
-                .withSavedInstance(savedInstanceState)
-                .build();
+        try {
+            headerResult = new AccountHeaderBuilder()
+                    .withActivity(this)
+                    .withHeaderBackground(R.drawable.header)
+    //                .withProfileImagesVisible(true)
+                    .withOnlySmallProfileImagesVisible(true)
+                    .addProfiles(
+                            profile
+                    )
+                    .withSavedInstance(savedInstanceState)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Create the drawer
-        result = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withHasStableIds(true)
-                .withDrawerLayout(R.layout.crossfade_drawer)
-                .withDrawerWidthDp(72)
-                .withGenerateMiniDrawer(true)
-                .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.main_menu_activity)
-                                .withIcon(FontAwesome.Icon.faw_th)
-                                .withIdentifier(1),
-                        new PrimaryDrawerItem().withName(R.string.accident_activity)
-                                .withIcon(GoogleMaterial.Icon.gmd_error)
-                                .withIdentifier(2),
-                        new PrimaryDrawerItem().withName(R.string.personal_infomation)
-                                .withIcon(FontAwesome.Icon.faw_user_circle)
-                                .withIdentifier(3),
-                        new SecondaryDrawerItem()
-                                .withName(R.string.Logout)
-                                .withIcon(R.drawable.icon_shutdown)
-                                .withIdentifier(4)
-                )
-                // add the items we want to use with our Drawer
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem != null) {
-                            Intent intent = null;
-                            if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
-                            } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(MainMenuActivity.this, AccidentActivity.class);
-                            } else if (drawerItem.getIdentifier() == 3) {
-                                intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
-                            } else if (drawerItem.getIdentifier() == 4) {
-                                mProgressDialog.show();
-                                if (!progressDialog.isShowing())
-                                    progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
-                                Logout();
-                                intent = new Intent(MainMenuActivity.this, LoginActivity.class);
-                                intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
-                            }
-                            if (intent != null) startActivity(intent);
+        try {
+            result = new DrawerBuilder()
+                    .withActivity(this)
+                    .withToolbar(toolbar)
+                    .withHasStableIds(true)
+                    .withDrawerLayout(R.layout.crossfade_drawer)
+                    .withDrawerWidthDp(72)
+                    .withGenerateMiniDrawer(true)
+                    .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
+                    .addDrawerItems(
+                            new PrimaryDrawerItem().withName(R.string.main_menu_activity)
+                                    .withIcon(FontAwesome.Icon.faw_th)
+                                    .withIdentifier(1),
+                            new PrimaryDrawerItem().withName(R.string.accident_activity)
+                                    .withIcon(GoogleMaterial.Icon.gmd_error)
+                                    .withIdentifier(2),
+                            new PrimaryDrawerItem().withName(R.string.personal_infomation)
+                                    .withIcon(FontAwesome.Icon.faw_user_circle)
+                                    .withIdentifier(3),
+                            new SecondaryDrawerItem()
+                                    .withName(R.string.Logout)
+                                    .withIcon(R.drawable.icon_shutdown)
+                                    .withIdentifier(4)
+                    )
+                    // add the items we want to use with our Drawer
+                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                        @Override
+                        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                            if (drawerItem != null) {
+                                Intent intent = null;
+                                if (drawerItem.getIdentifier() == 1) {
+                                    intent = new Intent(MainMenuActivity.this, MainMenuActivity.class);
+                                } else if (drawerItem.getIdentifier() == 2) {
+                                    intent = new Intent(MainMenuActivity.this, AccidentActivity.class);
+                                } else if (drawerItem.getIdentifier() == 3) {
+                                    intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
+                                } else if (drawerItem.getIdentifier() == 4) {
+                                    mProgressDialog.show();
+                                    if (!progressDialog.isShowing())
+                                        progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                    Logout();
+                                    intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                                    intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
+                                }
+                                if (intent != null) startActivity(intent);
 
+                            }
+                            return false;
                         }
-                        return false;
-                    }
-                })
-                .withSavedInstance(savedInstanceState)
-                .withShowDrawerOnFirstLaunch(true)
-                .build();
+                    })
+                    .withSavedInstance(savedInstanceState)
+                    .withShowDrawerOnFirstLaunch(true)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //get the CrossfadeDrawerLayout which will be used as alternative DrawerLayout for the Drawer
         crossfadeDrawerLayout = (CrossfadeDrawerLayout) result
@@ -781,18 +799,18 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-//    public Boolean isOnline() {
-//        try {
-//            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
-//            int returnVal = p1.waitFor();
-//            boolean reachable = (returnVal == 0);
-//            return reachable;
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
+    public Boolean isOnline() {
+        try {
+            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+            int returnVal = p1.waitFor();
+            boolean reachable = (returnVal == 0);
+            return reachable;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     private void sendRequest() {
         if (kinhDo == -1 && viDo == -1) {
@@ -860,27 +878,29 @@ public class MainMenuActivity extends AppCompatActivity
                 final LatLng loocation = new LatLng(viDoUser, kinhDoUser);
                 try {
                     if (arrUser.get(i).getToken() != null) {
-                        final int j=i;
-                        Glide.with(getApplicationContext())
-                                .asBitmap()
-                                .load(arrUser.get(i).getToken())
-                                .into(new SimpleTarget<Bitmap>(48,48) {
-                                    @Override
-                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        if (arrUser.get(i).getAvatar_User() != null) {
+                            final int j = i;
+                            Glide.with(getApplicationContext())
+                                    .asBitmap()
+                                    .load(arrUser.get(i).getAvatar_User())
+                                    .into(new SimpleTarget<Bitmap>(48, 48) {
+                                        @Override
+                                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 //                                        Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
-                                        mMap.addMarker(new MarkerOptions()
-                                                .position(loocation)
-                                                .title(arrUser.get(j).getUser_name())
-                                                .snippet(String.valueOf(arrUser.get(j).getId_user())))
-                                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
-                                    }
-                                });
-                    } else {
-                        mMap.addMarker(new MarkerOptions()
-                                .position(loocation)
-                                .title(arrUser.get(i).getUser_name())
-                                .snippet(String.valueOf(arrUser.get(i).getId_user())))
-                                .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
+                                            mMap.addMarker(new MarkerOptions()
+                                                    .position(loocation)
+                                                    .title(arrUser.get(j).getUser_name())
+                                                    .snippet(String.valueOf(arrUser.get(j).getId_user())))
+                                                    .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
+                                        }
+                                    });
+                        } else {
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(loocation)
+                                    .title(arrUser.get(i).getUser_name())
+                                    .snippet(String.valueOf(arrUser.get(i).getId_user())))
+                                    .setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos));
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

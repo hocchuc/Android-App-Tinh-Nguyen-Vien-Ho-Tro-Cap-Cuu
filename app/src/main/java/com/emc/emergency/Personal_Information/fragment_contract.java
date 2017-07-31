@@ -176,37 +176,42 @@ public class fragment_contract extends Fragment {
                 btnSend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        flag = true;
                         for (int j = 0; j < userList.size(); j++) {
-                            if ((userList.get(j).getId_user() == id_user) && (!userList.get(j).getId_signup_volumteer())) {
-                                if (ckbYes.isChecked()) {
-                                    OkHttpClient client = new OkHttpClient();
+                            if ((userList.get(j).getId_user() == id_user)) {
+                                if (!userList.get(j).getId_signup_volumteer()) {
+                                    if (ckbYes.isChecked()) {
+                                        OkHttpClient client = new OkHttpClient();
 
-                                    MediaType mediaType = MediaType.parse("application/json");
-                                    RequestBody body = RequestBody.create(mediaType, "{\n\t\"is_signup_volunteer\": " + String.valueOf(user.getId_signup_volumteer()) + "\n}");
-                                    Request request = new Request.Builder()
-                                            .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
-                                            .patch(body)
-                                            .addHeader("content-type", "application/json")
-                                            .build();
-                                    int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                                    if (SDK_INT > 8) {
-                                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                                .permitAll().build();
-                                        StrictMode.setThreadPolicy(policy);
+                                        MediaType mediaType = MediaType.parse("application/json");
+                                        RequestBody body = RequestBody.create(mediaType, "{\n\t\"is_signup_volunteer\": " + String.valueOf(user.getId_signup_volumteer()) + "\n}");
+                                        Request request = new Request.Builder()
+                                                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
+                                                .patch(body)
+                                                .addHeader("content-type", "application/json")
+                                                .build();
+                                        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                                        if (SDK_INT > 8) {
+                                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                                    .permitAll().build();
+                                            StrictMode.setThreadPolicy(policy);
 
-                                        try {
-                                            Response response = client.newCall(request).execute();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
+                                            try {
+                                                Response response = client.newCall(request).execute();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            getActivity().finish();
                                         }
+                                    }else if(ckbNo.isChecked())
                                         getActivity().finish();
-                                    }
-                                } else
-                                    Toast.makeText(getActivity(), "Chưa chọn.!" + String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
-                            } else flag = false;
+                                    else
+                                        Toast.makeText(getActivity(), "Chưa chọn.!" + String.valueOf(user.getId_signup_volumteer()), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getActivity(), "Bạn đã đăng ký làm tình nguyện viên. Hãy đợi duyệt.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+                            }
                         }
-                        if(!flag) Toast.makeText(getActivity(), "Bạn đã đăng ký làm tình nguyện viên. Hãy đợi duyệt.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

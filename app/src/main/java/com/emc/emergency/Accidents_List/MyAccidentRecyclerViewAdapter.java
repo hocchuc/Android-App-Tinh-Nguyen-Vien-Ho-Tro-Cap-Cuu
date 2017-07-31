@@ -2,6 +2,7 @@ package com.emc.emergency.Accidents_List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,16 +17,22 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.ChatBox.ChatBoxActivity;
+import com.emc.emergency.Helper.Utils.GPSTracker;
+
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Accident;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 import com.emc.emergency.Helper.Utils.ThoiGian;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
@@ -36,6 +43,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     private final Context context;
     private final List<Accident> mValues;
     private final fragment_accident_page.OnListFragmentInteractionListener mListener;
+    public double latitude = 0;
+    public double longitude = 0;
 
     public MyAccidentRecyclerViewAdapter(Context context, List<Accident> items, fragment_accident_page.OnListFragmentInteractionListener listener) {
         this.context = context;
@@ -47,30 +56,45 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_list_accidents, parent, false);
+        GPSTracker gps = new GPSTracker(view.getContext());
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
         return new ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.txtDes.setText(mValues.get(position).getDescription_AC());
         holder.txtStatus.setText(mValues.get(position).getStatus_AC());
+
+        LatLng latLng1=new LatLng(latitude,longitude);
+        LatLng latLng2=new LatLng(Double.valueOf(mValues.get(position).getLat_AC().toString()), Double.valueOf(mValues.get(position).getLong_AC().toString()));
+        double results= SphericalUtil.computeDistanceBetween(latLng1,latLng2)/1000;
+
+        holder.txtDistance.setText(String.format("%.2f", results)+" km");
+
+        if (mValues.get(position).getRequest_AC())
+            holder.txtRequest.setText("Request");
+        else holder.txtRequest.setText("Report");
+//        holder.txtRequest.setText(mValues.get(position).getRequest_AC()+"");
 //        holder.txtLong_Ac.setText((mValues.get(position).getLong_AC().toString()));
 //        holder.txtLat_Ac.setText((mValues.get(position).getLat_AC().toString()));
         String origin = mValues.get(position).getDate_AC();
-        String []subCurrent=origin.split("T");
-        String subDay=subCurrent[0];
-        String subTime=subCurrent[1];
-        String []subCurrent1=subTime.split(".000+0000");
-        String subTime1=subCurrent1[0];
-        Log.d("subTime1",subTime1);
-        String dateStart=subDay+" "+subTime1;
-                        Log.d("dateStart", dateStart);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String[] subCurrent = origin.split("T");
+        String subDay = subCurrent[0];
+        String subTime = subCurrent[1];
+        String[] subCurrent1 = subTime.split(".000+0000");
+        String subTime1 = subCurrent1[0];
+//        Log.d("subTime1", subTime1);
+        String dateStart = subDay + " " + subTime1;
+//        Log.d("dateStart", dateStart);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         Date date = new Date();
         String dateStop = dateFormat.format(date);
-        Log.d("dateStop", dateStop);
-        String thoiGianOnOff = ThoiGian.thoiGianOnOff(dateStart,dateStop);
+//        Log.d("dateStop", dateStop);
+        String thoiGianOnOff = ThoiGian.thoiGianOnOff(dateStart, dateStop);
         holder.txtDate.setText(thoiGianOnOff);
         holder.txtAdress.setText(mValues.get(position).getAddress());
         holder.imgV.setOnClickListener(new View.OnClickListener() {
@@ -82,8 +106,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
                 Log.d("type", SystemUtils.TYPE_HELPER);
                 i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
                 Log.d("FirebaseKey", holder.mItem.getFirebaseKey());
-                i.putExtra("id_AC", holder.mItem.getId_AC()+"");
-                i.putExtra("id_victim", holder.mItem.getId_user()+"");
+                i.putExtra("id_AC", holder.mItem.getId_AC() + "");
+                i.putExtra("id_victim", holder.mItem.getId_user() + "");
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             }
         });
@@ -93,8 +117,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
                 Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
                 i.setAction(SystemUtils.TYPE_HELPER);
                 i.putExtra("type", SystemUtils.TYPE_HELPER);
-                i.putExtra("id_AC", holder.mItem.getId_AC()+"");
-                i.putExtra("id_victim", holder.mItem.getId_user()+"");
+                i.putExtra("id_AC", holder.mItem.getId_AC() + "");
+                i.putExtra("id_victim", holder.mItem.getId_user() + "");
                 i.putExtra("FirebaseKey", holder.mItem.getFirebaseKey());
                 v.getContext().startActivity(i);
             }
@@ -133,12 +157,14 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         public Accident mItem;
         public final TextView txtDes;
         public final TextView txtStatus;
-//        public final TextView txtLong_Ac;
+        //        public final TextView txtLong_Ac;
 //        public final TextView txtLat_Ac;
         public final TextView txtDate;
         public final ImageView imgV;
         public final FloatingActionButton floatingActionButton;
         public final TextView txtAdress;
+        public final TextView txtDistance;
+        public final TextView txtRequest;
 
         public ViewHolder(View view) {
             super(view);
@@ -151,6 +177,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
             imgV = (ImageView) view.findViewById(R.id.imgVAC);
             floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
             txtAdress = (TextView) view.findViewById(R.id.txtAddess_Ac);
+            txtRequest = (TextView) view.findViewById(R.id.txtRequest_NearYou);
+            txtDistance = (TextView) view.findViewById(R.id.txtDistance_NearYou);
         }
 
         @Override
