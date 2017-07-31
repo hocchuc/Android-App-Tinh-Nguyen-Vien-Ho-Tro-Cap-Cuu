@@ -17,11 +17,12 @@ public class SystemUtils {
     public static final String FCM_SERVER_CONNECTION = "@gcm.googleapis.com";
     public static final String BACKEND_ACTION_MESSAGE = "MESSAGE";
     public static final String BACKEND_ACTION_ACCIDENT = "new_accident";
+    public static final String BACKEND_ACTION_LOCK_USER = "lock_user";
     public static final String BACKEND_ACTION_ECHO = "com.emc.emergency.ECHO";
     public static final Random RANDOM = new Random();
     public static final String API_MODE="LOCAL";//"HEROKU" hoặc "LOCAL"
     public static final String HEROKU_API="https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/";
-    public static final String LOCAL_API="http://192.168.1.15:8080/api/";
+    public static final String LOCAL_API="http://192.168.1.110:8080/api/";
 
     public static final String PUT_USER_TO_ACCIDENT = "http://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/";
 

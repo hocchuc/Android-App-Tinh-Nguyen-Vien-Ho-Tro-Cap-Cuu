@@ -359,6 +359,7 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
                 @Override
                 public void onFailure(Call<FlashMessage> call, Throwable t) {
+                    btnLogin.setProgress(0);
                     btnLogin.setError(getString(R.string.pleasecheckconnection));
                     Toast.makeText(getApplicationContext(),R.string.pleasecheckconnection, Toast.LENGTH_LONG).show();
                     
@@ -403,6 +404,8 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
+
+
                                                            
             };
 

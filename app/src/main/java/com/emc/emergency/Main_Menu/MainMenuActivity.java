@@ -45,6 +45,7 @@ import com.emc.emergency.Helper.AsyncTask.SendLocationToServer;
 import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Services.IRequestListener;
 
+import com.emc.emergency.Helper.Utils.Utility;
 import com.emc.emergency.Login.LoginActivity;
 import com.emc.emergency.Personal_Information.Personal_Inf_Activity;
 import com.emc.emergency.R;
@@ -159,8 +160,9 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
 
+        setContentView(R.layout.activity_main_menu);
+        processIntent();
         addControls();
         setLoadImageLogic();
         BuildDrawer(savedInstanceState);
@@ -168,6 +170,21 @@ public class MainMenuActivity extends AppCompatActivity
         BuildFragment();
 
         addEvents();
+    }
+
+    private void processIntent() {
+        // kiem tra intent goi toi co phai la cua lock-user
+        Utility.dumpIntent(getIntent(),"MainMenu");
+       Intent intent =  getIntent();
+        if(intent.hasExtra("action")) {
+            if(intent.getStringExtra("action").equals(SystemUtils.BACKEND_ACTION_LOCK_USER))
+            Logout();
+        }
+
+        if(isOnline()){
+            Toast.makeText(this, "You are offline, please turn on connection to make app work correctly", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     /**
@@ -191,22 +208,7 @@ public class MainMenuActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
 
-//                LatLng latLng = new LatLng(latitude, longitude);
 
-//                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
-//                mDatabase.orderByChild("id_user").equalTo(id_user).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                            idUser_UID = childSnapshot.getKey();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -331,9 +333,9 @@ public class MainMenuActivity extends AppCompatActivity
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
-        if (isOnline() == false) {
-            Logout();
-        }
+//        if(isOnline()==false){
+//            Logout();
+//        }
 
         sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
         id_usertype = sharedPreferences1.getLong("id_user_type", -1);
@@ -812,7 +814,8 @@ public class MainMenuActivity extends AppCompatActivity
             Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int returnVal = p1.waitFor();
             boolean reachable = (returnVal == 0);
-            return reachable;
+            if(!reachable&&!Utility.isNetworkAvailable(MainMenuActivity.this)&&Utility.isInternetAvailable())
+                return false;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

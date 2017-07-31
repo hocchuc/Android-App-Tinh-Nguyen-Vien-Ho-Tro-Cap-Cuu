@@ -1,9 +1,13 @@
 package com.emc.emergency.Helper.Utils;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,5 +59,18 @@ public class Utility {
 	        }
 	        Log.e(LOG_TAG,"Dumping Intent end");
 	    }
+	}
+	public  static boolean isNetworkAvailable(Context context) {
+	    final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+	    return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+	}
+	public static boolean isInternetAvailable() {
+	    try {
+	        final InetAddress address = InetAddress.getByName("www.google.com");
+	        return !address.equals("");
+	    } catch (UnknownHostException e) {
+	        // Log error
+	    }
+	    return false;
 	}
 }

@@ -44,6 +44,9 @@ import com.emc.emergency.Helper.Model.Personal_Information;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -61,6 +64,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -108,6 +113,7 @@ public class fragment_personal_info_page extends Fragment {
     public FloatingActionButton btnEdit;
     public Button btnChange;
     public MaterialDialog materialDialog;
+    private Uri downloadURL;
     /**
      * Biến để chọn và chụp hình
      */
@@ -116,11 +122,13 @@ public class fragment_personal_info_page extends Fragment {
     //    //Image properties
 //    private String mCurrentImagePath = null;
 //    private Uri mCapturedImageURI = null;
+    FirebaseAuth mAuth;
     private StorageReference imagesRef;
     /* biến dùng cho firebase */
     FirebaseStorage storage;
     StorageReference storageRef;
     Uri uriAvatar = null;
+    String Avatar = null;
     ProgressDialog progressDialog;
 
     @Override
@@ -155,10 +163,39 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+         mAuth = FirebaseAuth.getInstance();
+
         progressDialog = progressDialog.show(getContext(), getString(R.string.progress_dialog_loading), getString(R.string.load_data_from_server));
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+          // do your stuff
+        } else {
+          signInAnonymously();
+        }
+    }
+
+    private void signInAnonymously() {
+        mAuth.signInAnonymously().addOnSuccessListener(getActivity(), new  OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    // do your stuff
+                }
+            })
+            .addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.e("personal_info", "signInAnonymously:FAILURE", exception);
+                }
+            });
     }
 
     @Override
@@ -272,7 +309,6 @@ public class fragment_personal_info_page extends Fragment {
                     pi1.setBirthday(txtBirthdayPI.getText().toString());
                     pi1.setPhone_PI(txtPhonePI.getText().toString());
                     pi1.setWork_location(txtWKPI.getText().toString());
-//                    pi1.setAvatar(imgV.toString());
                     if (radMale.isChecked()) {
                         pi1.setSex__PI(true);
                     } else pi1.setSex__PI(false);
@@ -294,9 +330,13 @@ public class fragment_personal_info_page extends Fragment {
 
                     Gson gson = new Gson();
                     String json = gson.toJson(pi1);
-
+                    Log.d("Json from personal_info",json.toString());
                     OkHttpClient client = new OkHttpClient();
-
+                    try {
+                        Log.d("personal_info","Send : "+SystemUtils.getServerBaseUrl() + "personal_Infomations/" + idPI);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     MediaType mediaType = MediaType.parse("application/json");
                     RequestBody body = RequestBody.create(mediaType, json);
                     Request request = new Request.Builder()
@@ -311,14 +351,32 @@ public class fragment_personal_info_page extends Fragment {
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                                 .permitAll().build();
                         StrictMode.setThreadPolicy(policy);
-                        try {
-                            Response response = client.newCall(request).execute();
-                            Toast.makeText(getContext(), "Saved", Toast.LENGTH_SHORT).show();
-                            if (progressDialog.isShowing()) progressDialog.dismiss();
-//                        Log.d("reponsePI_PUT",response.body().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+
+                         client.newCall(request).enqueue(new Callback() {
+                             @Override
+                             public void onFailure(Call call, IOException e) {
+
+                             }
+
+                             @Override
+                             public void onResponse(Call call, Response response) throws IOException {
+                                 try {
+                                     getActivity().runOnUiThread(new Runnable() {
+                                       public void run() {
+                                         Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
+                                           if (progressDialog.isShowing()) progressDialog.dismiss();
+
+                                       }
+                                     });
+
+                                     if(downloadURL!=null)sendPatchAvatarToPI(downloadURL);
+
+                                 } catch (Exception e) {
+                                     e.printStackTrace();
+                                 }
+                             }
+
+                         });
                     }
                 }
             }
@@ -434,8 +492,8 @@ public class fragment_personal_info_page extends Fragment {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                sendPatchAvatarToPI(downloadUrl);
+                downloadURL = taskSnapshot.getDownloadUrl();
+                sendPatchAvatarToPI(downloadURL);
 
             }
         });
@@ -456,24 +514,20 @@ public class fragment_personal_info_page extends Fragment {
                 .build();
         Log.d("PatchURL", SystemUtils.getServerBaseUrl() + "personal_Infomations/" + idPI);
         // TODO: 21-Jun-17 kiểm soát lỗi từ responge
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+             client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                }
+            });
+
     }
-
-//    private byte[] getByteArrayFromImageView(ImageView imgv) {
-//        // ham xu ly anh tu imageView sang BitmapDrawble => byte[]
-//        BitmapDrawable drawable = (BitmapDrawable) imgv.getDrawable();
-//        Bitmap bmp = drawable.getBitmap();
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        // COMPRESS to JPEG LOW QUALITY
-//        bmp.compress(Bitmap.CompressFormat.JPEG, 10, stream);
-//        byte[] byteArray = stream.toByteArray();
-//        return byteArray;
-//    }
-
 
     /**
      * Hàm get thông tin personal_info đổ vào forrm
@@ -507,32 +561,20 @@ public class fragment_personal_info_page extends Fragment {
                 txtAddressPI.setText(pi.getAddress_PI().toString());
                 txtBirthdayPI.setText(pi.getBirthday().toString());
                 txtPID.setText(pi.getPersonal_id().toString());
+                Avatar = pi.getAvatar();
+                RequestOptions options = new RequestOptions()
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .placeholder(R.drawable.profile3)
+                        .error(R.drawable.material_drawer_circle_mask)
+                        .priority(Priority.HIGH);
+                try {
+                    Glide.with(getActivity()).load(Avatar).apply(options).into(imgV);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                imagesRef.getDownloadUrl()
-                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                uriAvatar = uri;
-                                RequestOptions options = new RequestOptions()
-                                        .centerCrop()
-                                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                                        .placeholder(R.drawable.profile3)
-                                        .error(R.drawable.material_drawer_circle_mask)
-                                        .priority(Priority.HIGH);
-                                try {
-                                    Glide.with(getActivity()).load(uriAvatar).apply(options).into(imgV);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-//                        Log.d("getDownloadUrlSuccess",uri.toString());
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
 
-                    }
-                });
 
                 try {
                     if (pi.getSex__PI()) {
@@ -584,6 +626,8 @@ public class fragment_personal_info_page extends Fragment {
                     pi.setAddress_PI(jsonObj.getString("address_PI"));
                 if (jsonObj.has("personal_id"))
                     pi.setPersonal_id(jsonObj.getString("personal_id"));
+                if (jsonObj.has("avatar"))
+                    pi.setAvatar(jsonObj.getString("avatar"));
                 if (jsonObj.has("name_PI"))
                     pi.setName_PI(jsonObj.getString("name_PI"));
                 if (jsonObj.has("id_PI")) {

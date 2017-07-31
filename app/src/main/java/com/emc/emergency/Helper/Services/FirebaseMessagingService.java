@@ -1,7 +1,9 @@
 package com.emc.emergency.Helper.Services;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.Ringtone;
@@ -10,8 +12,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.support.v4.app.NotificationCompat;
+import android.view.WindowManager;
 
 import com.emc.emergency.ChatBox.ChatBoxActivity;
+import com.emc.emergency.Main_Menu.MainMenuActivity;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 import com.google.firebase.messaging.RemoteMessage;
@@ -77,6 +81,27 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
             }
+            if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_ACCIDENT)){
+                title = remoteMessage.getData().get("title");
+                Log.d(TAG, "Message Notification title: " + remoteMessage.getNotification().getTitle());
+                AlertDialog alertDialog = new AlertDialog.Builder(this)
+                                    .setTitle("Your account was locked")
+                                    .setMessage("Your account was locked due to our administrator"+
+                                            " detect that you had spamming. Your account will be lock."+
+                                    " If we have mistake, please contact find support by email emergencysos@gmail.com")
+                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(getApplicationContext(), MainMenuActivity.class);
+                                intent.putExtra("action",SystemUtils.BACKEND_ACTION_LOCK_USER);
+                            }
+                        })
+                        .create();
+
+                alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                alertDialog.show();
+            }
+
 
         }
         
