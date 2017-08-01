@@ -341,7 +341,6 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 
         if (Active.equals("Active"))
             addValueEventListener_noti();
-        else addValueEventListener();
 //        LatLng myLocation = new LatLng(lat, lon);
 //        MarkerOptions markerOptions = new MarkerOptions()
 //                .position(myLocation)
