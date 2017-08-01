@@ -85,30 +85,8 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         id_user = sharedPreferences1.getInt("id_user", -1);
 
         GetUser();
-        GetAccident();
         return new ViewHolder(view);
     }
-
-    private void GetAccident() {
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(SystemUtils.getServerBaseUrl()+"accidents/2")
-                .get()
-                .build();
-        int SDK_INT = android.os.Build.VERSION.SDK_INT;
-        if (SDK_INT > 8) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                    .permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            try {
-                Response response = client.newCall(request).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void GetUser() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()

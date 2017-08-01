@@ -247,8 +247,7 @@
             </android.support.design.widget.TextInputLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/txtChangePassPI"
@@ -256,7 +255,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.7"
                     android:enabled="false"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:hint="Change Password"/>
 
                 <Button
                     android:id="@+id/btnChangePassPI"

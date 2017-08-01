@@ -163,7 +163,7 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//         mAuth = FirebaseAuth.getInstance();
+         mAuth = FirebaseAuth.getInstance();
 
         progressDialog = progressDialog.show(getContext(), getString(R.string.progress_dialog_loading), getString(R.string.load_data_from_server));
         if (getArguments() != null) {
@@ -175,28 +175,28 @@ public class fragment_personal_info_page extends Fragment {
     public void onStart() {
         super.onStart();
 
-//        FirebaseUser user = mAuth.getCurrentUser();
-//        if (user != null) {
-//          // do your stuff
-//        } else {
-//          signInAnonymously();
-//        }
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+          // do your stuff
+        } else {
+          signInAnonymously();
+        }
     }
 
-//    private void signInAnonymously() {
-//        mAuth.signInAnonymously().addOnSuccessListener(getActivity(), new  OnSuccessListener<AuthResult>() {
-//                @Override
-//                public void onSuccess(AuthResult authResult) {
-//                    // do your stuff
-//                }
-//            })
-//            .addOnFailureListener(getActivity(), new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    Log.e("personal_info", "signInAnonymously:FAILURE", exception);
-//                }
-//            });
-//    }
+    private void signInAnonymously() {
+        mAuth.signInAnonymously().addOnSuccessListener(getActivity(), new  OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    // do your stuff
+                }
+            })
+            .addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.e("personal_info", "signInAnonymously:FAILURE", exception);
+                }
+            });
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
@@ -225,7 +225,7 @@ public class fragment_personal_info_page extends Fragment {
         new GetPersonalInfo(this.getActivity(), mItem).execute();
 
         imgV.setEnabled(false);
-        imgV.setImageResource(R.drawable.profile3);
+        if(imgV.getDrawable()==null) imgV.setImageResource(R.drawable.profile3);
 
         imgV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,10 +301,7 @@ public class fragment_personal_info_page extends Fragment {
                 } else {
                     progressDialog.show();
                     if(bitmap!=null)sendImageToFirebase(bitmap);
-                    else {
-                        bitmap = ((BitmapDrawable)imgV.getDrawable()).getBitmap();
-                        if(bitmap!=null)sendImageToFirebase(bitmap);
-                    }
+
 
                     Personal_Information pi1 = new Personal_Information();
                     pi1.setName_PI(txtNamePI.getText().toString());
@@ -502,10 +499,27 @@ public class fragment_personal_info_page extends Fragment {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                downloadURL = taskSnapshot.getDownloadUrl();
-                sendPatchAvatarToPI(downloadURL);
+                try {
+                    downloadURL = taskSnapshot.getDownloadUrl();
+                    sendPatchAvatarToPI(downloadURL);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                getActivity().runOnUiThread(new Runnable() {
+                   public void run() {
+                       Toast.makeText(getActivity(), "Error, please try again", Toast.LENGTH_SHORT).show();
+                       if (progressDialog.isShowing()) progressDialog.dismiss();
+
+
+                   }
+               });
             }
         });
     }
@@ -529,7 +543,14 @@ public class fragment_personal_info_page extends Fragment {
              client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                       public void run() {
+                           Toast.makeText(getActivity(), "Error, please try again", Toast.LENGTH_SHORT).show();
+                           if (progressDialog.isShowing()) progressDialog.dismiss();
 
+
+                       }
+                   });
                 }
 
                 @Override
@@ -587,7 +608,7 @@ public class fragment_personal_info_page extends Fragment {
                         .error(R.drawable.material_drawer_circle_mask)
                         .priority(Priority.HIGH);
                 try {
-                    Glide.with(getActivity()).load(Avatar).apply(options).into(imgV);
+                    if(Avatar!=null&&!Avatar.equals("null")) Glide.with(getActivity()).load(Avatar).apply(options).into(imgV);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

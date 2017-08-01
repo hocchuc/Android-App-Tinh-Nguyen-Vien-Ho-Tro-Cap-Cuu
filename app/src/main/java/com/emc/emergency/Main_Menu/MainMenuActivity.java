@@ -364,11 +364,15 @@ public class MainMenuActivity extends AppCompatActivity
 
         LocationChange();
 
-        if (user1.getUser_type().getName_user_type().equals("user")) {
-            new GetAllUser(MainMenuActivity.this).execute();
-        } else {
-            new GetAllUser(MainMenuActivity.this).execute();
-            new GetAllAccident(MainMenuActivity.this).execute();
+        try {
+            if (user1.getUser_type().getName_user_type().equals("user")) {
+                new GetAllUser(MainMenuActivity.this).execute();
+            } else {
+                new GetAllUser(MainMenuActivity.this).execute();
+                new GetAllAccident(MainMenuActivity.this).execute();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -554,12 +558,16 @@ public class MainMenuActivity extends AppCompatActivity
                                 } else if (drawerItem.getIdentifier() == 3) {
                                     intent = new Intent(MainMenuActivity.this, Personal_Inf_Activity.class);
                                 } else if (drawerItem.getIdentifier() == 4) {
-                                    mProgressDialog.show();
-                                    if (!progressDialog.isShowing())
-                                        progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
-                                    Logout();
-                                    intent = new Intent(MainMenuActivity.this, LoginActivity.class);
-                                    intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
+                                    try {
+                                        mProgressDialog.show();
+                                        if (!progressDialog.isShowing())
+                                            progressDialog.show(MainMenuActivity.this, getString(R.string.cleanning), getString(R.string.we_are_cleanning));
+                                        Logout();
+                                        intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                                        intent.putExtra(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 if (intent != null) startActivity(intent);
 
