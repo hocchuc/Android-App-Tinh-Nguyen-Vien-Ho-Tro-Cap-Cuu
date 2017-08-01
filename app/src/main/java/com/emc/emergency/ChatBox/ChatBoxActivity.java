@@ -707,10 +707,10 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
 
-                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
-                    SharedPreferences.Editor editor4 = preferences4.edit();
-                    editor4.putString("id_acc",id_AC);
-                    editor4.apply();
+//                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
+//                    SharedPreferences.Editor editor4 = preferences4.edit();
+//                    editor4.putString("id_acc",id_AC);
+//                    editor4.apply();
 
                     SendtoActionOnServer();
                     SendtoActionOnFirebase();
@@ -893,11 +893,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
         // Chuẩn bị folder cho accident và lấy key về
         accident2.setFirebaseKey(AccidentKey);
 
-        preferences3 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
-        SharedPreferences.Editor editor3 = preferences3.edit();
-        editor3.putString("accident_key", AccidentKey);
 
-        editor3.commit();
 
 
         // Bỏ accident mới vào key vừa tạo trên firebase
@@ -1130,7 +1126,11 @@ public class ChatBoxActivity extends AppCompatActivity implements
         accident = new Accident();
         accident2 = new Accident();
         AccidentKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD).push().getKey();
+        preferences3 = getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
+        SharedPreferences.Editor editor3 = preferences3.edit();
+        editor3.putString("accident_key", AccidentKey);
 
+        editor3.commit();
         accident.setDescription_AC("Tai nạn");
 
 

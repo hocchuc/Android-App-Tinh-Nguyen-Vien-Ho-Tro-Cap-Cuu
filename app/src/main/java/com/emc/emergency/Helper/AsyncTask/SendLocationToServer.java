@@ -1,6 +1,7 @@
 package com.emc.emergency.Helper.AsyncTask;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.emc.emergency.Helper.Utils.SystemUtils;
@@ -33,11 +34,13 @@ public class SendLocationToServer {
     }
     public void excute() {
         OkHttpClient client = new OkHttpClient();
+        Log.d("SendLocationToServer",SystemUtils.getServerBaseUrl()+"users/"+id_user);
 
         MediaType mediaType = MediaType.parse("application/json");
+        Log.d("SendLocationToServer","{\n      \"long_PI\" : "+longtitude+",\n      \"lat_PI\" : "+latitude+"\n}");
         RequestBody body = RequestBody.create(mediaType, "{\n      \"long_PI\" : "+longtitude+",\n      \"lat_PI\" : "+latitude+"\n}");
         Request request = new Request.Builder()
-          .url(SystemUtils.getServerBaseUrl()+"user/"+id_user)
+          .url(SystemUtils.getServerBaseUrl()+"users/"+id_user)
           .patch(body)
           .addHeader("content-type", "application/json")
           .build();
@@ -54,6 +57,7 @@ public class SendLocationToServer {
 
              @Override
              public void onResponse(Call call, Response response) throws IOException {
+                 Log.d("SendLocationToServer","Sucess");
 
              }
          }) ;

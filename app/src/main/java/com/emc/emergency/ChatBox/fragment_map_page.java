@@ -102,8 +102,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     GoogleMap mMap;
     //    OnMapReadyCallback onMapReadyCallback;
 //    ArrayList<Accident> accidentList;
-//    double lat = 0;
-//    double lon = 0;
+    double lat = 0;
+    double lon = 0;
     //    String moTa, diaChi;
     Accident accident;
     private final Handler mHandler;
@@ -160,8 +160,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     // XU LY NUT VE DUONG
 //    private EditText etOrigin;
 //    private EditText etDestination;
-
-    Button btnVeDuong;
+        Boolean is_TNV = false;
+      Button btnVeDuong;
 //    private List<Marker> originMarkers = new ArrayList<>();
 //    private List<Marker> destinationMarkers = new ArrayList<>();
 //    private List<Polyline> polylinePaths = new ArrayList<>();
@@ -198,11 +198,12 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         super.onCreate(savedInstanceState);
      /*   SupportMapFragment supportMapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map_pager);
         supportMapFragment.getMapAsync(this);*/
-//        GPSTracker gps = new GPSTracker(this.getActivity());
-//        if (gps.canGetLocation()) {
-//            lat = gps.getLatitude();
-//            lon = gps.getLongitude();
-//        }
+        GPSTracker gps = new GPSTracker(this.getActivity());
+        if (gps.canGetLocation()) {
+            // cua nan nhan / tnv dang dung
+            lat = gps.getLatitude();
+            lon = gps.getLongitude();
+        }
         if (getArguments() != null) {
             mParam1 = getArguments().getDouble(ARG_PARAM1);
             mParam2 = getArguments().getDouble(ARG_PARAM2);
@@ -238,7 +239,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         sharedPreferences2 = getActivity().getSharedPreferences("ACCIDENT_KEY_NOTI", MODE_PRIVATE);
         Active = sharedPreferences2.getString("Type_active", "");
         AccidentKey_noti = sharedPreferences2.getString("accident_key_noti", "");
+        if(!AccidentKey_noti.equals("")) is_TNV=true;
 
+        Log.d("Active", Active);
         sharedPreferences3 = getActivity().getSharedPreferences("ACCIDENT_KEY", MODE_PRIVATE);
         AccidentKey = sharedPreferences3.getString("accident_key", "");
 
@@ -249,8 +252,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //        UserJoinedKey = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
 //                .child(AccidentKey_noti)
 //                .child("User joined").push().getKey();
-//        if (Active.equals("Active"))
-//            SendtoActionOnFirebase();
+
+
         return view;
     }
 
@@ -281,6 +284,16 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                         accident.setLat_AC(jsonObject.getDouble("lat_AC"));
                     if (jsonObject.has("address"))
                         accident.setAddress(jsonObject.getString("address"));
+                    if (jsonObject.has("firebaseKey"))
+                          accident.setFirebaseKey(jsonObject.getString("firebaseKey"));
+
+                    if(AccidentKey==null||AccidentKey.equals("")) {
+
+                        AccidentKey = accident.getFirebaseKey();
+                        if(!is_TNV) addValueEventListener();
+
+                    }
+
                     Log.d("ds_1AC", accident.toString());
 
                 } catch (JSONException e) {
@@ -330,7 +343,7 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap = googleMap;
 
         BitmapDescriptor icon1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_sos);
-        LatLng myLocation = new LatLng(accident.getLat_AC(), accident.getLong_AC());
+        LatLng myLocation = new LatLng(accident.getLat_AC(),accident.getLong_AC());
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(myLocation)
                 .icon(icon1)
@@ -339,8 +352,11 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         mMap.setMyLocationEnabled(false);
 
-        if (Active.equals("Active"))
+        if(!AccidentKey_noti.equals("")&&is_TNV){
+            if(!AccidentKey_noti.equals(""))Log.d("FragMapAccidentKey_noti",AccidentKey_noti);
             addValueEventListener_noti();
+        }
+//        else addValueEventListener();
 //        LatLng myLocation = new LatLng(lat, lon);
 //        MarkerOptions markerOptions = new MarkerOptions()
 //                .position(myLocation)
@@ -374,6 +390,9 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void addValueEventListener() {
+        // cho nguoi bi nan
+        Log.d("addValueEventListener","addValueEventListener");
+
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey)
                 .child("User joined");
@@ -396,6 +415,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                                 @Override
                                 public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
 //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                    Log.d("FragMapEventListener",userJoined1.getName());
+
                                     mMap.addMarker(new MarkerOptions()
                                             .position(loocation)
                                             .title(String.valueOf(userJoined1.getName())))
@@ -430,6 +451,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
     }
 
     private void addValueEventListener_noti() {
+        // cho tnv
+
+        Log.d("FragMapEventListenerNo","addValueEventListener_noti");
+
         DatabaseReference ref1 = mFirebaseDatabaseReference.child(ACCIDENTS_CHILD)
                 .child(AccidentKey_noti)
                 .child("User joined");
@@ -448,7 +473,8 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                                 .into(new SimpleTarget<Bitmap>(48, 48) {
                                     @Override
                                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-    //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                        //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                        Log.d("FragMapEventListenerNo",userJoined1.getName());
                                         mMap.addMarker(new MarkerOptions()
                                                 .position(loocation)
                                                 .title(String.valueOf(userJoined1.getName())))

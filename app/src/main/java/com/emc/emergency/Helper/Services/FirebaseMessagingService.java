@@ -39,6 +39,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     private String id_AC="";
     private String title="";
     private String id_victim;
+    Boolean is_not_getdata = true;
     final private String TYPE_HELPER = "helper";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -62,6 +63,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 id_victim = remoteMessage.getData().get("id_victim");
                 if(id_AC!=null&&!id_AC.equals("")) Log.d("On_Mess_Rec_id_AC",id_AC);
                 showAccidentNotification(message);
+                is_not_getdata=false;
+
 
             }
 
@@ -74,7 +77,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
                 showBasicNotification(message);
 
-                
+                is_not_getdata=false;
+
             }
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_DONE_ACCIDENT)) {
                 title = remoteMessage.getData().get("title");
@@ -82,6 +86,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
                 showBasicNotification(message);
 
+                is_not_getdata=false;
 
             }
             if(remoteMessage.getData().containsKey(SystemUtils.BACKEND_ACTION_LOCK_USER)){
@@ -102,7 +107,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-
+            if(is_not_getdata)
             showBasicNotification(remoteMessage.getNotification().getBody());
         }
 
@@ -145,7 +150,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         if(FirebaseKey!=null&&!FirebaseKey.equals(""))Log.d("FirebaseKey",FirebaseKey);
         i.putExtra("id_victim",id_victim);
         i.putExtra("id_AC", id_AC);
-        
         i.setAction("TYPE_HELPER");
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i,PendingIntent.FLAG_CANCEL_CURRENT);
