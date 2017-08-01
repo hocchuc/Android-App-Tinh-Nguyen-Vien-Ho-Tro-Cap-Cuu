@@ -1,6 +1,8 @@
 package com.emc.emergency.Helper.AsyncTask;
 
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.emc.emergency.Helper.Model.Personal_Information;
@@ -56,35 +58,40 @@ public class GetAllUser extends AsyncTask<Void, Void, ArrayList<User>> {
                     .url(SystemUtils.getServerBaseUrl() + "GetAllUser")
                     .get()
                     .build();
-
-            Response response = client.newCall(request).execute();
-            JSONArray usersJSONArray = new JSONArray(response.body().string());
+            int SDK_INT = Build.VERSION.SDK_INT;
+            if (SDK_INT > 8) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                Response response = client.newCall(request).execute();
+                JSONArray usersJSONArray = new JSONArray(response.body().string());
                 Log.d("usersJSONArray", usersJSONArray.toString());
-            for (int i = 0; i < usersJSONArray.length(); i++) {
-                User user1 = new User();
-                JSONObject jsonObj = usersJSONArray.getJSONObject(i);
-                if (jsonObj.has("name")) {
-                    Personal_Information pi = new Personal_Information();
-                    pi.setName_PI(jsonObj.getString("name"));
-                    user1.setUser_name(pi.getName_PI());
-                }
-                if (jsonObj.has("id_user"))
-                    user1.setId_user(jsonObj.getLong("id_user"));
-                if (jsonObj.has("avatar"))
-                    user1.setAvatar_User(jsonObj.getString("avatar"));
-                if (jsonObj.has("long"))
-                    user1.setLong_PI(jsonObj.getDouble("long"));
-                if (jsonObj.has("lat"))
-                    user1.setLat_PI(jsonObj.getDouble("lat"));
-                if (jsonObj.has("name_user_type")) {
-                    User_Type user_type1 = new User_Type();
-                    user_type1.setName_user_type(jsonObj.getString("name_user_type"));
-                    user1.setUser_type(user_type1);
-                }
-                if (jsonObj.has("token"))
-                    user1.setToken(jsonObj.getString("token"));
+                for (int i = 0; i < usersJSONArray.length(); i++) {
+                    User user1 = new User();
+                    JSONObject jsonObj = usersJSONArray.getJSONObject(i);
+                    if (jsonObj.has("name")) {
+                        Personal_Information pi = new Personal_Information();
+                        pi.setName_PI(jsonObj.getString("name"));
+                        user1.setUser_name(pi.getName_PI());
+                    }
+                    if (jsonObj.has("id_user"))
+                        user1.setId_user(jsonObj.getLong("id_user"));
+                    if (jsonObj.has("avatar"))
+                        user1.setAvatar_User(jsonObj.getString("avatar"));
+                    if (jsonObj.has("long"))
+                        user1.setLong_PI(jsonObj.getDouble("long"));
+                    if (jsonObj.has("lat"))
+                        user1.setLat_PI(jsonObj.getDouble("lat"));
+                    if (jsonObj.has("name_user_type")) {
+                        User_Type user_type1 = new User_Type();
+                        user_type1.setName_user_type(jsonObj.getString("name_user_type"));
+                        user1.setUser_type(user_type1);
+                    }
+                    if (jsonObj.has("token"))
+                        user1.setToken(jsonObj.getString("token"));
                     Log.d("User1", user1.toString());
-                userList.add(user1);
+                    userList.add(user1);
+                }
             }
             Log.d("DSUser1", userList.toString());
         } catch (Exception ex) {

@@ -150,7 +150,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
         accident = new Accident();
         if(vt<0){
             accident.setDescription_AC(txtRB_Details.getText().toString());
-        }else accident.setDescription_AC(DSTainan[vt]+" - "+txtRB_Details.getText().toString());
+        }else accident.setDescription_AC(DSTainan[vt]+". "+txtRB_Details.getText().toString());
 
           //TODO thêm locate sau này, sử dụng giờ hệ thống
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
@@ -269,12 +269,7 @@ public class ReportAccidentActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
                 return "";
-
-
-
         }
     }
 

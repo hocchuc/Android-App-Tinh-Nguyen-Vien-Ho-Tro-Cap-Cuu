@@ -163,7 +163,7 @@ public class fragment_personal_info_page extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         mAuth = FirebaseAuth.getInstance();
+//         mAuth = FirebaseAuth.getInstance();
 
         progressDialog = progressDialog.show(getContext(), getString(R.string.progress_dialog_loading), getString(R.string.load_data_from_server));
         if (getArguments() != null) {
@@ -175,28 +175,28 @@ public class fragment_personal_info_page extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-          // do your stuff
-        } else {
-          signInAnonymously();
-        }
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        if (user != null) {
+//          // do your stuff
+//        } else {
+//          signInAnonymously();
+//        }
     }
 
-    private void signInAnonymously() {
-        mAuth.signInAnonymously().addOnSuccessListener(getActivity(), new  OnSuccessListener<AuthResult>() {
-                @Override
-                public void onSuccess(AuthResult authResult) {
-                    // do your stuff
-                }
-            })
-            .addOnFailureListener(getActivity(), new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.e("personal_info", "signInAnonymously:FAILURE", exception);
-                }
-            });
-    }
+//    private void signInAnonymously() {
+//        mAuth.signInAnonymously().addOnSuccessListener(getActivity(), new  OnSuccessListener<AuthResult>() {
+//                @Override
+//                public void onSuccess(AuthResult authResult) {
+//                    // do your stuff
+//                }
+//            })
+//            .addOnFailureListener(getActivity(), new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    Log.e("personal_info", "signInAnonymously:FAILURE", exception);
+//                }
+//            });
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,

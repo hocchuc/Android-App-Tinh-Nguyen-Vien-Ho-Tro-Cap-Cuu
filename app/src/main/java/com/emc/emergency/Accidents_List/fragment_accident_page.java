@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,19 +15,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.emc.emergency.Helper.Model.User;
+import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.R;
 import com.emc.emergency.Helper.Model.Accident;
 import com.emc.emergency.Helper.AsyncTask.ReturnDataAllAccident;
 import com.emc.emergency.Helper.Utils.SystemUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -37,7 +46,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class fragment_accident_page extends Fragment implements ReturnDataAllAccident {
+public class fragment_accident_page extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -46,8 +55,10 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
     private OnListFragmentInteractionListener mListener;
     ArrayList<Accident> accidentList;
     RecyclerView recyclerView;
-    public SharedPreferences sharedPreferences1;
-    long id_usertype;
+    public SharedPreferences sharedPreferences2;
+    int id_user;
+    User user1;
+    User_Type user_type;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,15 +91,18 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
         accidentList = new ArrayList<>();
+        user1=new User();
+        user_type=new User_Type();
 
         new GetAccidents(getActivity(), accidentList).execute();
 
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
 
-        sharedPreferences1 = view.getContext().getSharedPreferences("User", MODE_PRIVATE);
-        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
+        sharedPreferences2 = getContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
+        id_user = sharedPreferences2.getInt("id_user", -1);
 
+        GetUser();
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
@@ -114,12 +128,39 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         super.onDetach();
         mListener = null;
     }
+    private void GetUser() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+                try {
+                    JSONObject jsonObj = new JSONObject(response.body().string());
+                    user1 = new User();
+                    user_type = new User_Type();
+                    if (jsonObj.has("id_user_type")) {
+                        String user_Type = jsonObj.getString("id_user_type");
+                        JSONObject jsonObject = new JSONObject(user_Type);
+                        if (jsonObject.has("name_user_type"))
+                            user_type.setName_user_type(jsonObject.getString("name_user_type"));
+                        user1.setUser_type(user_type);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-    @Override
-    public void handleReturnDataAllAccident(ArrayList<Accident> arrAccident) {
-
+        }
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -155,10 +196,11 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         protected void onPostExecute(ArrayList<Accident> accidents) {
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
+
             for (Accident accident : accidents) {
-                if ((id_usertype == 3) && (accident.getStatus_AC().equals("Done")))
+                if ((user1.getUser_type().getName_user_type().equals("user")) && (accident.getStatus_AC().equals("Done")))
                     accidentList.add(accident);
-                else if ((id_usertype != 3) && (accident.getStatus_AC().equals("Active")))
+                else if (((!user1.getUser_type().getName_user_type().equals("user"))) && (accident.getStatus_AC().equals("Active")))
                     accidentList.add(accident);
             }
             recyclerView.getAdapter().notifyDataSetChanged();
@@ -219,8 +261,8 @@ public class fragment_accident_page extends Fragment implements ReturnDataAllAcc
         }
     }
 
-    public void displayAccidentList(ArrayList<Accident> accidents) {
-        accidentList.addAll(accidents);
-        recyclerView.getAdapter().notifyDataSetChanged();
-    }
+//    public void displayAccidentList(ArrayList<Accident> accidents) {
+//        accidentList.addAll(accidents);
+//        recyclerView.getAdapter().notifyDataSetChanged();
+//    }
 }

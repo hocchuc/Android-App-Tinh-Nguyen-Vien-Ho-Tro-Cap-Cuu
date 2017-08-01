@@ -141,8 +141,6 @@ public class MainMenuActivity extends AppCompatActivity
     public Drawer result = null;
     private CrossfadeDrawerLayout crossfadeDrawerLayout = null;
 
-    //    String idUser_UID;
-    Long id_usertype;
     int id_user;
     //-----------------------------------------------------------------------
     GoogleMap mMap;
@@ -152,7 +150,7 @@ public class MainMenuActivity extends AppCompatActivity
     ImageButton btnToGMap, imgbtnRefresh;
     double latitude = 0;
     double longitude = 0;
-    SharedPreferences sharedPreferences1, sharedPreferences2, sharedPreferences3;
+    SharedPreferences sharedPreferences2;
     /* biến dùng cho firebase */
     FirebaseStorage storage;
     StorageReference storageRef;
@@ -309,7 +307,7 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 mMap.clear();
-                if (id_usertype == 3) {
+                if (user1.getUser_type().getName_user_type().equals("user")) {
                     GetAllUser getAllUser = new GetAllUser(MainMenuActivity.this);
                     getAllUser.execute();
                 } else {
@@ -348,28 +346,12 @@ public class MainMenuActivity extends AppCompatActivity
 //            Logout();
 //        }
 
-        sharedPreferences1 = getApplicationContext().getSharedPreferences("User", MODE_PRIVATE);
-        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
-//        Log.d("IDusertype", id_usertype.toString());
-
         sharedPreferences2 = getApplicationContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
         id_user = sharedPreferences2.getInt("id_user", -1);
 
         GetPersonalInfo();
         GetUser();
 
-//        sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-//        if (sharedPreferences3.contains(SystemUtils.PI)) {
-//            //sharedPreferences3 = getApplicationContext().getSharedPreferences(SystemUtils.PI, MODE_PRIVATE);
-//            pi.setName_PI(sharedPreferences3.getString(SystemUtils.NAME_PI, ""));
-//            pi.setAvatar(sharedPreferences3.getString(SystemUtils.AVATAR_PI, ""));
-//            pi.setEmail_PI(sharedPreferences3.getString(SystemUtils.EMAIL_PI, ""));
-//        } else {
-//            GetPersonalInfo();
-//
-//        }
-
-//        setSupportActionBar(toolbar);
         mapFragment = (SupportMapFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -382,12 +364,11 @@ public class MainMenuActivity extends AppCompatActivity
 
         LocationChange();
 
-        if (id_usertype == 3) {
+        if (user1.getUser_type().getName_user_type().equals("user")) {
             new GetAllUser(MainMenuActivity.this).execute();
         } else {
             new GetAllUser(MainMenuActivity.this).execute();
             new GetAllAccident(MainMenuActivity.this).execute();
-
         }
     }
 

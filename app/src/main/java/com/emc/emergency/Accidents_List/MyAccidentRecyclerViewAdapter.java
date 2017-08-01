@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.emc.emergency.ChatBox.ChatBoxActivity;
+import com.emc.emergency.Helper.Model.User;
+import com.emc.emergency.Helper.Model.User_Type;
 import com.emc.emergency.Helper.Utils.GPSTracker;
 
 import com.emc.emergency.R;
@@ -28,12 +31,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -49,7 +60,9 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     public double latitude = 0;
     public double longitude = 0;
     public SharedPreferences sharedPreferences1;
-    long id_usertype;
+    int id_user;
+    User user1;
+    User_Type user_type;
 
     public MyAccidentRecyclerViewAdapter(Context context, List<Accident> items, fragment_accident_page.OnListFragmentInteractionListener listener) {
         this.context = context;
@@ -61,14 +74,73 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_list_accidents, parent, false);
+        user1 = new User();
+        user_type = new User_Type();
         GPSTracker gps = new GPSTracker(view.getContext());
         if (gps.canGetLocation()) {
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
         }
-        sharedPreferences1 = view.getContext().getSharedPreferences("User", MODE_PRIVATE);
-        id_usertype = sharedPreferences1.getLong("id_user_type", -1);
+        sharedPreferences1 = view.getContext().getSharedPreferences("ID_USER", MODE_PRIVATE);
+        id_user = sharedPreferences1.getInt("id_user", -1);
+
+        GetUser();
+        GetAccident();
         return new ViewHolder(view);
+    }
+
+    private void GetAccident() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl()+"accidents/2")
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void GetUser() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(SystemUtils.getServerBaseUrl() + "users/" + id_user)
+                .get()
+                .build();
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            try {
+                Response response = client.newCall(request).execute();
+                try {
+                    JSONObject jsonObj = new JSONObject(response.body().string());
+                    user1 = new User();
+                    user_type = new User_Type();
+                    if (jsonObj.has("id_user_type")) {
+                        String user_Type = jsonObj.getString("id_user_type");
+                        JSONObject jsonObject = new JSONObject(user_Type);
+                        if (jsonObject.has("name_user_type"))
+                            user_type.setName_user_type(jsonObject.getString("name_user_type"));
+                        user1.setUser_type(user_type);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override
@@ -122,7 +194,7 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
         holder.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (id_usertype != 3) {
+                if (!user1.getUser_type().getName_user_type().equals("user")) {
                     Intent i = new Intent(v.getContext(), ChatBoxActivity.class);
                     i.setAction(SystemUtils.TYPE_HELPER);
                     i.putExtra("type", SystemUtils.TYPE_HELPER);

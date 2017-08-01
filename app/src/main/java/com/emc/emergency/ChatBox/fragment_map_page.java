@@ -442,19 +442,23 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
 //                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_user_sos);
                 if (userJoined1 != null) {
                     final LatLng loocation = new LatLng(userJoined1.getLat_userjoined(), userJoined1.getLong_userjoined());
-                    Glide.with(getContext())
-                            .asBitmap()
-                            .load(userJoined1.getAvatar())
-                            .into(new SimpleTarget<Bitmap>(48, 48) {
-                                @Override
-                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-//                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
-                                    mMap.addMarker(new MarkerOptions()
-                                            .position(loocation)
-                                            .title(String.valueOf(userJoined1.getName())))
-                                            .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
-                                }
-                            });
+                    try {
+                        Glide.with(getActivity())
+                                .asBitmap()
+                                .load(userJoined1.getAvatar())
+                                .into(new SimpleTarget<Bitmap>(48, 48) {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+    //                                    Bitmap b = Bitmap.createScaledBitmap(resource, 32, 48, true);
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(loocation)
+                                                .title(String.valueOf(userJoined1.getName())))
+                                                .setIcon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromBitmap(resource)));
+                                    }
+                                });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
