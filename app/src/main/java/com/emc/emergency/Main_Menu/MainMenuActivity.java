@@ -139,6 +139,7 @@ public class MainMenuActivity extends AppCompatActivity
         , fragment_countdown.OnFragmentInteractionListener, IRequestListener
         , ReturnDataAllUser
         , ReturnDataAllAccident{
+    MyBroadcastReceiver receiver = new MyBroadcastReceiver();
 
     MaterialDialog mProgressDialog;
 
@@ -1005,11 +1006,22 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
       protected void onResume() {
         super.onResume();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.emc.emergency.onLockUser");
-        MyBroadcastReceiver receiver = new MyBroadcastReceiver();
-        registerReceiver(receiver, intentFilter);
+        try {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("com.emc.emergency.onLockUser");
+            registerReceiver(receiver, intentFilter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+
+    }
+
     private void CheckNetwork() {
                Utility.showDialog(MainMenuActivity.this, "Xử lý...", "Kết nối đến server, vui lòng đợi...", false);
        		Thread thrd = new Thread()

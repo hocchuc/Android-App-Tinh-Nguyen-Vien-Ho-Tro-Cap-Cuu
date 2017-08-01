@@ -707,6 +707,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
 //                    Log.d("AccidentKey", AccidentKey);
                     id_AC = intent.getStringExtra("id_AC");
 
+                    fragment_map_page fragment_map_page = new fragment_map_page().newInstance(id_AC);
+                    getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, fragment_map_page).commit();
+
 //                    preferences4 = getSharedPreferences("ID_ACC", MODE_PRIVATE);
 //                    SharedPreferences.Editor editor4 = preferences4.edit();
 //                    editor4.putString("id_acc",id_AC);
@@ -803,8 +806,7 @@ public class ChatBoxActivity extends AppCompatActivity implements
      * Đổ Fragment Map vào acitivity
      */
     private void buildFragment() {
-        fragment_map_page fragment_map_page = new fragment_map_page();
-        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, fragment_map_page).commit();
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -1223,6 +1225,9 @@ public class ChatBoxActivity extends AppCompatActivity implements
             }
 
         }
+
+        fragment_map_page fragment_map_page = new fragment_map_page().newInstance(accident2.getId_AC().toString());
+         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, fragment_map_page).commit();
     }
 
     /**
