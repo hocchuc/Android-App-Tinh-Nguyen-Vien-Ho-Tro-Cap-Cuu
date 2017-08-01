@@ -87,4 +87,5 @@
     <string name="Logout">Log Out</string>
     <string name="id_victim">id_victim</string>
     <string name="helper">helper</string>
+    <string name="please_try_again">Please try again</string>
 </resources>

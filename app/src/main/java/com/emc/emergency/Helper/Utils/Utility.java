@@ -1,5 +1,6 @@
 package com.emc.emergency.Helper.Utils;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -73,4 +74,33 @@ public class Utility {
 	    }
 	    return false;
 	}
+
+	// dialog
+	    public static ProgressDialog dialogModel = null;
+
+	    public static void showDialog(Context context, String title, String message, Boolean cancel) {
+
+	        if (dialogModel == null) {
+	            dialogModel = new ProgressDialog(context);
+	            dialogModel.setIndeterminate(true);
+	            dialogModel.setCancelable(cancel);
+	            //dialogModel.setContentView();
+
+	        } else {
+	            dialogModel.dismiss();
+	        }
+	        dialogModel.setTitle(title);
+	        dialogModel.setMessage(message);
+	        dialogModel.show();
+	    }
+
+	/**
+    * Tắt dialog
+    */
+   public static void closeDialog() {
+       if (dialogModel != null) {
+           dialogModel.dismiss();
+       }
+       dialogModel = null;
+   }
 }

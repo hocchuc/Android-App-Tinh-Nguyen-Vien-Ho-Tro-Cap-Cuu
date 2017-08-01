@@ -1,13 +1,23 @@
 package com.emc.emergency.Login;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.emc.emergency.Helper.Services.IRequestListener;
@@ -38,12 +49,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.WebSocketListener;
 import okhttp3.logging.HttpLoggingInterceptor;
+import okio.BufferedSource;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,12 +88,13 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
 
     private static final int REQUEST_CAMERA_PERMISSIONS = 123;
     private static final int  ACCESS_FINE_LOCATION = 456;
+    private boolean networkError = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-      
+        CheckNetwork();
         progressDialog = new MaterialDialog.Builder(this)
                    .title(R.string.progress_dialog_loading)
                    .content(R.string.please_wait)
@@ -166,15 +182,20 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
                 Log.d(SystemUtils.ACTION, SystemUtils.TYPE_LOGOUT);
 
             }
+            if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("EXIT", false)) {
+                finish();
+            }
 
         } else {
             preferences = getSharedPreferences(SystemUtils.USER, MODE_PRIVATE);
             isLogined = preferences.getBoolean(SystemUtils.IS_LOGINED, false);
-            if (isLogined) {
-                Log.d(SystemUtils.IS_LOGINED, "true");
-                Intent MainMenuIntent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                startActivity(MainMenuIntent);
-            }
+            if (isLogined&&!networkError) {
+
+                    Intent MainMenuIntent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                    startActivity(MainMenuIntent);
+                }
+
+
 
             username = preferences.getString("Username", "");
             password = preferences.getString("Password", "");
@@ -472,4 +493,63 @@ public class LoginActivity extends AppCompatActivity implements IRequestListener
             }
         }
     }
+    private void CheckNetwork() {
+            Utility.showDialog(LoginActivity.this, "Xử lý...", "Kết nối đến server, vui lòng đợi...", false);
+    		Thread thrd = new Thread()
+    	    {
+    		    public void run()
+    		    {
+    		        Looper.prepare();
+    		    	networkError = !checkNetwork(LoginActivity.this);
+
+    		    	uiCheckNetworkCallback.sendEmptyMessage(0);
+
+    		        Looper.loop();
+    		    }
+    	    };
+    	    thrd.start();
+    	}
+
+    public static boolean checkNetwork(Activity context)
+    {
+        final ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+        if(netInfo == null || !netInfo.isConnected())
+            return false;
+        return true;
+    }
+
+    private Handler uiCheckNetworkCallback = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            Utility.closeDialog();
+            if(networkError)
+            {
+
+                {
+                    try {
+                        AlertDialog.Builder ab = new AlertDialog.Builder(LoginActivity.this);
+                        ab.setTitle("Thông Báo");
+                        ab.setMessage("Không thể kết nối đến server, xin hãy thử lại sau?");
+                        ab.setPositiveButton("Tắt", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton)
+                            {
+                                finish();
+                            }
+                        });
+
+                        ab.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        finish();
+
+                    }
+
+                }
+            }
+        }
+    };
+
+
 }

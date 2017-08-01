@@ -46,7 +46,7 @@ public class SendLocationToServer {
              @Override
              public void onFailure(Call call, IOException e) {
                  try {
-                     Toast.makeText(context, "Lỗi kết nối tới server", Toast.LENGTH_SHORT).show();
+
                  } catch (Exception e1) {
                      e1.printStackTrace();
                  }

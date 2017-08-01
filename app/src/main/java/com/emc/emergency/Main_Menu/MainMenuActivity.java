@@ -1,6 +1,7 @@
 package com.emc.emergency.Main_Menu;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -20,8 +21,13 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -165,6 +171,7 @@ public class MainMenuActivity extends AppCompatActivity
     User user1;
     User_Type user_type;
     //------------------------
+    boolean networkError = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,17 +190,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void processOnline() {
         //todo is online chuă hoạt động
-        if(isOnline()){
-            Toast.makeText(this, "You are offline, please turn on connection to make app work correctly", Toast.LENGTH_SHORT).show();
-
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finishAndRemoveTask();
-            }else {
-                this.finishAffinity();
-
-            }
-        }
+        CheckNetwork();
     }
 
     /**
@@ -712,11 +709,16 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //add the values which need to be saved from the drawer to the bundle
-        outState = result.saveInstanceState(outState);
-        //add the values which need to be saved from the accountHeader to the bundle
-        outState = headerResult.saveInstanceState(outState);
-        //add the values which need to be saved from the crossFader to the bundle
+
+        try {
+            //add the values which need to be saved from the drawer to the bundle
+            outState = result.saveInstanceState(outState);
+            //add the values which need to be saved from the accountHeader to the bundle
+                outState = headerResult.saveInstanceState(outState);
+            //add the values which need to be saved from the crossFader to the bundle
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         super.onSaveInstanceState(outState);
 
     }
@@ -1008,4 +1010,58 @@ public class MainMenuActivity extends AppCompatActivity
         MyBroadcastReceiver receiver = new MyBroadcastReceiver();
         registerReceiver(receiver, intentFilter);
     }
+    private void CheckNetwork() {
+               Utility.showDialog(MainMenuActivity.this, "Xử lý...", "Kết nối đến server, vui lòng đợi...", false);
+       		Thread thrd = new Thread()
+       	    {
+       		    public void run()
+       		    {
+       		        Looper.prepare();
+                     networkError = !checkNetwork(MainMenuActivity.this);
+
+       		    	uiCheckNetworkCallback.sendEmptyMessage(0);
+
+       		        Looper.loop();
+       		    }
+       	    };
+       	    thrd.start();
+       	}
+
+       public static boolean checkNetwork(Activity context)
+       {
+           final ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+           final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+           if(netInfo == null || !netInfo.isConnected())
+               return false;
+           return true;
+       }
+
+       private Handler uiCheckNetworkCallback = new Handler()
+       {
+           public void handleMessage(Message msg)
+           {
+               Utility.closeDialog();
+               if(networkError)
+               {
+
+                   {
+                       android.support.v7.app.AlertDialog.Builder ab = new android.support.v7.app.AlertDialog.Builder(MainMenuActivity.this);
+                       ab.setTitle("Thông Báo");
+                       ab.setMessage("Không thể kết nối đến server, xin hãy thử lại sau?");
+                       ab.setPositiveButton("Tắt", new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int whichButton)
+                           {
+                               Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                               intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                               intent.putExtra("EXIT", true);
+                               startActivity(intent);
+                           }
+                       });
+
+                       ab.show();
+
+                   }
+               }
+           }
+       };
 }
