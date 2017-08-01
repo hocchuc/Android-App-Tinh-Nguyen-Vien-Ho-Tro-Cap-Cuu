@@ -287,10 +287,10 @@ public class fragment_map_page extends Fragment implements OnMapReadyCallback, L
                     if (jsonObject.has("firebaseKey"))
                           accident.setFirebaseKey(jsonObject.getString("firebaseKey"));
 
-                    if(AccidentKey==null||AccidentKey.equals("")) {
+                    if(AccidentKey.equals("")&&!is_TNV) {
 
                         AccidentKey = accident.getFirebaseKey();
-                        if(!is_TNV) addValueEventListener();
+                        addValueEventListener();
 
                     }
 
