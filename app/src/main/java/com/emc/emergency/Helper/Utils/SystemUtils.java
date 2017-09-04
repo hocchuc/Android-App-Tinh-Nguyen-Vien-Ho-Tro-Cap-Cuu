@@ -20,11 +20,11 @@ public class SystemUtils {
     public static final String BACKEND_ACTION_LOCK_USER = "lock_user";
     public static final String BACKEND_ACTION_ECHO = "com.emc.emergency.ECHO";
     public static final Random RANDOM = new Random();
-    public static final String API_MODE="LOCAL";//"HEROKU" hoặc "LOCAL"
-    public static final String HEROKU_API="https://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/";
-    public static final String LOCAL_API="http://192.168.1.110:8080/api/";
+    public static final String API_MODE="HEROKU";//"HEROKU" hoặc "LOCAL"
+    public static final String HEROKU_API="http://emergencysos.ddns.net:8080/api/";
+    public static final String LOCAL_API="http://192.168.1.42:8080/api/";
 
-    public static final String PUT_USER_TO_ACCIDENT = "http://app-tnv-ho-tro-cap-cuu.herokuapp.com/api/accidents/";
+    public static final String PUT_USER_TO_ACCIDENT = "http://emergencysos.ddns.net:8080/api/accidents/";
 
     public static final String TAG_SELF = "self", TAG_NEW = "new",
             TAG_GO_MESSAGE = "message_go", TAG_EXIT = "exit", TAG_FIREBASE_MESSAGE = "fir   ebase_message",
