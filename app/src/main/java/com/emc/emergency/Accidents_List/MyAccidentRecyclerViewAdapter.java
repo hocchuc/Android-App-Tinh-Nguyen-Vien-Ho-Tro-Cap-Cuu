@@ -55,7 +55,7 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccidentRecyclerViewAdapter.ViewHolder> {
     private final Context context;
-    private final List<Accident> mValues;
+    private List<Accident> mValues;
     private final fragment_accident_page.OnListFragmentInteractionListener mListener;
     public double latitude = 0;
     public double longitude = 0;
@@ -63,6 +63,12 @@ public class MyAccidentRecyclerViewAdapter extends RecyclerView.Adapter<MyAccide
     int id_user;
     User user1;
     User_Type user_type;
+
+    public void setList(List<Accident> mValues){
+        this.mValues.clear();
+        this.mValues = mValues;
+        notifyDataSetChanged();
+    }
 
     public MyAccidentRecyclerViewAdapter(Context context, List<Accident> items, fragment_accident_page.OnListFragmentInteractionListener listener) {
         this.context = context;

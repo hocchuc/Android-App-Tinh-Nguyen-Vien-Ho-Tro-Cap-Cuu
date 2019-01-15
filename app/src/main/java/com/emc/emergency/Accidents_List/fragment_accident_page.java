@@ -33,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -59,7 +61,7 @@ public class fragment_accident_page extends Fragment {
     int id_user;
     User user1;
     User_Type user_type;
-
+    MyAccidentRecyclerViewAdapter adapter;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -91,10 +93,9 @@ public class fragment_accident_page extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_page, container, false);
         accidentList = new ArrayList<>();
-        user1=new User();
-        user_type=new User_Type();
+        user1 = new User();
+        user_type = new User_Type();
 
-        new GetAccidents(getActivity(), accidentList).execute();
 
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
@@ -107,7 +108,8 @@ public class fragment_accident_page extends Fragment {
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new MyAccidentRecyclerViewAdapter(getContext(), accidentList, mListener));
+        adapter = new MyAccidentRecyclerViewAdapter(getContext(), accidentList, mListener);
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -128,6 +130,7 @@ public class fragment_accident_page extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
     private void GetUser() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -139,28 +142,38 @@ public class fragment_accident_page extends Fragment {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            try {
-                Response response = client.newCall(request).execute();
-                try {
-                    JSONObject jsonObj = new JSONObject(response.body().string());
-                    user1 = new User();
-                    user_type = new User_Type();
-                    if (jsonObj.has("id_user_type")) {
-                        String user_Type = jsonObj.getString("id_user_type");
-                        JSONObject jsonObject = new JSONObject(user_Type);
-                        if (jsonObject.has("name_user_type"))
-                            user_type.setName_user_type(jsonObject.getString("name_user_type"));
-                        user1.setUser_type(user_type);
-                    }
-                } catch (JSONException e) {
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try {
+                        JSONObject jsonObj = new JSONObject(response.body().string());
+                        user1 = new User();
+                        user_type = new User_Type();
+                        if (jsonObj.has("id_user_type")) {
+                            String user_Type = jsonObj.getString("id_user_type");
+                            JSONObject jsonObject = new JSONObject(user_Type);
+                            if (jsonObject.has("name_user_type"))
+                                user_type.setName_user_type(jsonObject.getString("name_user_type"));
+                            user1.setUser_type(user_type);
+                        }
+                        new GetAccidents(getActivity(), accidentList).execute();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
 
         }
     }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -196,13 +209,15 @@ public class fragment_accident_page extends Fragment {
         protected void onPostExecute(ArrayList<Accident> accidents) {
             super.onPostExecute(accidents);
 //        arrAccidents.clear();
-
+            Log.d("-------onPostExecute", (accidents != null) ? accidents.size() +"" : 0 +"");
+            if(accidents == null) return;
             for (Accident accident : accidents) {
                 if ((user1.getUser_type().getName_user_type().equals("user")) && (accident.getStatus_AC().equals("Done")))
                     accidentList.add(accident);
                 else if (((!user1.getUser_type().getName_user_type().equals("user"))) && (accident.getStatus_AC().equals("Active")))
                     accidentList.add(accident);
             }
+            adapter.setList(accidentList);
             recyclerView.getAdapter().notifyDataSetChanged();
         }
 
